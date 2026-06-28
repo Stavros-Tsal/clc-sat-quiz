@@ -900,6 +900,32 @@
     border-radius: 6px;
   }
 
+
+  .timer-controls {
+    display: flex; gap: 6px; margin-left: 8px;
+  }
+  .timer-ctrl-btn {
+    width: 30px; height: 30px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    color: rgba(255,255,255,0.85);
+    font-size: 13px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .timer-ctrl-btn:hover {
+    background: rgba(255,255,255,0.25); color: #fff;
+  }
+  .timer-ctrl-btn.active {
+    background: rgba(255,255,255,0.3);
+    border-color: rgba(255,255,255,0.5);
+  }
+  .timer-display.hidden-timer {
+    filter: blur(6px);
+    user-select: none;
+  }
+
 </style>
 </head>
 <body>
@@ -971,10 +997,14 @@
   <div class="timer-bar" id="timer-bar" style="background:#5a0000;">
     <span class="timer-label">Time</span>
     <span class="timer-display" id="timer-display">40:00</span>
-    <div class="timer-progress">
+    <div class="timer-progress" id="timer-progress-wrap">
       <div class="timer-progress-fill" id="timer-fill" style="width:100%"></div>
     </div>
-    <button class="timer-reset-btn" onclick="resetTimer()">↺ Reset</button>
+    <div class="timer-controls">
+      <button class="timer-ctrl-btn" id="btn-pause" onclick="togglePause()" title="Pause / Resume">⏸</button>
+      <button class="timer-ctrl-btn" id="btn-hide" onclick="toggleHide()" title="Hide / Show timer">👁</button>
+      <button class="timer-ctrl-btn" onclick="resetTimer()" title="Reset timer">↺</button>
+    </div>
   </div>
 
   <!-- TAB NAV -->
@@ -1377,14 +1407,17 @@ function restartQuiz(tabIdx) {
 
 
 // ── TIMER ──
-const TIMER_DURATION = 40 * 60; // 40 minutes in seconds
+const TIMER_DURATION = 40 * 60;
 let timerSeconds = TIMER_DURATION;
 let timerInterval = null;
-let timerTabIdx = 0; // tracks which tab is active when timer expires
+let timerPaused = false;
+let timerHidden = false;
 
 function startTimer() {
   if (timerInterval) clearInterval(timerInterval);
+  timerPaused = false;
   timerInterval = setInterval(() => {
+    if (timerPaused) return;
     timerSeconds--;
     updateTimerDisplay();
     if (timerSeconds <= 0) {
@@ -1403,26 +1436,55 @@ function updateTimerDisplay() {
   const fill = document.getElementById('timer-fill');
   if (!display || !fill) return;
 
-  display.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  display.textContent = timerHidden ? '--:--' : String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
 
   const pct = (timerSeconds / TIMER_DURATION) * 100;
-  fill.style.width = pct + '%';
+  fill.style.width = timerHidden ? '100%' : pct + '%';
 
-  // Color states
-  display.className = 'timer-display';
-  fill.className = 'timer-progress-fill';
-  if (timerSeconds <= 300) { // 5 min
-    display.classList.add('danger');
-    fill.classList.add('danger');
-  } else if (timerSeconds <= 600) { // 10 min
-    display.classList.add('warning');
-    fill.classList.add('warning');
+  if (!timerHidden) {
+    display.className = 'timer-display';
+    fill.className = 'timer-progress-fill';
+    if (timerSeconds <= 300) {
+      display.classList.add('danger'); fill.classList.add('danger');
+    } else if (timerSeconds <= 600) {
+      display.classList.add('warning'); fill.classList.add('warning');
+    }
+  } else {
+    display.className = 'timer-display';
+    fill.className = 'timer-progress-fill';
   }
+}
+
+function togglePause() {
+  timerPaused = !timerPaused;
+  const btn = document.getElementById('btn-pause');
+  if (btn) {
+    btn.textContent = timerPaused ? '▶' : '⏸';
+    btn.title = timerPaused ? 'Resume' : 'Pause';
+    btn.classList.toggle('active', timerPaused);
+  }
+}
+
+function toggleHide() {
+  timerHidden = !timerHidden;
+  const btn = document.getElementById('btn-hide');
+  if (btn) {
+    btn.textContent = timerHidden ? '🙈' : '👁';
+    btn.title = timerHidden ? 'Show timer' : 'Hide timer';
+    btn.classList.toggle('active', timerHidden);
+  }
+  updateTimerDisplay();
 }
 
 function resetTimer() {
   clearInterval(timerInterval);
   timerSeconds = TIMER_DURATION;
+  timerPaused = false;
+  timerHidden = false;
+  const pauseBtn = document.getElementById('btn-pause');
+  const hideBtn = document.getElementById('btn-hide');
+  if (pauseBtn) { pauseBtn.textContent = '⏸'; pauseBtn.classList.remove('active'); }
+  if (hideBtn) { hideBtn.textContent = '👁'; hideBtn.classList.remove('active'); }
   updateTimerDisplay();
   startTimer();
 }
