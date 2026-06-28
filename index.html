@@ -916,17 +916,17 @@
 </div>
 
 <!-- DESMOS FAB -->
-<button class="desmos-fab" onclick="openDesmos()" title="Open Desmos Calculator">
+<button class="desmos-fab" id="desmos-fab" onclick="openDesmos()" style="display:none;" title="Open Desmos Calculator">
   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect width="24" height="24" rx="4" fill="white" fill-opacity="0.15"/>
     <path d="M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z" fill="white" fill-opacity="0.9"/>
     <path d="M5 7h4M7 5v4M15 7h4M17 5v4M5 17h4M15 15l4 4M19 15l-4 4" stroke="white" stroke-width="1.4" stroke-linecap="round"/>
   </svg>
 </button>
-<div class="desmos-fab-label">Desmos Calculator</div>
+<div class="desmos-fab-label" id="desmos-fab-label" style="display:none;">Desmos Calculator</div>
 
 <!-- UNANSWERED JUMP BUTTON -->
-<button class="unanswered-btn" id="unanswered-btn" onclick="jumpToNextUnanswered()">
+<button class="unanswered-btn" id="unanswered-btn" style="display:none;" onclick="jumpToNextUnanswered()">
   <span>⬜ Unanswered</span>
   <span class="unanswered-badge" id="unanswered-badge">–</span>
 </button>
@@ -950,6 +950,14 @@
 // ── SCREEN NAVIGATION ──
 function goScreen(id, subject) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  if (id !== 'screen-quiz') {
+    const fab = document.getElementById('desmos-fab');
+    const fabLabel = document.getElementById('desmos-fab-label');
+    const unans = document.getElementById('unanswered-btn');
+    if (fab) fab.style.display = 'none';
+    if (fabLabel) fabLabel.style.display = 'none';
+    if (unans) unans.style.display = 'none';
+  }
   document.getElementById(id).classList.add('active');
   if (subject) {
     document.getElementById('mode-badge').textContent = subject === 'Math' ? '📐 Math' : '📖 English';
@@ -959,6 +967,9 @@ function goScreen(id, subject) {
 
 function goQuiz() {
   goScreen('screen-quiz');
+  document.getElementById('desmos-fab').style.display = 'flex';
+  document.getElementById('desmos-fab-label').style.display = 'block';
+  document.getElementById('unanswered-btn').style.display = 'flex';
   // Reset all quiz state
   [0,1,2].forEach(i => {
     state[i].current = 0;
