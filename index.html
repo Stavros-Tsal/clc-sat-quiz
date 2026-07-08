@@ -965,11 +965,10 @@
   <h2 class="subject-title">Choose a mode</h2>
   <p class="subject-sub">How do you want to practice?</p>
   <div class="mode-cards">
-    <div class="mode-card disabled">
+    <div class="mode-card" onclick="goScreen('screen-test-list')">
       <div class="icon">📝</div>
       <div class="label">Practice Test</div>
       <div class="desc">Full-length SAT mock test under timed conditions</div>
-      <span class="coming-soon">Coming Soon</span>
     </div>
     <div class="mode-card" onclick="goQuiz()">
       <div class="icon">🎯</div>
@@ -978,6 +977,70 @@
     </div>
   </div>
   <button class="back-btn" onclick="goScreen('screen-subject')">← Back</button>
+</div>
+
+<!-- ══ SCREEN: PRACTICE TEST LIST ══ -->
+<div id="screen-test-list" class="screen">
+  <h2 class="subject-title">Practice Tests</h2>
+  <p class="subject-sub">Choose a full-length test to begin</p>
+  <div class="mode-cards">
+    <div class="mode-card" onclick="goScreen('screen-test-ready')">
+      <div class="icon">📄</div>
+      <div class="label">Test 1</div>
+      <div class="desc">Module 1 (25 questions, 35 min) + Module 2 (22 questions, 35 min)</div>
+    </div>
+  </div>
+  <button class="back-btn" onclick="goScreen('screen-mode')">← Back</button>
+</div>
+
+<!-- ══ SCREEN: TEST READY ══ -->
+<div id="screen-test-ready" class="screen">
+  <div class="welcome-divider"></div>
+  <h1 class="welcome-title">Test 1</h1>
+  <p class="welcome-sub" style="max-width:480px;margin:0 auto 8px;">
+    This test has <strong>2 modules</strong>:
+  </p>
+  <div style="max-width:420px;margin:16px auto;text-align:left;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:20px 24px;">
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+      <span>📐 Module 1</span><span style="color:var(--muted)">25 questions · 35 min</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+      <span>☕ Break</span><span style="color:var(--muted)">2 min</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:8px 0;">
+      <span>📐 Module 2</span><span style="color:var(--muted)">22 questions · 35 min</span>
+    </div>
+  </div>
+  <p class="welcome-sub">Once you start, the timer begins immediately. Ready?</p>
+  <button class="welcome-next" onclick="startTestModule1()">Go! →</button>
+  <div><button class="back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
+</div>
+
+<!-- ══ SCREEN: TEST QUIZ (Module 1/2) ══ -->
+<div id="screen-test-quiz" class="screen">
+  <header>
+    <img src="data:image/png;base64,PLACEHOLDER_LOGO" alt="CLC" style="display:none;">
+    <div>
+      <h1>CLC SAT Practice</h1>
+      <div class="subtitle" id="test-module-label">Practice Test — Module 1</div>
+    </div>
+    <button onclick="goScreen('screen-test-list')" style="margin-left:auto;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:500;">← Exit</button>
+  </header>
+
+  <div class="timer-bar" id="test-timer-bar" style="background:#5a0000;">
+    <span class="timer-label">Time</span>
+    <span class="timer-display" id="test-timer-display">35:00</span>
+    <div class="timer-progress" id="test-timer-progress-wrap">
+      <div class="timer-progress-fill" id="test-timer-fill" style="width:100%"></div>
+    </div>
+    <div class="timer-controls">
+      <button class="timer-ctrl-btn" id="test-btn-pause" onclick="toggleTestPause()" title="Pause / Resume">⏸</button>
+      <button class="timer-ctrl-btn" id="test-btn-hide" onclick="toggleTestHide()" title="Hide / Show timer">👁</button>
+      <button class="timer-ctrl-btn" onclick="resetTestTimer()" title="Reset timer">↺</button>
+    </div>
+  </div>
+
+  <div class="quiz-wrap" id="test-quiz-wrap"></div>
 </div>
 
 <!-- ══ SCREEN 4: QUIZ ══ -->
@@ -1074,7 +1137,7 @@ document.addEventListener('keydown', e => {
 // ── SCREEN NAVIGATION ──
 function goScreen(id, subject) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  if (id !== 'screen-quiz') {
+  if (id !== 'screen-quiz' && id !== 'screen-test-quiz') {
     const fab = document.getElementById('desmos-fab');
     const fabLabel = document.getElementById('desmos-fab-label');
     const unans = document.getElementById('unanswered-btn');
@@ -1082,6 +1145,15 @@ function goScreen(id, subject) {
     const refFab = document.getElementById('ref-fab'); if (refFab) refFab.style.display = 'none';
     if (fabLabel) fabLabel.style.display = 'none';
     if (unans) unans.style.display = 'none';
+  }
+  if (id === 'screen-test-quiz') {
+    const fab = document.getElementById('desmos-fab');
+    const fabLabel = document.getElementById('desmos-fab-label');
+    const refFab = document.getElementById('ref-fab');
+    if (fab) fab.style.display = 'flex';
+    if (fabLabel) fabLabel.style.display = 'block';
+    if (refFab) refFab.style.display = 'flex';
+    // unanswered-btn is drill-quiz specific (uses QUESTIONS/activeTab); keep hidden in test mode
   }
   document.getElementById(id).classList.add('active');
   if (subject) {
@@ -1589,6 +1661,330 @@ function jumpToNextUnanswered() {
     }
   }
 }
+
+
+// ══════════════ PRACTICE TEST — TEST 1 ══════════════
+const TEST1_M1 = [{"q": "A delivery service charges $8 per parcel plus a $12 flat fee. A customer paid $60. How many parcels were delivered?", "open": true, "ans": "6"}, {"q": "Which equation has the same solution as $3x + 9 = 21$?", "opts": ["$x + 3 = 7$", "$x + 3 = 4$", "$x = 8$", "$x = 7$"], "ans": "A"}, {"q": "The perimeter of a rectangle is 56 cm. The length is 4 more than twice the width. What is the width, in cm?", "opts": ["6", "8", "12", "16"], "ans": "B"}, {"q": "If $kx - 6 = 24$ has the solution $x = 5$, what is the value of $k$?", "opts": ["3", "6", "7", "9"], "ans": "B"}, {"q": "The equation $ax + b = cx + d$ ($a \\neq c$) has exactly one solution. Which expression gives $x$?", "opts": ["$\\dfrac{b-d}{a-c}$", "$\\dfrac{d-b}{a-c}$", "$\\dfrac{a-c}{b-d}$", "$\\dfrac{b+d}{a+c}$"], "ans": "B"}, {"q": "$3|x - 4| = 21$. How many real solutions does this equation have?", "opts": ["0", "1", "2", "3"], "ans": "C"}, {"q": "$5 - 2x < 11$. What is the solution?", "opts": ["$x > -3$", "$x < 3$", "$x > 3$", "$x < -3$"], "ans": "A"}, {"q": "For which values of $k$ does $kx + 3 > 7$ have solutions for all real $x$ (that is, all the real numbers are solutions to this inequality)?", "opts": ["$k > 0$", "$k < 0$", "$k = 0$", "No such $k$"], "ans": "D"}, {"q": "Consider the equation $x^2 - 5x + 6 = 0$ and let $x_1, x_2$ be the solutions of it. What is the value of $(x_1+x_2) - (x_1 x_2)$?", "open": true, "ans": "-1"}, {"q": "Consider the equation $x^2 + 3x - 10 = 0$ and let $x_1, x_2$ be the solutions of it. Find the value of: $\\dfrac{x_1}{x_2} + \\dfrac{x_2}{x_1}$.", "open": true, "ans": "-2.9"}, {"q": "$|2x - 5| \\geq 9$. Which set of values satisfies this inequality?", "opts": ["$x \\leq -2$ or $x \\geq 7$", "$-2 \\leq x \\leq 7$", "$x \\leq 2$ or $x \\geq 7$", "$-7 \\leq x \\leq 2$"], "ans": "A"}, {"q": "A store earns $15 profit on item A and $20 on item B. It sells at most 50 items and needs at least $850 profit. If it sells $a$ items of A and $b$ items of B ($a, b \\geq 0$), which system models this?", "opts": ["$a+b\\leq 50,\\ 15a+20b\\geq 850$", "$a+b\\geq 50,\\ 15a+20b\\leq 850$", "$a+b\\leq 50,\\ 15a+20b\\leq 850$", "$a+b\\geq 50,\\ 15a+20b\\geq 850$"], "ans": "A"}, {"q": "If $-1 < 2x - 3 < 7$, what is the range of $x^2$?", "opts": ["$0 < x^2 < 16$", "$1 < x^2 < 25$", "$0 \\leq x^2 < 25$", "$1 \\leq x^2 \\leq 16$"], "ans": "B"}, {"q": "Which is equivalent to the product $(2x + 3)(4x^2 - 6x + 9)$?", "opts": ["$8x^3 + 27$", "$8x^3 - 27$", "$(2x)^3 + 3^3$", "Both A and C"], "ans": "D"}, {"q": "Which quadratic equation has exactly one distinct real solution?", "opts": ["$(x + 15)^2 = 0$", "$(x + 15)^2 = -45$", "$(x + 15)^2 = 45$", "$(x + 15)^2 = 135$"], "ans": "A"}, {"q": "The equation $kx^2 - 12x + 4 = 0$ has exactly one real solution. What is the value of $k$?", "opts": ["3", "6", "9", "12"], "ans": "C"}, {"q": "The system $y = x^2 - 4$ and $y = 2x - 1$ has solutions at which $x$-values?", "opts": ["$x = -1$ and $x = 3$", "$x = 1$ and $x = 3$", "$x = -3$ and $x = 1$", "$x = 2$ and $x = 3$"], "ans": "A"}, {"q": "For what real values of $c$ does $x^2 + cx + 16$ have no real roots?", "opts": ["$c > 8$", "$-8 < c < 8$", "$c < -8$ or $c > 8$", "$c = \\pm 8$"], "ans": "B"}, {"q": "Three coordinate points $(0, 2)$, $(1, 5)$, $(3, 17)$ all lie on $f(x) = ax^2 + bx + c$. What is $f(2)$?", "open": true, "ans": "10"}, {"q": "$x^4 - 13x^2 + 36 = 0$. How many real solutions does this equation have?", "opts": ["0", "2", "4", "Depends on domain"], "ans": "C"}, {"q": "For $f(x) = x^2 + 2$, what is $f(x + 1) - f(x)$?", "opts": ["$2x + 1$", "$2x + 3$", "$2x - 1$", "$x + 1$"], "ans": "A"}, {"q": "A car depreciates at 15% per year. Its initial value is \\$24,000. Which function gives its value after $t$ years?", "opts": ["$V(t) = 24000(0.85)^t$", "$V(t) = 24000(1.15)^t$", "$V(t) = 24000 - 0.15t$", "$V(t) = 24000(0.15)^t$"], "ans": "A"}, {"q": "A colony of cells triples every 5 hours. Starting at 200 cells, after how many hours will the count first exceed 50,000?", "open": true, "ans": "25"}, {"q": "If $f(x) = \\sqrt{9 - x^2}$, what is the domain of $f$?", "opts": ["$x \\geq 0$", "$x \\leq 3$", "$-3 \\leq x \\leq 3$", "All real numbers"], "ans": "C"}, {"q": "The graph of $y = |f(x)|$ compared to $y = f(x)$: which transformation is applied?", "opts": ["All parts above the $x$-axis remain; parts below are reflected over the $x$-axis.", "All parts below the $x$-axis remain; parts above are reflected.", "The whole graph is reflected over the $x$-axis.", "No change."], "ans": "A"}];
+
+const TEST1_M2 = [{"q": "A car travels 240 miles in 4 hours. At the same speed, how many miles will it travel in 7 hours?", "opts": ["360", "420", "480", "560"], "ans": "B"}, {"q": "A map has a scale of 1 cm : 50 km. Two cities are 7 cm apart on the map. What is the actual distance?", "opts": ["7 km", "50 km", "350 km", "500 km"], "ans": "C"}, {"q": "60 miles per hour is equivalent to how many feet per second? (1 mile = 5280 feet)", "opts": ["66", "88", "97", "110"], "ans": "B"}, {"q": "A shirt originally costs $60. It is discounted by 25%. What is the sale price?", "opts": ["$35", "$40", "$45", "$50"], "ans": "C"}, {"q": "A town's population grew from 50,000 to 56,500. What is the percentage increase?", "opts": ["11%", "13%", "15%", "17%"], "ans": "B"}, {"q": "40% of students in a class are girls. There are 18 boys. How many students are in the class?", "open": true, "ans": "30"}, {"q": "A circle has radius 5 cm. What is its area in terms of $\\pi$?", "opts": ["$5\\pi$ cm$^2$", "$10\\pi$ cm$^2$", "$25\\pi$ cm$^2$", "$50\\pi$ cm$^2$"], "ans": "C"}, {"q": "A rectangular box has length 4 cm, width 3 cm, and height 5 cm. What is its volume?", "opts": ["12 cm$^3$", "47 cm$^3$", "60 cm$^3$", "120 cm$^3$"], "ans": "C"}, {"q": "A cylinder has radius 3 cm and height 10 cm. What is its volume in terms of $\\pi$?", "opts": ["$30\\pi$ cm$^3$", "$60\\pi$ cm$^3$", "$90\\pi$ cm$^3$", "$180\\pi$ cm$^3$"], "ans": "C"}, {"q": "A circle has circumference $12\\pi$ cm. What is its area?", "opts": ["$6\\pi$ cm$^2$", "$12\\pi$ cm$^2$", "$36\\pi$ cm$^2$", "$144\\pi$ cm$^2$"], "ans": "C"}, {"q": "A triangle has base 10 m and height 6 m. What is its area?", "opts": ["30 m$^2$", "60 m$^2$", "16 m$^2$", "120 m$^2$"], "ans": "A"}, {"q": "A sphere has volume $36\\pi$ cm$^3$. What is its radius?", "opts": ["3 cm", "4 cm", "6 cm", "9 cm"], "ans": "A"}, {"q": "A triangle has angles in the ratio 1:2:3. What are the three angle measures?", "opts": ["$30°, 60°, 90°$", "$20°, 40°, 60°$", "$45°, 90°, 45°$", "$60°, 60°, 60°$"], "ans": "A"}, {"q": "Two angles are complementary. One is $(3x + 5)°$ and the other is $(2x - 10)°$. What is $x$?", "open": true, "ans": "19"}, {"q": "The sides of a triangle are 6, 8, and 10. Is this a right triangle? Which sides form the right angle?", "opts": ["No, not a right triangle.", "Yes, right angle between sides 6 and 10.", "Yes, right angle between sides 6 and 8.", "Yes, right angle between sides 8 and 10."], "ans": "C"}, {"q": "Triangle XYZ is right-angled at Y. $XZ = 17$ and $XY = 15$. What is the area of triangle XYZ?", "open": true, "ans": "60"}, {"q": "In a right triangle, the legs are 3 and 4. What is the hypotenuse?", "opts": ["5", "6", "7", "12"], "ans": "A"}, {"q": "Two tangents from an external point P touch a circle at A and B. $PA = PB = 12$ and the radius is 5. What is the distance from P to the centre?", "open": true, "ans": "13"}, {"q": "Two circles of radii 6 and 10 have their centres 16 cm apart. At how many points do they intersect?", "opts": ["1", "2", "3", "0"], "ans": "A"}, {"q": "Which value of $k$ makes the expression $\\dfrac{x^2 - kx + 12}{x - 3}$ undefined AND equal to 0 for the same value? (i.e., both numerator and denominator are 0 at $x = 3$).", "opts": ["$k = 7$", "$k = 5$", "$k = 4$", "$k = 8$"], "ans": "A"}, {"q": "If for a quadratic function $f(x) = ax^2+bx+c$ the graph of $f(x)$ intersects the $x$-axis at two points and the $y$-axis below the $x$-axis, and $f(x)$ takes a minimum value, which of the following must be true?", "opts": ["$a>0,\\ D>0,\\ c>0$", "$a>0,\\ D>0,\\ c<0$", "$a>0,\\ D<0,\\ c<0$", "$a<0,\\ D>0,\\ c>0$"], "ans": "B"}, {"q": "The volume of a right cylinder is given by $V = \\pi r^2 h$. Consider a cylinder whose height and radius are positive integers. Which of the following represents the new volume $V'$ if we triple its height and quadruple its radius?", "opts": ["$V' = 12V$", "$V' = 48V$", "$V' = 20V$", "$V' = 16V$"], "ans": "B"}];
+
+const TEST_MODULE_DURATION = 35 * 60;
+let testTimerSeconds = TEST_MODULE_DURATION;
+let testTimerInterval = null;
+let testTimerPaused = false;
+let testTimerHidden = false;
+
+let testState = {
+  moduleIdx: 1,       // 1 or 2
+  current: 0,
+  score: 0,
+  answered: {},
+  bookmarks: new Set()
+};
+
+function currentTestQuestions() {
+  return testState.moduleIdx === 1 ? TEST1_M1 : TEST1_M2;
+}
+
+function startTestModule1() {
+  testState = { moduleIdx: 1, current: 0, score: 0, answered: {}, bookmarks: new Set() };
+  document.getElementById('test-module-label').textContent = 'Practice Test — Test 1 · Module 1';
+  goScreen('screen-test-quiz');
+  renderTestQuestion();
+  resetTestTimer();
+}
+
+function renderTestQuestion() {
+  const s = testState;
+  const qs = currentTestQuestions();
+  const q = qs[s.current];
+  const qIdx = s.current;
+  const letters = ['A','B','C','D'];
+  const pct = Math.round((Object.keys(s.answered).length / qs.length) * 100);
+
+  let html = `
+    <div id="test-qdots" class="qdots-wrap"></div>
+    <div class="progress-label">
+      <span>Progress</span>
+      <span>${Object.keys(s.answered).length} / ${qs.length} answered</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" style="width:${pct}%"></div>
+    </div>
+    <div class="q-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div class="q-number" style="margin-bottom:0">Question ${qIdx+1} of ${qs.length}</div>
+        <button class="bm-btn ${s.bookmarks.has(qIdx)?'bm-active':''}" id="test-bm-${qIdx}" onclick="toggleTestBookmark(${qIdx})">
+          ${s.bookmarks.has(qIdx) ? '🔖 Bookmarked' : '📌 Bookmark'}
+        </button>
+      </div>
+      <div class="q-text">${q.q}</div>
+  `;
+
+  if (q.img) html += `<img class="q-image" src="${q.img}" alt="figure">`;
+
+  const alreadyAnswered = s.answered[qIdx] !== undefined;
+
+  if (q.open) {
+    html += `
+      <div class="open-wrap">
+        <input class="open-input ${alreadyAnswered ? (s.answered[qIdx] ? 'correct' : 'wrong') : ''}" id="test-open-${qIdx}"
+          placeholder="Type your answer…" value="${alreadyAnswered ? q.ans : ''}"
+          ${alreadyAnswered ? 'disabled' : ''}
+          onkeydown="if(event.key==='Enter') document.getElementById('test-chk-${qIdx}').click()">
+        <button class="check-btn" id="test-chk-${qIdx}"
+          onclick="checkTestOpen(${qIdx})"
+          ${alreadyAnswered ? 'disabled' : ''}>Check</button>
+      </div>
+    `;
+    const fbTxt = alreadyAnswered
+      ? (s.answered[qIdx] ? '✓ Correct!' : `✗ Incorrect. Correct answer: ${q.ans}`)
+      : '';
+    html += `<div class="feedback ${alreadyAnswered ? (s.answered[qIdx] ? 'correct' : 'wrong') : ''}" id="test-fb-${qIdx}" ${alreadyAnswered?'':'style="display:none"'}>${fbTxt}</div>`;
+  } else {
+    html += `<div class="options">`;
+    const correctIdx = letters.indexOf(q.ans);
+    (q.opts||[]).forEach((opt,i) => {
+      let cls = '';
+      if (alreadyAnswered && i === correctIdx) cls = 'correct';
+      html += `
+        <button class="opt-btn ${cls}" id="test-opt-${qIdx}-${i}"
+          onclick="chooseTestMCQ(${qIdx},${i})"
+          ${alreadyAnswered?'disabled':''}>
+          <span class="opt-letter">${letters[i]}</span>
+          <span>${opt}</span>
+        </button>`;
+    });
+    html += `</div>`;
+    html += `<div class="feedback ${alreadyAnswered ? (s.answered[qIdx] ? 'correct' : 'wrong') : ''}" id="test-fb-${qIdx}" ${alreadyAnswered?'':'style="display:none"'}>${alreadyAnswered ? (s.answered[qIdx] ? '✓ Correct!' : `✗ Incorrect. Correct answer: ${q.ans}`) : ''}</div>`;
+  }
+
+  html += `</div><div id="test-nav"></div>`;
+
+  document.getElementById('test-quiz-wrap').innerHTML = html;
+  MathJax.typesetPromise([document.getElementById('test-quiz-wrap')]);
+  renderTestNav();
+  renderTestQuestionDots();
+}
+
+function normalizeTest(s) {
+  return String(s).trim().toLowerCase().replace(/\s+/g,'');
+}
+
+function checkTestOpen(qIdx) {
+  const s = testState;
+  const qs = currentTestQuestions();
+  const q = qs[qIdx];
+  const input = document.getElementById(`test-open-${qIdx}`);
+  const ans = normalizeTest(input.value);
+  const correct = normalizeTest(q.ans);
+  const fb = document.getElementById(`test-fb-${qIdx}`);
+  const btn = document.getElementById(`test-chk-${qIdx}`);
+
+  input.disabled = true;
+  btn.disabled = true;
+
+  const isCorrect = ans === correct;
+  input.classList.add(isCorrect ? 'correct' : 'wrong');
+  fb.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
+  fb.textContent = isCorrect ? '✓ Correct!' : `✗ Incorrect. Correct answer: ${q.ans}`;
+  fb.style.display = 'block';
+
+  if (!s.answered[qIdx] && s.answered[qIdx] !== false) {
+    if (s.answered[qIdx] === undefined) {
+      s.answered[qIdx] = isCorrect;
+      if (isCorrect) s.score++;
+    }
+  }
+  MathJax.typesetPromise([fb]);
+  renderTestNav();
+  renderTestQuestionDots();
+}
+
+function chooseTestMCQ(qIdx, chosenIdx) {
+  const s = testState;
+  const qs = currentTestQuestions();
+  const q = qs[qIdx];
+  const letters = ['A','B','C','D'];
+  const chosen = letters[chosenIdx];
+  const isCorrect = chosen === q.ans;
+  const correctIdx = letters.indexOf(q.ans);
+
+  for (let i=0;i<4;i++) {
+    const btn = document.getElementById(`test-opt-${qIdx}-${i}`);
+    if (!btn) continue;
+    btn.disabled = true;
+    if (i === chosenIdx) btn.classList.add(isCorrect ? 'correct' : 'wrong');
+    if (!isCorrect && i === correctIdx) btn.classList.add('correct');
+  }
+
+  const fb = document.getElementById(`test-fb-${qIdx}`);
+  fb.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
+  fb.textContent = isCorrect ? '✓ Correct!' : `✗ Incorrect. Correct answer: ${q.ans}`;
+  fb.style.display = 'block';
+
+  if (s.answered[qIdx] === undefined) {
+    s.answered[qIdx] = isCorrect;
+    if (isCorrect) s.score++;
+  }
+  renderTestNav();
+  renderTestQuestionDots();
+}
+
+function renderTestNav() {
+  const s = testState;
+  const qs = currentTestQuestions();
+  const navEl = document.getElementById('test-nav');
+  if (!navEl) return;
+  const answered = s.answered[s.current] !== undefined;
+  const isLast = s.current === qs.length - 1;
+
+  navEl.innerHTML = `
+    <button class="nav-btn secondary" onclick="goTestTo(${s.current-1})" ${s.current===0?'disabled':''}>← Previous</button>
+    <span style="font-size:13px;color:var(--muted)">${s.current+1} / ${qs.length}</span>
+    ${isLast
+      ? `<button class="nav-btn primary" onclick="finishTestModule1()" ${!answered?'disabled':''}>Finish Module 1 →</button>`
+      : `<button class="nav-btn primary" onclick="goTestTo(${s.current+1})" ${!answered?'disabled':''}>Next →</button>`
+    }
+  `;
+}
+
+function goTestTo(idx) {
+  const qs = currentTestQuestions();
+  if (idx < 0 || idx >= qs.length) return;
+  testState.current = idx;
+  renderTestQuestion();
+}
+
+function toggleTestBookmark(qIdx) {
+  const s = testState;
+  if (s.bookmarks.has(qIdx)) s.bookmarks.delete(qIdx);
+  else s.bookmarks.add(qIdx);
+  const bmBtn = document.getElementById(`test-bm-${qIdx}`);
+  if (bmBtn) {
+    const active = s.bookmarks.has(qIdx);
+    bmBtn.className = 'bm-btn ' + (active ? 'bm-active' : '');
+    bmBtn.textContent = active ? '🔖 Bookmarked' : '📌 Bookmark';
+  }
+  renderTestQuestionDots();
+}
+
+function renderTestQuestionDots() {
+  const dotsEl = document.getElementById('test-qdots');
+  if (!dotsEl) return;
+  const s = testState;
+  const qs = currentTestQuestions();
+  let dotsHtml = '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">';
+  for (let i = 0; i < qs.length; i++) {
+    const ans = s.answered[i];
+    const answered = ans !== undefined;
+    const correct = ans === true;
+    const bookmarked = s.bookmarks.has(i);
+    const current = s.current === i;
+    let cls = 'qdot';
+    if (current) cls += ' qdot-current';
+    else if (answered && correct) cls += ' qdot-correct';
+    else if (answered && !correct) cls += ' qdot-wrong';
+    if (bookmarked) cls += ' qdot-bm';
+    const tooltip = `Q${i+1}${bookmarked?' 📌':''}${!answered?' (unanswered)':correct?' ✓':' ✗'}`;
+    dotsHtml += `<button class="${cls}" onclick="goTestTo(${i})" title="${tooltip}">${i+1}${bookmarked?'<span class="bm-dot"></span>':''}</button>`;
+  }
+  dotsHtml += '</div>';
+  dotsEl.innerHTML = dotsHtml;
+}
+
+function finishTestModule1() {
+  // Step 1 scope: Module 1 complete placeholder.
+  // (Step 2 will add the 2-min break screen + Module 2 + full results screen.)
+  clearInterval(testTimerInterval);
+  const s = testState;
+  const qs = currentTestQuestions();
+  const pct = Math.round((s.score / qs.length) * 100);
+  document.getElementById('test-quiz-wrap').innerHTML = `
+    <div class="score-screen active">
+      <div class="score-circle" style="--pct:${pct}%">
+        <div class="score-inner">
+          <div class="score-num">${s.score}</div>
+          <div class="score-denom">out of ${qs.length}</div>
+        </div>
+      </div>
+      <h2 class="score-title">Module 1 complete! 🎉</h2>
+      <p class="score-subtitle">You scored ${pct}% on Module 1. (Module 2 + break coming next!)</p>
+      <button class="restart-btn" onclick="startTestModule1()">Try Module 1 Again</button>
+    </div>
+  `;
+}
+
+// ── TEST TIMER ──
+function startTestTimer() {
+  if (testTimerInterval) clearInterval(testTimerInterval);
+  testTimerPaused = false;
+  testTimerInterval = setInterval(() => {
+    if (testTimerPaused) return;
+    testTimerSeconds--;
+    updateTestTimerDisplay();
+    if (testTimerSeconds <= 0) {
+      clearInterval(testTimerInterval);
+      testTimerSeconds = 0;
+      updateTestTimerDisplay();
+      finishTestModule1();
+    }
+  }, 1000);
+}
+
+function updateTestTimerDisplay() {
+  const m = Math.floor(testTimerSeconds / 60);
+  const sec = testTimerSeconds % 60;
+  const display = document.getElementById('test-timer-display');
+  const fill = document.getElementById('test-timer-fill');
+  if (!display || !fill) return;
+
+  display.textContent = testTimerHidden ? '--:--' : String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+  const pct = (testTimerSeconds / TEST_MODULE_DURATION) * 100;
+  fill.style.width = testTimerHidden ? '100%' : pct + '%';
+
+  display.className = 'timer-display';
+  fill.className = 'timer-progress-fill';
+  if (!testTimerHidden) {
+    if (testTimerSeconds <= 300) { display.classList.add('danger'); fill.classList.add('danger'); }
+    else if (testTimerSeconds <= 600) { display.classList.add('warning'); fill.classList.add('warning'); }
+  }
+}
+
+function toggleTestPause() {
+  testTimerPaused = !testTimerPaused;
+  const btn = document.getElementById('test-btn-pause');
+  if (btn) {
+    btn.textContent = testTimerPaused ? '▶' : '⏸';
+    btn.title = testTimerPaused ? 'Resume' : 'Pause';
+    btn.classList.toggle('active', testTimerPaused);
+  }
+}
+
+function toggleTestHide() {
+  testTimerHidden = !testTimerHidden;
+  const btn = document.getElementById('test-btn-hide');
+  if (btn) {
+    btn.textContent = testTimerHidden ? '🙈' : '👁';
+    btn.title = testTimerHidden ? 'Show timer' : 'Hide timer';
+    btn.classList.toggle('active', testTimerHidden);
+  }
+  updateTestTimerDisplay();
+}
+
+function resetTestTimer() {
+  clearInterval(testTimerInterval);
+  testTimerSeconds = TEST_MODULE_DURATION;
+  testTimerPaused = false;
+  testTimerHidden = false;
+  const pauseBtn = document.getElementById('test-btn-pause');
+  const hideBtn = document.getElementById('test-btn-hide');
+  if (pauseBtn) { pauseBtn.textContent = '⏸'; pauseBtn.classList.remove('active'); }
+  if (hideBtn) { hideBtn.textContent = '👁'; hideBtn.classList.remove('active'); }
+  updateTestTimerDisplay();
+  startTestTimer();
+}
+// ══════════════ END PRACTICE TEST — TEST 1 ══════════════
 
 // Init all quizzes
 [0,1,2,3].forEach(i => renderQuestion(i));
