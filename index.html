@@ -1016,6 +1016,20 @@
   <div><button class="back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
 </div>
 
+<!-- ══ SCREEN: TEST BREAK ══ -->
+<div id="screen-test-break" class="screen">
+  <div class="welcome-divider"></div>
+  <h1 class="welcome-title">☕ Break</h1>
+  <p class="welcome-sub">Module 1 done! Take a short breather before Module 2.</p>
+  <div style="font-size:64px;font-weight:800;font-variant-numeric:tabular-nums;margin:24px 0;color:var(--accent,#e94f9c);" id="break-timer-display">2:00</div>
+  <button class="welcome-next" onclick="skipBreak()">Skip Break — Start Module 2 →</button>
+</div>
+
+<!-- ══ SCREEN: TEST FINAL RESULTS ══ -->
+<div id="screen-test-results" class="screen">
+  <div id="test-results-wrap"></div>
+</div>
+
 <!-- ══ SCREEN: TEST QUIZ (Module 1/2) ══ -->
 <div id="screen-test-quiz" class="screen">
   <header>
@@ -1024,7 +1038,7 @@
       <h1>CLC SAT Practice</h1>
       <div class="subtitle" id="test-module-label">Practice Test — Module 1</div>
     </div>
-    <button onclick="goScreen('screen-test-list')" style="margin-left:auto;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:500;">← Exit</button>
+    <button onclick="clearInterval(testTimerInterval);clearInterval(breakInterval);goScreen('screen-test-list')" style="margin-left:auto;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:500;">← Exit</button>
   </header>
 
   <div class="timer-bar" id="test-timer-bar" style="background:#5a0000;">
@@ -1682,13 +1696,27 @@ let testState = {
   bookmarks: new Set()
 };
 
+let testResults = { m1: null, m2: null };
+let breakSeconds = 120;
+let breakInterval = null;
+
 function currentTestQuestions() {
   return testState.moduleIdx === 1 ? TEST1_M1 : TEST1_M2;
 }
 
 function startTestModule1() {
+  testResults = { m1: null, m2: null };
   testState = { moduleIdx: 1, current: 0, score: 0, answered: {}, bookmarks: new Set() };
   document.getElementById('test-module-label').textContent = 'Practice Test — Test 1 · Module 1';
+  goScreen('screen-test-quiz');
+  renderTestQuestion();
+  resetTestTimer();
+}
+
+function startTestModule2() {
+  clearInterval(breakInterval);
+  testState = { moduleIdx: 2, current: 0, score: 0, answered: {}, bookmarks: new Set() };
+  document.getElementById('test-module-label').textContent = 'Practice Test — Test 1 · Module 2';
   goScreen('screen-test-quiz');
   renderTestQuestion();
   resetTestTimer();
@@ -1843,7 +1871,7 @@ function renderTestNav() {
     <button class="nav-btn secondary" onclick="goTestTo(${s.current-1})" ${s.current===0?'disabled':''}>← Previous</button>
     <span style="font-size:13px;color:var(--muted)">${s.current+1} / ${qs.length}</span>
     ${isLast
-      ? `<button class="nav-btn primary" onclick="finishTestModule1()" ${!answered?'disabled':''}>Finish Module 1 →</button>`
+      ? `<button class="nav-btn primary" onclick="finishCurrentModule()" ${!answered?'disabled':''}>${s.moduleIdx===1?'Finish Module 1 →':'See Results →'}</button>`
       : `<button class="nav-btn primary" onclick="goTestTo(${s.current+1})" ${!answered?'disabled':''}>Next →</button>`
     }
   `;
@@ -1893,26 +1921,106 @@ function renderTestQuestionDots() {
   dotsEl.innerHTML = dotsHtml;
 }
 
-function finishTestModule1() {
-  // Step 1 scope: Module 1 complete placeholder.
-  // (Step 2 will add the 2-min break screen + Module 2 + full results screen.)
+function finishCurrentModule() {
   clearInterval(testTimerInterval);
   const s = testState;
   const qs = currentTestQuestions();
-  const pct = Math.round((s.score / qs.length) * 100);
-  document.getElementById('test-quiz-wrap').innerHTML = `
+  // Snapshot this module's results
+  const snapshot = {
+    score: s.score,
+    total: qs.length,
+    answered: { ...s.answered },
+    bookmarks: new Set(s.bookmarks),
+    questions: qs
+  };
+  if (s.moduleIdx === 1) {
+    testResults.m1 = snapshot;
+    goToBreak();
+  } else {
+    testResults.m2 = snapshot;
+    showFinalResults();
+  }
+}
+
+function goToBreak() {
+  goScreen('screen-test-break');
+  breakSeconds = 120;
+  updateBreakDisplay();
+  clearInterval(breakInterval);
+  breakInterval = setInterval(() => {
+    breakSeconds--;
+    updateBreakDisplay();
+    if (breakSeconds <= 0) {
+      clearInterval(breakInterval);
+      startTestModule2();
+    }
+  }, 1000);
+}
+
+function updateBreakDisplay() {
+  const m = Math.floor(breakSeconds / 60);
+  const sec = breakSeconds % 60;
+  const el = document.getElementById('break-timer-display');
+  if (el) el.textContent = `${m}:${String(sec).padStart(2,'0')}`;
+}
+
+function skipBreak() {
+  clearInterval(breakInterval);
+  startTestModule2();
+}
+
+function showFinalResults() {
+  const m1 = testResults.m1;
+  const m2 = testResults.m2;
+  const totalScore = m1.score + m2.score;
+  const totalQs = m1.total + m2.total;
+  const pct = Math.round((totalScore / totalQs) * 100);
+  const grade = pct >= 90 ? '🏆 Excellent!' : pct >= 70 ? '👍 Good job!' : pct >= 50 ? '📚 Keep studying!' : '💪 You can do it!';
+
+  function moduleReview(mod, label, offset) {
+    let html = `<h3 style="margin:24px 0 8px;color:var(--muted);font-size:14px;text-transform:uppercase;letter-spacing:0.05em;">${label} — ${mod.score}/${mod.total}</h3>`;
+    for (let i = 0; i < mod.total; i++) {
+      const ok = mod.answered[i];
+      const q = mod.questions[i];
+      const shortQ = q.q.replace(/<[^>]+>/g,'').substring(0,80) + (q.q.length>80?'…':'');
+      html += `<div class="review-item">
+        <div class="review-dot ${ok?'c':'w'}">${ok?'✓':'✗'}</div>
+        <div class="review-text"><strong>Q${i+1}:</strong> ${shortQ}</div>
+      </div>`;
+    }
+    return html;
+  }
+
+  const allBookmarks = [
+    ...[...m1.bookmarks].map(i => ({label:`M1-Q${i+1}`, action:`startTestModule1();`})),
+    ...[...m2.bookmarks].map(i => ({label:`M2-Q${i+1}`, action:`startTestModule1();`}))
+  ];
+
+  document.getElementById('test-results-wrap').innerHTML = `
     <div class="score-screen active">
       <div class="score-circle" style="--pct:${pct}%">
         <div class="score-inner">
-          <div class="score-num">${s.score}</div>
-          <div class="score-denom">out of ${qs.length}</div>
+          <div class="score-num">${totalScore}</div>
+          <div class="score-denom">out of ${totalQs}</div>
         </div>
       </div>
-      <h2 class="score-title">Module 1 complete! 🎉</h2>
-      <p class="score-subtitle">You scored ${pct}% on Module 1. (Module 2 + break coming next!)</p>
-      <button class="restart-btn" onclick="startTestModule1()">Try Module 1 Again</button>
+      <h2 class="score-title">${grade}</h2>
+      <p class="score-subtitle">You scored ${pct}% on Test 1 (Module 1: ${m1.score}/${m1.total} · Module 2: ${m2.score}/${m2.total})</p>
+      <button class="restart-btn" onclick="startTestModule1()">Retake Test 1</button>
+      ${allBookmarks.length > 0 ? `
+      <div class="bookmark-summary">
+        <h3>🔖 Bookmarked Questions — Review these!</h3>
+        <div class="bookmark-summary-list">
+          ${allBookmarks.map(b => `<span class="bookmark-chip" style="cursor:default;">${b.label}</span>`).join('')}
+        </div>
+      </div>` : ''}
+      <div class="review-list">
+        ${moduleReview(m1, 'Module 1', 0)}
+        ${moduleReview(m2, 'Module 2', m1.total)}
+      </div>
     </div>
   `;
+  goScreen('screen-test-results');
 }
 
 // ── TEST TIMER ──
@@ -1927,7 +2035,7 @@ function startTestTimer() {
       clearInterval(testTimerInterval);
       testTimerSeconds = 0;
       updateTestTimerDisplay();
-      finishTestModule1();
+      finishCurrentModule();
     }
   }, 1000);
 }
