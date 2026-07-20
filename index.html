@@ -969,10 +969,6 @@
     <p class="auth-sub">Συνδέσου για να συνεχίσεις</p>
     <form id="auth-form" onsubmit="return handleLogin(event)">
       <div class="auth-field">
-        <label for="auth-username">Username</label>
-        <input type="text" id="auth-username" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" required>
-      </div>
-      <div class="auth-field">
         <label for="auth-password">Password</label>
         <input type="password" id="auth-password" autocomplete="current-password" required>
       </div>
@@ -982,22 +978,8 @@
   </div>
 </div>
 
+<script src="auth-config.js"></script>
 <script>
-const USER_HASHES = {
-  "kalogeropoulou.melina": "9b01013cc6dc1682c51cf89c4fa0c96277e5d9c351e66254deb59c58fb8a2f6f",
-  "manetas.periklis": "c1827cc85cfac5b6d7a2d4ad536129cdbb8827e2ea2387e0de27e411bc536f87",
-  "maniatis.spyros": "73f6c328008146f80d44b5a1b79e99f11a050170f577a003e9d90a7aa0163979",
-  "komnianos.nikolas": "676fd33fc42e536d7228d33103bf53888e7eb99b3a2146898cf9106c5f6dea84",
-  "psaromba.eleni": "88312fee933dfe09ffde4ec1567482028fd57db571f6d994ff6411e20b840c79",
-  "kouloumpis.vasilis": "7c4f4c2169e455fd0fc5751bbf91659a18afda875a173740837ac907ca4235e1",
-  "giannakis.nektarios": "c710a8a5445d13e4f10bc76c0fb98d5a51b4ad6d881d00a0a15612581b2c668c",
-  "metaxas.nikolas": "818f38d6b93a1370c0020b2eb8a0436b52f003817ae3e17e36dfdc726ff6ddd2",
-  "molvalis.dimos": "897b1a04f4fbd7e46afe066b220bbfe36c94e5df738f0952ec6d167d3eca9b45",
-  "pefani.alexandra": "24776444a27fcb60b2dd751da4e851cc486838e2b531256f17200ffd9bf70dd2",
-  "skondreas.alexandros": "8fde13fec95a85bfeb8dcea7917367bbbf130e08af3d3225dd15e36dcfc1b44a",
-  "chatzipoulidis.nikolas": "f85214ac541280790e80e99dbfe91a6af16e2f5cfc646cca7e82d86633bb3608"
-};
-
 const HOST_SECRET = "ΒΑΣΙΛΙΚΗΟΔΟΣ";
 
 async function sha256Hex(str) {
@@ -1029,9 +1011,9 @@ async function checkAuth() {
     return;
   }
 
-  // 3. Already-logged-in student on this device
-  const savedUser = localStorage.getItem('clc_auth');
-  if (savedUser && USER_HASHES.hasOwnProperty(savedUser)) {
+  // 3. Already-logged-in on this device (password hash matches the current one)
+  const savedHash = localStorage.getItem('clc_auth');
+  if (savedHash && savedHash === PASSWORD_HASH) {
     hideAuthGate();
     return;
   }
@@ -1041,22 +1023,18 @@ async function checkAuth() {
 
 async function handleLogin(e) {
   e.preventDefault();
-  const username = document.getElementById('auth-username').value.trim().toLowerCase();
   const password = document.getElementById('auth-password').value;
   const errorEl = document.getElementById('auth-error');
   errorEl.textContent = '';
 
-  if (!USER_HASHES.hasOwnProperty(username)) {
-    errorEl.textContent = 'Λάθος username ή password.';
-    return false;
-  }
-
-  const hash = await sha256Hex(username + ':' + password);
-  if (hash === USER_HASHES[username]) {
-    localStorage.setItem('clc_auth', username);
+  const hash = await sha256Hex(password);
+  if (hash === PASSWORD_HASH) {
+    // Store the hash itself (not the raw password) so that when the weekly
+    // password rotates, previously-saved devices are naturally logged out.
+    localStorage.setItem('clc_auth', hash);
     hideAuthGate();
   } else {
-    errorEl.textContent = 'Λάθος username ή password.';
+    errorEl.textContent = 'Λάθος password.';
   }
   return false;
 }
