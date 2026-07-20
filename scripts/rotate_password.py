@@ -121,6 +121,23 @@ def upload_to_drive(encrypted_buf, folder_id, service_account_json):
     ).execute()
     files = existing.get("files", [])
 
+    if not files:
+        # Debug aid: list everything actually visible in that folder so a
+        # naming/location mismatch is obvious in the Action logs instead of
+        # failing silently on create().
+        everything = drive.files().list(
+            q=f"'{folder_id}' in parents and trashed=false",
+            fields="files(id,name,mimeType)",
+            supportsAllDrives=True,
+            includeItemsFromAllDrives=True,
+        ).execute()
+        print(f"Looking for exact name: {DOCX_FILENAME!r}")
+        print("Files visible to the service account in that folder:")
+        for f in everything.get("files", []):
+            print(f"  - {f['name']!r} (mimeType={f['mimeType']}, id={f['id']})")
+        if not everything.get("files"):
+            print("  (none — folder appears empty or not shared with the service account)")
+
     if files:
         file_id = files[0]["id"]
         drive.files().update(fileId=file_id, media_body=media, supportsAllDrives=True).execute()
