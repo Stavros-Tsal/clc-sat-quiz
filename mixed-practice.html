@@ -151,10 +151,8 @@
     color: var(--muted);
     flex-shrink: 0;
   }
-  .opt-btn.correct { border-color: var(--correct); background: var(--correct-bg); }
-  .opt-btn.correct .opt-letter { background: var(--correct); border-color: var(--correct); color: #fff; }
-  .opt-btn.wrong { border-color: var(--wrong); background: var(--wrong-bg); }
-  .opt-btn.wrong .opt-letter { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+  .opt-btn.selected { border-color: var(--crimson); background: #fff8f8; }
+  .opt-btn.selected .opt-letter { background: var(--crimson); border-color: var(--crimson); color: #fff; }
   .opt-btn:disabled { cursor: default; }
 
   .feedback {
@@ -163,6 +161,25 @@
   }
   .feedback.correct { background: var(--correct-bg); color: var(--correct); display: block; }
   .feedback.wrong { background: var(--wrong-bg); color: var(--wrong); display: block; }
+
+  /* ── REVIEW LIST ── */
+  .review-list { margin-top: 40px; text-align: left; max-width: 600px; margin-inline: auto; }
+  .review-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px;
+  }
+  .review-dot {
+    width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; margin-top: 2px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: #fff;
+  }
+  .review-dot.c { background: var(--correct); }
+  .review-dot.w { background: var(--wrong); }
+  .review-text { color: var(--muted); }
+  .review-text strong { color: var(--text); }
+  .review-answers { font-size: 12px; margin-top: 2px; }
+  .review-answers .wrong-ans { color: var(--wrong); }
+  .review-answers .correct-ans { color: var(--correct); }
 
   .nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; }
   .nav-btn {
@@ -336,29 +353,16 @@ function renderQuestion() {
     return;
   }
 
-  const alreadyAnswered = state.answered[qIdx] !== undefined;
   const chosenLetter = state.chosen ? state.chosen[qIdx] : undefined;
+  const hasAnswer = chosenLetter !== undefined;
 
   let optsHtml = q.opts.map((opt, i) => {
     let cls = 'opt-btn';
-    let dis = '';
-    if (alreadyAnswered) {
-      dis = 'disabled';
-      if (letters[i] === q.correct) cls += ' correct';
-      else if (letters[i] === chosenLetter) cls += ' wrong';
-    }
-    return `<button class="${cls}" ${dis} onclick="chooseAnswer(${i})">
+    if (letters[i] === chosenLetter) cls += ' selected';
+    return `<button class="${cls}" onclick="chooseAnswer(${i})">
       <span class="opt-letter">${letters[i]}</span><span>${opt}</span>
     </button>`;
   }).join('');
-
-  let fbHtml = '';
-  if (alreadyAnswered) {
-    const isCorrect = chosenLetter === q.correct;
-    fbHtml = `<div class="feedback ${isCorrect ? 'correct' : 'wrong'}">
-      ${isCorrect ? '&#10003; Correct!' : '&#10007; Incorrect. Correct answer: ' + q.correct}
-    </div>`;
-  }
 
   const isLast = qIdx === QUESTIONS.length - 1;
   const navHtml = `
@@ -366,8 +370,8 @@ function renderQuestion() {
       <button class="nav-btn secondary" onclick="goTo(${qIdx - 1})" ${qIdx === 0 ? 'disabled' : ''}>&larr; Previous</button>
       <span style="font-size:13px;color:var(--muted)">${qIdx + 1} / ${QUESTIONS.length}</span>
       ${isLast
-        ? `<button class="nav-btn primary" onclick="finishQuiz()" ${!alreadyAnswered ? 'disabled' : ''}>See Results &rarr;</button>`
-        : `<button class="nav-btn primary" onclick="goTo(${qIdx + 1})" ${!alreadyAnswered ? 'disabled' : ''}>Next &rarr;</button>`
+        ? `<button class="nav-btn primary" onclick="finishQuiz()" ${!hasAnswer ? 'disabled' : ''}>See Results &rarr;</button>`
+        : `<button class="nav-btn primary" onclick="goTo(${qIdx + 1})" ${!hasAnswer ? 'disabled' : ''}>Next &rarr;</button>`
       }
     </div>`;
 
@@ -376,7 +380,6 @@ function renderQuestion() {
       <div class="q-number">Exercise ${qIdx + 1}</div>
       <div class="q-text">${q.q}</div>
       <div class="options">${optsHtml}</div>
-      ${fbHtml}
     </div>
     ${navHtml}
   `;
@@ -384,17 +387,10 @@ function renderQuestion() {
 
 function chooseAnswer(i) {
   const letters = ['A','B','C','D'];
-  const q = QUESTIONS[state.current];
   const qIdx = state.current;
-  if (state.answered[qIdx] !== undefined) return;
-
-  const chosen = letters[i];
-  const isCorrect = chosen === q.correct;
-  state.answered[qIdx] = isCorrect;
   if (!state.chosen) state.chosen = {};
-  state.chosen[qIdx] = chosen;
-  if (isCorrect) state.score++;
-
+  state.chosen[qIdx] = letters[i];
+  state.answered[qIdx] = true;
   renderQuestion();
 }
 
@@ -406,6 +402,10 @@ function goTo(idx) {
 
 function finishQuiz() {
   state.done = true;
+  state.score = 0;
+  for (let i = 0; i < QUESTIONS.length; i++) {
+    if (state.chosen && state.chosen[i] === QUESTIONS[i].correct) state.score++;
+  }
   showScore();
 }
 
@@ -416,6 +416,24 @@ function showScore() {
   if (pct >= 90) grade = 'Excellent!';
   else if (pct >= 70) grade = 'Good work!';
   else if (pct >= 50) grade = 'Not bad!';
+
+  let reviewHtml = '';
+  for (let i = 0; i < total; i++) {
+    const q = QUESTIONS[i];
+    const chosen = state.chosen ? state.chosen[i] : undefined;
+    const ok = chosen === q.correct;
+    const shortQ = q.q.replace(/<[^>]+>/g, '').substring(0, 90) + (q.q.length > 90 ? '...' : '');
+    reviewHtml += `<div class="review-item">
+      <div class="review-dot ${ok ? 'c' : 'w'}">${ok ? '&#10003;' : '&#10007;'}</div>
+      <div>
+        <div class="review-text"><strong>Q${i + 1}:</strong> ${shortQ}</div>
+        <div class="review-answers">
+          <span class="${ok ? 'correct-ans' : 'wrong-ans'}">Your answer: ${chosen || '(none)'}</span>
+          ${ok ? '' : `<span class="correct-ans"> &middot; Correct: ${q.correct}</span>`}
+        </div>
+      </div>
+    </div>`;
+  }
 
   document.getElementById('quiz-wrap').innerHTML = `
     <div class="score-screen active" style="--pct:${pct}%">
@@ -428,6 +446,7 @@ function showScore() {
       <h2 class="score-title">${grade}</h2>
       <p class="score-subtitle">You scored ${pct}% on this practice set.</p>
       <button class="restart-btn" onclick="restartQuiz()">Try Again</button>
+      <div class="review-list">${reviewHtml}</div>
     </div>
   `;
 }
