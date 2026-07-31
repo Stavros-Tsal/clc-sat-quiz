@@ -1933,14 +1933,12 @@ function renderTestQuestion() {
       <div class="open-wrap">
         <input class="open-input" id="test-open-${qIdx}"
           placeholder="Type your answer…" value="${alreadyAnswered ? s.answered[qIdx] : ''}"
-          ${alreadyAnswered ? 'disabled' : ''}
           onkeydown="if(event.key==='Enter') document.getElementById('test-chk-${qIdx}').click()">
         <button class="check-btn" id="test-chk-${qIdx}"
-          onclick="checkTestOpen(${qIdx})"
-          ${alreadyAnswered ? 'disabled' : ''}>${alreadyAnswered ? 'Recorded' : 'Submit'}</button>
+          onclick="checkTestOpen(${qIdx})">${alreadyAnswered ? 'Update answer' : 'Save answer'}</button>
       </div>
     `;
-    html += `<div class="feedback" id="test-fb-${qIdx}" ${alreadyAnswered?'':'style="display:none"'}>${alreadyAnswered ? '✓ Answer recorded' : ''}</div>`;
+    html += `<div class="feedback" id="test-fb-${qIdx}" ${alreadyAnswered?'':'style="display:none"'}>${alreadyAnswered ? '✓ Answer saved — you can still change it anytime' : ''}</div>`;
   } else {
     html += `<div class="options">`;
     (q.opts||[]).forEach((opt,i) => {
@@ -1948,14 +1946,13 @@ function renderTestQuestion() {
       let cls = (alreadyAnswered && s.answered[qIdx] === letter) ? 'selected' : '';
       html += `
         <button class="opt-btn ${cls}" id="test-opt-${qIdx}-${i}"
-          onclick="chooseTestMCQ(${qIdx},${i})"
-          ${alreadyAnswered?'disabled':''}>
+          onclick="chooseTestMCQ(${qIdx},${i})">
           <span class="opt-letter">${letters[i]}</span>
           <span>${opt}</span>
         </button>`;
     });
     html += `</div>`;
-    html += `<div class="feedback" id="test-fb-${qIdx}" ${alreadyAnswered?'':'style="display:none"'}>${alreadyAnswered ? '✓ Answer recorded' : ''}</div>`;
+    html += `<div class="feedback" id="test-fb-${qIdx}" ${alreadyAnswered?'':'style="display:none"'}>${alreadyAnswered ? '✓ Answer saved — you can still change it anytime' : ''}</div>`;
   }
 
   html += `</div><div id="test-nav"></div>`;
@@ -1977,14 +1974,9 @@ function checkTestOpen(qIdx) {
   const btn = document.getElementById(`test-chk-${qIdx}`);
   const value = input.value.trim();
 
-  input.disabled = true;
-  btn.disabled = true;
-  btn.textContent = 'Recorded';
-
-  if (s.answered[qIdx] === undefined) {
-    s.answered[qIdx] = value;
-  }
-  fb.textContent = '✓ Answer recorded';
+  s.answered[qIdx] = value;
+  btn.textContent = 'Update answer';
+  fb.textContent = '✓ Answer saved — you can still change it anytime';
   fb.style.display = 'block';
   renderTestNav();
   renderTestQuestionDots();
@@ -1998,19 +1990,17 @@ function chooseTestMCQ(qIdx, chosenIdx) {
   for (let i=0;i<4;i++) {
     const btn = document.getElementById(`test-opt-${qIdx}-${i}`);
     if (!btn) continue;
-    btn.disabled = true;
+    btn.classList.remove('selected');
     if (i === chosenIdx) btn.classList.add('selected');
   }
 
   const fb = document.getElementById(`test-fb-${qIdx}`);
   if (fb) {
-    fb.textContent = '✓ Answer recorded';
+    fb.textContent = '✓ Answer saved — you can still change it anytime';
     fb.style.display = 'block';
   }
 
-  if (s.answered[qIdx] === undefined) {
-    s.answered[qIdx] = chosen;
-  }
+  s.answered[qIdx] = chosen;
   renderTestNav();
   renderTestQuestionDots();
 }
