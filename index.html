@@ -1090,8 +1090,37 @@ checkAuth();
       <div class="label">Modules / Drills</div>
       <div class="desc">Targeted exercises by topic — Algebra, Interpretation, Statistics</div>
     </div>
+    <div class="mode-card" onclick="goScreen('screen-solved-exercises')">
+      <div class="icon">✅</div>
+      <div class="label">Λυμένες Ασκήσεις</div>
+      <div class="desc">Formula booklets &amp; fully worked solutions</div>
+    </div>
   </div>
   <button class="back-btn" onclick="goScreen('screen-subject')">← Back</button>
+</div>
+
+<!-- ══ SCREEN: SOLVED EXERCISES ══ -->
+<div id="screen-solved-exercises" class="screen">
+  <h2 class="subject-title">Λυμένες Ασκήσεις</h2>
+  <p class="subject-sub">Formula booklets and fully worked solutions</p>
+  <div class="mode-cards">
+    <a class="mode-card" href="solved-exercises/Formula-Booklet-and-Solved-Exercises-March-2026.pdf" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+      <div class="icon">📘</div>
+      <div class="label">Formula Booklet &amp; Solved Exercises</div>
+      <div class="desc">March 2026 · Geometry, quadratics, lines &amp; systems, similarity</div>
+    </a>
+    <a class="mode-card" href="solved-exercises/SAT-Math-Formula-Sheet.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+      <div class="icon">📐</div>
+      <div class="label">SAT Math Formula Sheet</div>
+      <div class="desc">Quick-reference formula sheet for the whole exam</div>
+    </a>
+    <a class="mode-card" href="solved-exercises/SAT-June-Resit-2026-Math-Part1.pdf" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+      <div class="icon">📄</div>
+      <div class="label">June Resit 2026 — Math (Part 1)</div>
+      <div class="desc">10 fully worked exponential, quadratic &amp; angle problems</div>
+    </a>
+  </div>
+  <button class="back-btn" onclick="goScreen('screen-mode')">← Back</button>
 </div>
 
 <!-- ══ SCREEN: PRACTICE TEST LIST ══ -->
