@@ -1065,17 +1065,43 @@ function normalize(s) {
   return String(s).trim().toLowerCase().replace(/\s+/g,'');
 }
 
+function parseNumericAnswer(s) {
+  if (s === null || s === undefined) return NaN;
+  s = String(s).trim().replace(/\$/g, '').replace(/,/g, '').replace(/\s+/g, '');
+  if (s === '') return NaN;
+  // Accept simple fractions like "1/50" or "-3/4"
+  const fracMatch = s.match(/^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)$/);
+  if (fracMatch) {
+    const num = parseFloat(fracMatch[1]);
+    const den = parseFloat(fracMatch[2]);
+    return den !== 0 ? num / den : NaN;
+  }
+  if (/^-?\d+(?:\.\d+)?$/.test(s)) return parseFloat(s);
+  return NaN;
+}
+
+function answersMatch(given, correct) {
+  if (normalize(given) === normalize(correct)) return true;
+  // Accept equivalent fraction/decimal representations (e.g. "1/50" vs "0.02")
+  const numGiven = parseNumericAnswer(given);
+  const numCorrect = parseNumericAnswer(correct);
+  if (!isNaN(numGiven) && !isNaN(numCorrect)) {
+    return Math.abs(numGiven - numCorrect) < 1e-6 * Math.max(1, Math.abs(numCorrect));
+  }
+  return false;
+}
+
 function checkOpen(tabIdx, qIdx) {
   const input = document.getElementById(`open-${tabIdx}-${qIdx}`);
-  const ans = normalize(input.value);
-  const correct = normalize(ANSWERS[tabIdx][qIdx+1]);
+  const rawAns = input.value;
+  const rawCorrect = ANSWERS[tabIdx][qIdx+1];
   const fb = document.getElementById(`fb-${tabIdx}-${qIdx}`);
   const btn = document.getElementById(`chk-${tabIdx}-${qIdx}`);
 
   input.disabled = true;
   btn.disabled = true;
 
-  const isCorrect = ans === correct;
+  const isCorrect = answersMatch(rawAns, rawCorrect);
   input.classList.add(isCorrect ? 'correct' : 'wrong');
   fb.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
   fb.textContent = isCorrect
