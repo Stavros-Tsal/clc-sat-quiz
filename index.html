@@ -239,6 +239,43 @@
   }
   .opt-btn:disabled { cursor: default; }
 
+  /* ── ANSWER ELIMINATION (cross-out) ── */
+  .opt-row { display: flex; align-items: stretch; gap: 8px; }
+  .opt-row .opt-btn { flex: 1; }
+  .opt-eliminate-btn {
+    flex-shrink: 0;
+    width: 40px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    font-size: 13px; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Inter', sans-serif;
+  }
+  .opt-eliminate-btn:hover {
+    border-color: var(--crimson);
+    color: var(--crimson);
+  }
+  .opt-eliminate-btn.active {
+    background: var(--crimson);
+    border-color: var(--crimson);
+    color: #fff;
+  }
+  .opt-btn.eliminated {
+    opacity: 0.45;
+    background: #f2f2f2;
+  }
+  .opt-btn.eliminated .opt-letter,
+  .opt-btn.eliminated > span:last-child {
+    text-decoration: line-through;
+  }
+  .opt-btn.eliminated:hover:not(:disabled) {
+    border-color: var(--border);
+    background: #f2f2f2;
+  }
+
   /* ── OPEN INPUT ── */
   .open-wrap { display: flex; gap: 10px; align-items: stretch; }
   .open-input {
@@ -2338,7 +2375,8 @@ let testState = {
   current: 0,
   score: 0,
   answered: {},
-  bookmarks: new Set()
+  bookmarks: new Set(),
+  eliminated: {}       // { qIdx: Set(optionIndex) } — choices the student has crossed out
 };
 
 let testResults = { m1: null, m2: null };
@@ -2370,7 +2408,7 @@ function currentTestQuestions() {
 function startTestModule1(testId) {
   testId = testId || 1;
   testResults = { m1: null, m2: null };
-  testState = { testId, moduleIdx: 1, current: 0, score: 0, answered: {}, bookmarks: new Set() };
+  testState = { testId, moduleIdx: 1, current: 0, score: 0, answered: {}, bookmarks: new Set(), eliminated: {} };
   document.getElementById('test-module-label').textContent = `Practice Test — Test ${testId} · Module 1`;
   goScreen('screen-test-quiz');
   renderTestQuestion();
@@ -2380,7 +2418,7 @@ function startTestModule1(testId) {
 function startTestModule2() {
   clearInterval(breakInterval);
   const testId = testState.testId || 1;
-  testState = { testId, moduleIdx: 2, current: 0, score: 0, answered: {}, bookmarks: new Set() };
+  testState = { testId, moduleIdx: 2, current: 0, score: 0, answered: {}, bookmarks: new Set(), eliminated: {} };
   document.getElementById('test-module-label').textContent = `Practice Test — Test ${testId} · Module 2`;
   goScreen('screen-test-quiz');
   renderTestQuestion();
@@ -2430,16 +2468,23 @@ function renderTestQuestion() {
     `;
     html += `<div class="feedback" id="test-fb-${qIdx}" ${alreadyAnswered?'':'style="display:none"'}>${alreadyAnswered ? '✓ Answer saved — you can still change it anytime' : ''}</div>`;
   } else {
+    const qElim = (s.eliminated && s.eliminated[qIdx]) ? s.eliminated[qIdx] : new Set();
     html += `<div class="options">`;
     (q.opts||[]).forEach((opt,i) => {
       const letter = letters[i];
+      const isElim = qElim.has(i);
       let cls = (alreadyAnswered && s.answered[qIdx] === letter) ? 'selected' : '';
+      if (isElim) cls += ' eliminated';
       html += `
-        <button class="opt-btn ${cls}" id="test-opt-${qIdx}-${i}"
-          onclick="chooseTestMCQ(${qIdx},${i})">
-          <span class="opt-letter">${letters[i]}</span>
-          <span>${opt}</span>
-        </button>`;
+        <div class="opt-row">
+          <button class="opt-btn ${cls}" id="test-opt-${qIdx}-${i}"
+            onclick="chooseTestMCQ(${qIdx},${i})">
+            <span class="opt-letter">${letters[i]}</span>
+            <span>${opt}</span>
+          </button>
+          <button class="opt-eliminate-btn ${isElim?'active':''}" id="test-elim-${qIdx}-${i}"
+            onclick="toggleEliminateOption(${qIdx},${i})" title="Διαγραφή / επαναφορά αυτής της επιλογής">✕</button>
+        </div>`;
     });
     html += `</div>`;
     html += `<div class="feedback" id="test-fb-${qIdx}" ${alreadyAnswered?'':'style="display:none"'}>${alreadyAnswered ? '✓ Answer saved — you can still change it anytime' : ''}</div>`;
@@ -2472,10 +2517,48 @@ function checkTestOpen(qIdx) {
   renderTestQuestionDots();
 }
 
+function toggleEliminateOption(qIdx, idx) {
+  const s = testState;
+  const letters = ['A','B','C','D'];
+  const letter = letters[idx];
+
+  if (!s.eliminated) s.eliminated = {};
+  if (!s.eliminated[qIdx]) s.eliminated[qIdx] = new Set();
+  const set = s.eliminated[qIdx];
+
+  const nowEliminated = !set.has(idx);
+  if (nowEliminated) {
+    set.add(idx);
+  } else {
+    set.delete(idx);
+  }
+
+  const optBtn = document.getElementById(`test-opt-${qIdx}-${idx}`);
+  const elimBtn = document.getElementById(`test-elim-${qIdx}-${idx}`);
+  if (elimBtn) elimBtn.classList.toggle('active', nowEliminated);
+
+  // If the crossed-out choice was the saved answer, clear it so a struck-through
+  // option can never remain selected.
+  if (nowEliminated && s.answered[qIdx] === letter) {
+    delete s.answered[qIdx];
+    if (optBtn) optBtn.classList.remove('selected');
+    const fb = document.getElementById(`test-fb-${qIdx}`);
+    if (fb) { fb.style.display = 'none'; fb.textContent = ''; }
+    renderTestNav();
+    renderTestQuestionDots();
+  }
+
+  if (optBtn) optBtn.classList.toggle('eliminated', nowEliminated);
+}
+
 function chooseTestMCQ(qIdx, chosenIdx) {
   const s = testState;
   const letters = ['A','B','C','D'];
   const chosen = letters[chosenIdx];
+
+  if (s.eliminated && s.eliminated[qIdx] && s.eliminated[qIdx].has(chosenIdx)) {
+    return; // choice is crossed out — must be restored before it can be selected
+  }
 
   for (let i=0;i<4;i++) {
     const btn = document.getElementById(`test-opt-${qIdx}-${i}`);
