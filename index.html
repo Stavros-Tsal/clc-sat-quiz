@@ -924,6 +924,25 @@
   }
   .ref-fab .ref-icon { font-size: 18px; }
 
+  /* ── SITE CREDIT ── */
+  .site-credit {
+    position: fixed;
+    bottom: 8px; left: 12px;
+    font-size: 10.5px;
+    color: var(--muted);
+    opacity: 0.55;
+    letter-spacing: 0.2px;
+    z-index: 40;
+    pointer-events: none;
+    background: rgba(248,246,242,0.7);
+    padding: 2px 6px;
+    border-radius: 4px;
+    user-select: none;
+  }
+  @media (max-width: 640px) {
+    .site-credit { font-size: 9.5px; bottom: 6px; left: 8px; }
+  }
+
   /* ── REFERENCE MODAL ── */
   .ref-modal {
     display: none;
@@ -2983,6 +3002,8 @@ function resetTestTimer() {
     </div>
   </div>
 </div>
+
+<div class="site-credit">Developed by Tsalapatis Stavros</div>
 
 </body>
 </html>
