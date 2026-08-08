@@ -1922,14 +1922,15 @@ function parseNumericAnswer(s) {
   if (s === null || s === undefined) return NaN;
   s = String(s).trim().replace(/\$/g, '').replace(/,/g, '').replace(/\s+/g, '');
   if (s === '') return NaN;
-  // Accept simple fractions like "1/50" or "-3/4"
-  const fracMatch = s.match(/^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)$/);
+  // Accept simple fractions like "1/50" or "-3/4" (numerator/denominator may omit a leading digit, e.g. ".5/2")
+  const fracMatch = s.match(/^(-?(?:\d+\.?\d*|\.\d+))\/(-?(?:\d+\.?\d*|\.\d+))$/);
   if (fracMatch) {
     const num = parseFloat(fracMatch[1]);
     const den = parseFloat(fracMatch[2]);
     return den !== 0 ? num / den : NaN;
   }
-  if (/^-?\d+(?:\.\d+)?$/.test(s)) return parseFloat(s);
+  // Accept decimals with or without a leading digit (e.g. "0.25" or ".25")
+  if (/^-?(?:\d+\.?\d*|\.\d+)$/.test(s)) return parseFloat(s);
   return NaN;
 }
 
@@ -2692,14 +2693,15 @@ function parseNumericAnswer(s) {
   if (s === null || s === undefined) return NaN;
   s = String(s).trim().replace(/\$/g, '').replace(/,/g, '').replace(/\s+/g, '');
   if (s === '') return NaN;
-  // Accept simple fractions like "1/50" or "-3/4"
-  const fracMatch = s.match(/^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)$/);
+  // Accept simple fractions like "1/50" or "-3/4" (numerator/denominator may omit a leading digit, e.g. ".5/2")
+  const fracMatch = s.match(/^(-?(?:\d+\.?\d*|\.\d+))\/(-?(?:\d+\.?\d*|\.\d+))$/);
   if (fracMatch) {
     const num = parseFloat(fracMatch[1]);
     const den = parseFloat(fracMatch[2]);
     return den !== 0 ? num / den : NaN;
   }
-  if (/^-?\d+(?:\.\d+)?$/.test(s)) return parseFloat(s);
+  // Accept decimals with or without a leading digit (e.g. "0.25" or ".25")
+  if (/^-?(?:\d+\.?\d*|\.\d+)$/.test(s)) return parseFloat(s);
   return NaN;
 }
 
