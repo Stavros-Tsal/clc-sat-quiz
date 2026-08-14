@@ -180,6 +180,45 @@
     border-radius: 8px;
     margin: 12px 0 20px;
     display: block;
+    cursor: zoom-in;
+    transition: opacity 0.15s ease;
+  }
+  .q-image:hover {
+    opacity: 0.85;
+  }
+
+  /* ── IMAGE LIGHTBOX ── */
+  .img-lightbox-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    cursor: zoom-out;
+  }
+  .img-lightbox-overlay.open {
+    display: flex;
+  }
+  .img-lightbox-overlay img {
+    max-width: 95vw;
+    max-height: 90vh;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    cursor: default;
+  }
+  .img-lightbox-close {
+    position: absolute;
+    top: 18px; right: 24px;
+    color: #fff;
+    font-size: 32px;
+    line-height: 1;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 8px;
   }
 
   /* ── MCQ OPTIONS ── */
@@ -3072,6 +3111,38 @@ function resetTestTimer() {
 </div>
 
 <div class="site-credit">Developed by Tsalapatis Stavros</div>
+
+<div class="img-lightbox-overlay" id="imgLightboxOverlay" onclick="closeImgLightbox()">
+  <button class="img-lightbox-close" onclick="closeImgLightbox(event)" aria-label="Close">&times;</button>
+  <img id="imgLightboxImg" src="" alt="">
+</div>
+<script>
+  function openImgLightbox(src, alt) {
+    var overlay = document.getElementById('imgLightboxOverlay');
+    var img = document.getElementById('imgLightboxImg');
+    if (!overlay || !img) return;
+    img.src = src;
+    img.alt = alt || '';
+    overlay.classList.add('open');
+  }
+  function closeImgLightbox(e) {
+    if (e) e.stopPropagation();
+    var overlay = document.getElementById('imgLightboxOverlay');
+    if (!overlay) return;
+    overlay.classList.remove('open');
+    var img = document.getElementById('imgLightboxImg');
+    if (img) img.src = '';
+  }
+  document.addEventListener('click', function (e) {
+    var target = e.target;
+    if (target && target.classList && target.classList.contains('q-image')) {
+      openImgLightbox(target.src, target.alt);
+    }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeImgLightbox();
+  });
+</script>
 
 </body>
 </html>
