@@ -1199,11 +1199,35 @@ checkAuth();
       <div class="label">Λυμένες Ασκήσεις</div>
       <div class="desc">Formula booklets &amp; fully worked solutions</div>
     </div>
+    <div class="mode-card" onclick="goScreen('screen-specific-practice')">
+      <div class="icon">🧭</div>
+      <div class="label">Specific Practice</div>
+      <div class="desc">Trap-question banks by chapter &amp; sub-topic</div>
+    </div>
   </div>
   <button class="back-btn" onclick="goScreen('screen-subject')">← Back</button>
 </div>
 
-<!-- ══ SCREEN: SOLVED EXERCISES ══ -->
+<!-- ══ SCREEN: SPECIFIC PRACTICE ══ -->
+<div id="screen-specific-practice" class="screen">
+  <h2 class="subject-title">Specific Practice</h2>
+  <p class="subject-sub">Trap-question banks, organized by chapter and sub-topic</p>
+  <div class="mode-cards">
+    <a class="mode-card" href="specific-practice-advanced-math.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+      <div class="icon">📐</div>
+      <div class="label">Advanced Math</div>
+      <div class="desc">Nonlinear Functions · Nonlinear Equations &amp; Systems · Equivalent Expressions</div>
+    </a>
+    <a class="mode-card" href="specific-practice-problem-solving-data-analysis.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+      <div class="icon">📊</div>
+      <div class="label">Problem-Solving &amp; Data Analysis</div>
+      <div class="desc">Ratios/Rates/Units · Percentages · One-Variable Data · Two-Variable Data · Probability · Inference · Evaluating Claims</div>
+    </a>
+  </div>
+  <button class="back-btn" onclick="goScreen('screen-mode')">← Back</button>
+</div>
+
+
 <div id="screen-solved-exercises" class="screen">
   <h2 class="subject-title">Λυμένες Ασκήσεις</h2>
   <p class="subject-sub">Formula booklets and fully worked solutions</p>
