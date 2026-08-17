@@ -2192,7 +2192,7 @@ function renderNav(tabIdx) {
     <span style="font-size:13px;color:var(--muted)">${s.current+1} / ${qs.length}</span>
     ${isLast
       ? `<button class="nav-btn primary" onclick="showScore(${tabIdx})" ${!answered?'disabled':''}>See Results →</button>`
-      : `<button class="nav-btn primary" onclick="goTo(${tabIdx},${s.current+1})" ${!answered?'disabled':''}>Next →</button>`
+      : `<button class="nav-btn primary" onclick="goTo(${tabIdx},${s.current+1})">Next →</button>`
     }
   `;
 }
@@ -2820,7 +2820,7 @@ function renderTestNav() {
     <span style="font-size:13px;color:var(--muted)">${s.current+1} / ${qs.length}</span>
     ${isLast
       ? `<button class="nav-btn primary" onclick="finishCurrentModule()" ${!answered?'disabled':''}>${s.moduleIdx===1?'Finish Module 1 →':'See Results →'}</button>`
-      : `<button class="nav-btn primary" onclick="goTestTo(${s.current+1})" ${!answered?'disabled':''}>Next →</button>`
+      : `<button class="nav-btn primary" onclick="goTestTo(${s.current+1})">Next →</button>`
     }
   `;
 }
