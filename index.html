@@ -2204,6 +2204,19 @@ function goTo(tabIdx, idx) {
   renderQuestion(tabIdx);
 }
 
+function escMath(s) {
+  if (typeof s !== 'string') return s;
+  const whitelist = /<\/?(?:br|table|tr|td|th|thead|tbody|strong|em|sup|sub|b|i)\b[^>]*>/gi;
+  const placeholders = [];
+  let out = s.replace(whitelist, (m) => {
+    placeholders.push(m);
+    return '\u0000' + (placeholders.length - 1) + '\u0000';
+  });
+  out = out.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  out = out.replace(/\u0000(\d+)\u0000/g, (m, i) => placeholders[Number(i)]);
+  return out;
+}
+
 function renderQuestion(tabIdx) {
   const s = state[tabIdx];
   const qs = QUESTIONS[tabIdx];
@@ -2228,7 +2241,7 @@ function renderQuestion(tabIdx) {
           ${s.bookmarks.has(qIdx) ? '🔖 Bookmarked' : '📌 Bookmark'}
         </button>
       </div>
-      <div class="q-text">${q.q}</div>
+      <div class="q-text">${escMath(q.q)}</div>
   `;
 
   if (q.img) html += `<img class="q-image" src="${q.img}" alt="figure">`;
@@ -2269,7 +2282,7 @@ function renderQuestion(tabIdx) {
           onclick="chooseMCQ(${tabIdx},${qIdx},${i})"
           ${alreadyAnswered?'disabled':''}>
           <span class="opt-letter">${letters[i]}</span>
-          <span>${opt}</span>
+          <span>${escMath(opt)}</span>
         </button>`;
     });
     html += `</div>`;
@@ -2678,7 +2691,7 @@ function renderTestQuestion() {
           ${s.bookmarks.has(qIdx) ? '🔖 Bookmarked' : '📌 Bookmark'}
         </button>
       </div>
-      <div class="q-text">${q.q}</div>
+      <div class="q-text">${escMath(q.q)}</div>
   `;
 
   if (q.img) html += `<img class="q-image" src="${q.img}" alt="figure">`;
@@ -2709,7 +2722,7 @@ function renderTestQuestion() {
           <button class="opt-btn ${cls}" id="test-opt-${qIdx}-${i}"
             onclick="chooseTestMCQ(${qIdx},${i})">
             <span class="opt-letter">${letters[i]}</span>
-            <span>${opt}</span>
+            <span>${escMath(opt)}</span>
           </button>
           <button class="opt-eliminate-btn ${isElim?'active':''}" id="test-elim-${qIdx}-${i}"
             onclick="toggleEliminateOption(${qIdx},${i})" title="Διαγραφή / επαναφορά αυτής της επιλογής">✕</button>
