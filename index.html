@@ -883,6 +883,32 @@
   }
   .back-btn:hover { color: var(--crimson); }
 
+  .nav-back-btn {
+    position: fixed;
+    top: 18px; left: 18px;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #fff;
+    border: 1.5px solid var(--crimson);
+    color: var(--crimson);
+    font-size: 14px; font-weight: 600;
+    padding: 9px 18px 9px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    letter-spacing: 0.2px;
+    z-index: 150;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+    transition: background 0.15s, color 0.15s, transform 0.15s, box-shadow 0.15s;
+  }
+  .nav-back-btn:hover {
+    background: var(--crimson);
+    color: #fff;
+    transform: translateX(-3px);
+    box-shadow: 0 5px 16px rgba(123,0,0,0.3);
+  }
+  @media (max-width: 480px) {
+    .nav-back-btn { top: 12px; left: 12px; padding: 8px 14px 8px 12px; font-size: 13px; }
+  }
+
   /* ── MODE SCREEN ── */
   #screen-mode {
     min-height: 100vh;
@@ -1175,7 +1201,7 @@ checkAuth();
       <div class="desc">Πλήρες Digital SAT · R&amp;W + Math, 4 modules, χρονόμετρο</div>
     </div>
   </div>
-  <button class="back-btn" onclick="goScreen('screen-welcome')">← Back</button>
+  <button class="nav-back-btn" onclick="goScreen('screen-welcome')">← Back</button>
 </div>
 
 <!-- ══ SCREEN 3: MODE ══ -->
@@ -1205,7 +1231,7 @@ checkAuth();
       <div class="desc">Trap-question banks by chapter &amp; sub-topic</div>
     </div>
   </div>
-  <button class="back-btn" onclick="goScreen('screen-subject')">← Back</button>
+  <button class="nav-back-btn" onclick="goScreen('screen-subject')">← Back</button>
 </div>
 
 <!-- ══ SCREEN: SPECIFIC PRACTICE ══ -->
@@ -1229,7 +1255,7 @@ checkAuth();
       <div class="desc">Linear Equations in One Variable · Linear Functions · Linear Equations in Two Variables · Systems · Inequalities</div>
     </a>
   </div>
-  <button class="back-btn" onclick="goScreen('screen-mode')">← Back</button>
+  <button class="nav-back-btn" onclick="goScreen('screen-mode')">← Back</button>
 </div>
 
 
@@ -1293,7 +1319,7 @@ checkAuth();
       <div class="desc">Κάθετη διαίρεση &amp; ισότητα παραστάσεων, με LaTeX τυπογραφία · Ελληνικά &amp; English</div>
     </a>
   </div>
-  <button class="back-btn" onclick="goScreen('screen-mode')">← Back</button>
+  <button class="nav-back-btn" onclick="goScreen('screen-mode')">← Back</button>
 </div>
 
 <!-- ══ SCREEN: PRACTICE TEST LIST ══ -->
@@ -1377,7 +1403,7 @@ checkAuth();
       <div class="desc">June 2026 Questions · Single module (16 questions, 35 min)</div>
     </div>
   </div>
-  <button class="back-btn" onclick="goScreen('screen-mode')">← Back</button>
+  <button class="nav-back-btn" onclick="goScreen('screen-mode')">← Back</button>
 </div>
 
 <!-- ══ SCREEN: TEST READY ══ -->
@@ -1407,7 +1433,7 @@ checkAuth();
     </div>
   </div>
   <button class="welcome-next" onclick="startTestModule1()">Go! →</button>
-  <div><button class="back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
+  <div><button class="nav-back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
 </div>
 
 <!-- ══ SCREEN: TEST 2 READY ══ -->
@@ -1437,7 +1463,7 @@ checkAuth();
     </div>
   </div>
   <button class="welcome-next" onclick="startTestModule1(2)">Go! →</button>
-  <div><button class="back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
+  <div><button class="nav-back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
 </div>
 
 <!-- ══ SCREEN: TEST 3 READY ══ -->
@@ -1467,7 +1493,7 @@ checkAuth();
     </div>
   </div>
   <button class="welcome-next" onclick="startTestModule1(3)">Go! →</button>
-  <div><button class="back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
+  <div><button class="nav-back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
 </div>
 
 <!-- ══ SCREEN: TEST 4 READY ══ -->
@@ -1497,7 +1523,7 @@ checkAuth();
     </div>
   </div>
   <button class="welcome-next" onclick="startTestModule1(4)">Go! →</button>
-  <div><button class="back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
+  <div><button class="nav-back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
 </div>
 
 <!-- ══ SCREEN: TEST 5 READY ══ -->
@@ -1527,7 +1553,7 @@ checkAuth();
     </div>
   </div>
   <button class="welcome-next" onclick="startTestModule1(5)">Go! →</button>
-  <div><button class="back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
+  <div><button class="nav-back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
 </div>
 
 <!-- ══ SCREEN: TEST 6 READY ══ -->
@@ -1557,7 +1583,7 @@ checkAuth();
     </div>
   </div>
   <button class="welcome-next" onclick="startTestModule1(6)">Go! →</button>
-  <div><button class="back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
+  <div><button class="nav-back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
 </div>
 
 <!-- ══ SCREEN: TEST 7 READY ══ -->
@@ -1587,7 +1613,7 @@ checkAuth();
     </div>
   </div>
   <button class="welcome-next" onclick="startTestModule1(7)">Go! →</button>
-  <div><button class="back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
+  <div><button class="nav-back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
 </div>
 
 <!-- ══ SCREEN: TEST 8 READY ══ -->
@@ -1617,7 +1643,7 @@ checkAuth();
     </div>
   </div>
   <button class="welcome-next" onclick="startTestModule1(8)">Go! →</button>
-  <div><button class="back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
+  <div><button class="nav-back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
 </div>
 
 <!-- ══ SCREEN: TEST 9 READY ══ -->
@@ -1647,7 +1673,7 @@ checkAuth();
     </div>
   </div>
   <button class="welcome-next" onclick="startTestModule1(9)">Go! →</button>
-  <div><button class="back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
+  <div><button class="nav-back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
 </div>
 
 <!-- ══ SCREEN: TEST 10 READY ══ -->
@@ -1677,7 +1703,7 @@ checkAuth();
     </div>
   </div>
   <button class="welcome-next" onclick="startTestModule1(10)">Go! →</button>
-  <div><button class="back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
+  <div><button class="nav-back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
 </div>
 
 <div id="screen-test11-ready" class="screen">
@@ -1706,7 +1732,7 @@ checkAuth();
     </div>
   </div>
   <button class="welcome-next" onclick="startTestModule1(11)">Go! →</button>
-  <div><button class="back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
+  <div><button class="nav-back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
 </div>
 
 <div id="screen-test12-ready" class="screen">
@@ -1735,7 +1761,7 @@ checkAuth();
     </div>
   </div>
   <button class="welcome-next" onclick="startTestModule1(12)">Go! →</button>
-  <div><button class="back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
+  <div><button class="nav-back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
 </div>
 
 <!-- ══ SCREEN: TEST 13 READY ══ -->
@@ -1765,7 +1791,7 @@ checkAuth();
     </div>
   </div>
   <button class="welcome-next" onclick="startTestModule1(13)">Go! →</button>
-  <div><button class="back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
+  <div><button class="nav-back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
 </div>
 
 <!-- ══ SCREEN: TEST 14 READY ══ -->
@@ -1795,7 +1821,7 @@ checkAuth();
     </div>
   </div>
   <button class="welcome-next" onclick="startTestModule1(14)">Go! →</button>
-  <div><button class="back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
+  <div><button class="nav-back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
 </div>
 
 <!-- ══ SCREEN: TEST 16 READY ══ -->
@@ -1819,7 +1845,7 @@ checkAuth();
     </div>
   </div>
   <button class="welcome-next" onclick="startTestModule1(15)">Go! →</button>
-  <div><button class="back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
+  <div><button class="nav-back-btn" onclick="goScreen('screen-test-list')">← Back</button></div>
 </div>
 
 <!-- ══ SCREEN: TEST BREAK ══ -->
@@ -1953,6 +1979,8 @@ document.addEventListener('keydown', e => {
 });
 
 // ── SCREEN NAVIGATION ──
+let __isHistoryNav = false;
+
 function goScreen(id, subject) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   if (id !== 'screen-quiz' && id !== 'screen-test-quiz') {
@@ -1978,7 +2006,29 @@ function goScreen(id, subject) {
     document.getElementById('mode-badge').textContent = subject === 'Math' ? '📐 Math' : '📖 English';
   }
   window.scrollTo(0,0);
+
+  if (!__isHistoryNav) {
+    const badgeEl = document.getElementById('mode-badge');
+    const effectiveSubject = subject || (badgeEl ? badgeEl.textContent : null);
+    history.pushState({ screenId: id, subject: effectiveSubject }, '', '#' + id);
+  }
 }
+
+window.addEventListener('popstate', function(e) {
+  __isHistoryNav = true;
+  if (e.state && e.state.screenId) {
+    goScreen(e.state.screenId, e.state.subject);
+  } else {
+    goScreen('screen-welcome');
+  }
+  __isHistoryNav = false;
+});
+
+window.addEventListener('DOMContentLoaded', function() {
+  const activeScreen = document.querySelector('.screen.active');
+  const initialId = activeScreen ? activeScreen.id : 'screen-welcome';
+  history.replaceState({ screenId: initialId, subject: null }, '', '#' + initialId);
+});
 
 function goQuiz() {
   goScreen('screen-quiz');
