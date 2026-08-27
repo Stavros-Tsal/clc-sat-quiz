@@ -88,7 +88,7 @@
   .skillrow { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #ddd4c0; font-size: 14px; }
   footer.conf { text-align: center; padding: 22px; font-size: 11px; color: #8a8072; letter-spacing: 1px; text-transform: uppercase; }
   @media print {
-    .toolbar, #calc-toast, #palette, footer.conf .noprint { display: none !important; }
+    .toolbar, #calc-toast, #palette, .noprint { display: none !important; }
     .navwrap { display: block; }
   }
   #intro-list { text-align: left; margin: 20px auto; max-width: 480px; }
@@ -123,7 +123,7 @@
     <h1 class="serif" style="color:var(--crimson);">Algebra Trap-Question Bank</h1>
     <p>200 original CLC-written questions covering every official Algebra skill, with real rendered graphs, systems, and inequality regions wherever a figure genuinely helps — not just described in words.</p>
     <ul id="intro-list"><li><strong>Linear Equations in One Variable</strong> — 40 original questions</li><li><strong>Linear Functions</strong> — 40 original questions</li><li><strong>Linear Equations in Two Variables</strong> — 40 original questions</li><li><strong>Systems of Two Linear Equations in Two Variables</strong> — 40 original questions</li><li><strong>Linear Inequalities in One or Two Variables</strong> — 40 original questions</li></ul>
-    <p style="font-size:13px;color:#8a8072;">Standard time: 160 minutes total. Calculator (Desmos, opens in a new tab) available throughout.</p>
+    <p style="font-size:13px;color:#8a8072;">Standard time: 120 minutes total. Calculator (Desmos, opens in a new tab) available throughout.</p>
     <button class="btn-primary" style="padding:12px 28px;font-size:15px;" onclick="beginTest()">Begin Practice Set</button>
   </div></div>
 
@@ -140,7 +140,7 @@ const SKILLS = [["linear_one_var", "Linear Equations in One Variable"], ["linear
 const SKILL_LABEL = {}; SKILLS.forEach(s => SKILL_LABEL[s[0]] = s[1]);
 window.QUESTIONS = QUESTIONS; window.SKILLS = SKILLS; window.SKILL_LABEL = SKILL_LABEL;
 
-let state = { screen: 'intro', current: 0, answers: {}, flagged: {}, timeLeft: 80*60, timerId: null };
+let state = { screen: 'intro', current: 0, answers: {}, flagged: {}, timeLeft: 120*60, timerId: null, studentName: '' };
 
 function fmtTime(s) { const m = Math.floor(s/60), sec = s%60; return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0'); }
 
@@ -255,7 +255,7 @@ function renderIntro() {
     <h1 class="serif" style="color:var(--crimson);">Algebra Trap-Question Bank</h1>
     <p>200 original CLC-written questions covering every official Algebra skill, with real rendered graphs, systems, and inequality regions wherever a figure genuinely helps &mdash; not just described in words.</p>
     <ul id="intro-list">${li}</ul>
-    <p style="font-size:13px;color:#8a8072;">Standard time: 160 minutes total. Calculator (Desmos, opens in a new tab) available throughout.</p>
+    <p style="font-size:13px;color:#8a8072;">Standard time: 120 minutes total. Calculator (Desmos, opens in a new tab) available throughout.</p>
     <button class="btn-primary" style="padding:12px 28px;font-size:15px;" onclick="beginTest()">Begin Practice Set</button>
   </div>`;
 }
@@ -309,6 +309,12 @@ function renderReview() {
 
   return `<div class="screen-center" style="max-width:760px;">
     <h1 class="serif" style="color:var(--crimson);">Results</h1>
+    <div class="noprint" style="max-width:420px;margin:0 auto 10px;text-align:left;">
+      <label style="font-size:13px;color:#8a8072;display:block;margin-bottom:4px;">Student Name (shown on the exported PDF)</label>
+      <input type="text" id="studentNameInput" value="${state.studentName || ''}" oninput="setStudentName(this.value)"
+        placeholder="Enter full name" style="width:100%;box-sizing:border-box;padding:9px 10px;border:1px solid #d8d0c4;border-radius:6px;font-size:14px;font-family:inherit;">
+    </div>
+    <div id="studentNameDisplay" style="font-size:15px;color:#3a352c;font-weight:600;margin-bottom:6px;">${state.studentName ? 'Student: ' + state.studentName : ''}</div>
     <div class="scorebig">${correctCount} / ${QUESTIONS.length}</div>
     <div style="max-width:420px;margin:18px auto;text-align:left;">${skillRows}</div>
     <div class="noprint" style="margin:20px 0;">
@@ -316,6 +322,12 @@ function renderReview() {
     </div>
   </div>
   <div id="main" style="max-width:760px;margin:0 auto 60px;">${blocks}</div>`;
+}
+
+function setStudentName(val) {
+  state.studentName = val;
+  const disp = document.getElementById('studentNameDisplay');
+  if (disp) disp.textContent = val ? ('Student: ' + val) : '';
 }
 
 function render() {
