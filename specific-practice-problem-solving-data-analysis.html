@@ -186,11 +186,48 @@ function showReview(fromTest) {
 
 function normalize(s) { return String(s).trim().toLowerCase().replace(/\s+/g,''); }
 
+function parseNumericAnswer(s) {
+  if (s === null || s === undefined) return NaN;
+  s = String(s).trim().replace(/\$/g, '').replace(/,/g, '').replace(/\s+/g, '');
+  if (s === '') return NaN;
+  const fracMatch = s.match(/^(-?(?:\d+\.?\d*|\.\d+))\/(-?(?:\d+\.?\d*|\.\d+))$/);
+  if (fracMatch) {
+    const num = parseFloat(fracMatch[1]);
+    const den = parseFloat(fracMatch[2]);
+    return den !== 0 ? num / den : NaN;
+  }
+  if (/^-?(?:\d+\.?\d*|\.\d+)$/.test(s)) return parseFloat(s);
+  return NaN;
+}
+
+function answersMatch(given, correct) {
+  if (correct.indexOf('|') !== -1) {
+    return correct.split('|').some(part => answersMatch(given, part.trim()));
+  }
+  if (correct.indexOf('RANGE:') === 0) {
+    const bounds = correct.split(':');
+    const lo = parseFloat(bounds[1]);
+    const hi = parseFloat(bounds[2]);
+    const numGiven = parseNumericAnswer(given);
+    if (!isNaN(numGiven) && !isNaN(lo) && !isNaN(hi)) {
+      return numGiven >= lo - 1e-9 && numGiven <= hi + 1e-9;
+    }
+    return false;
+  }
+  if (normalize(given) === normalize(correct)) return true;
+  const numGiven = parseNumericAnswer(given);
+  const numCorrect = parseNumericAnswer(correct);
+  if (!isNaN(numGiven) && !isNaN(numCorrect)) {
+    return Math.abs(numGiven - numCorrect) < 1e-4 * Math.max(1, Math.abs(numCorrect));
+  }
+  return false;
+}
+
 function isCorrect(q) {
   const a = state.answers[q.id];
   if (a === undefined || a === null || a === '') return false;
   if (q.type === 'mc') return a === q.correct;
-  return normalize(a) === normalize(q.correct);
+  return answersMatch(String(a), String(q.correct));
 }
 
 function renderPalette() {
