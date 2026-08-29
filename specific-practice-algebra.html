@@ -120,7 +120,7 @@
   </div>
   <div class="brand-text" style="text-align:right;">
     <div class="name" style="font-size:16px;">Algebra</div>
-    <div class="sub">200 Original Questions · 5 Skills</div>
+    <div class="sub">250 Original Questions · 5 Skills</div>
   </div>
 </div>
 
@@ -134,7 +134,7 @@
 <div id="app"><div class="screen-center">
     <h1 class="serif" style="color:var(--crimson);">Algebra Trap-Question Bank</h1>
     <p>200 original CLC-written questions covering every official Algebra skill, with real rendered graphs, systems, and inequality regions wherever a figure genuinely helps — not just described in words.</p>
-    <ul id="intro-list"><li><strong>Linear Equations in One Variable</strong> — 40 original questions</li><li><strong>Linear Functions</strong> — 40 original questions</li><li><strong>Linear Equations in Two Variables</strong> — 40 original questions</li><li><strong>Systems of Two Linear Equations in Two Variables</strong> — 40 original questions</li><li><strong>Linear Inequalities in One or Two Variables</strong> — 40 original questions</li></ul>
+    <ul id="intro-list"><li><strong>Linear Equations in One Variable</strong> — 50 original questions</li><li><strong>Linear Functions</strong> — 50 original questions</li><li><strong>Linear Equations in Two Variables</strong> — 50 original questions</li><li><strong>Systems of Two Linear Equations in Two Variables</strong> — 50 original questions</li><li><strong>Linear Inequalities in One or Two Variables</strong> — 50 original questions</li></ul>
     <p style="font-size:13px;color:#8a8072;">Standard time: 120 minutes total. Calculator (Desmos, opens in a new tab) available throughout.</p>
     <button class="btn-primary" style="padding:12px 28px;font-size:15px;" onclick="beginTest()">Begin Practice Set</button>
   </div></div>
@@ -299,7 +299,7 @@ function renderQuestion() {
 }
 
 function renderIntro() {
-  let li = SKILLS.map(([k,l]) => `<li><strong>${l}</strong> &mdash; 40 original questions</li>`).join('');
+  let li = SKILLS.map(([k,l]) => `<li><strong>${l}</strong> &mdash; ${QUESTIONS.filter(q => q.skill === k).length} original questions</li>`).join('');
   return `<div class="screen-center">
     <h1 class="serif" style="color:var(--crimson);">Algebra Trap-Question Bank</h1>
     <p>200 original CLC-written questions covering every official Algebra skill, with real rendered graphs, systems, and inequality regions wherever a figure genuinely helps &mdash; not just described in words.</p>
