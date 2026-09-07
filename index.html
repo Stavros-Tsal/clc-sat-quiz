@@ -1195,13 +1195,37 @@ checkAuth();
       <div class="label">Math</div>
       <div class="desc">Algebra, Data Analysis, Geometry & more</div>
     </div>
-    <div class="subject-card" onclick="window.location.href='full-practice-test-1.html'">
+    <div class="subject-card" onclick="goScreen('screen-full-practice-list')">
       <div class="icon">🎯</div>
       <div class="label">Full Practice Test</div>
       <div class="desc">Πλήρες Digital SAT · R&amp;W + Math, 4 modules, χρονόμετρο</div>
     </div>
   </div>
   <button class="nav-back-btn" onclick="goScreen('screen-welcome')">← Back</button>
+</div>
+
+<!-- ══ SCREEN: FULL PRACTICE TEST LIST ══ -->
+<div id="screen-full-practice-list" class="screen">
+  <h2 class="subject-title">Full Practice Test</h2>
+  <p class="subject-sub">Πλήρες Digital SAT · R&amp;W + Math, 4 modules, χρονόμετρο</p>
+  <div class="mode-cards">
+    <a class="mode-card" href="full-practice-test-1.html" style="text-decoration:none;color:inherit;">
+      <div class="icon">📄</div>
+      <div class="label">Test 1</div>
+      <div class="desc">Πλήρες τεστ 4 modules με χρονόμετρο</div>
+    </a>
+    <a class="mode-card" href="full-practice-test-2.html" style="text-decoration:none;color:inherit;">
+      <div class="icon">📄</div>
+      <div class="label">Test 2</div>
+      <div class="desc">Πλήρες τεστ 4 modules με χρονόμετρο</div>
+    </a>
+    <a class="mode-card" href="full-practice-test-3.html" style="text-decoration:none;color:inherit;">
+      <div class="icon">📄</div>
+      <div class="label">Test 3</div>
+      <div class="desc">Πλήρες τεστ 4 modules με χρονόμετρο</div>
+    </a>
+  </div>
+  <button class="nav-back-btn" onclick="goScreen('screen-subject')">← Back</button>
 </div>
 
 <!-- ══ SCREEN 3: MODE ══ -->
