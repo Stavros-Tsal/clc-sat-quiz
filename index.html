@@ -358,6 +358,17 @@
   .feedback.correct { background: var(--correct-bg); color: var(--correct); display: block; }
   .feedback.wrong { background: var(--wrong-bg); color: var(--wrong); display: block; }
 
+  /* ── STEP-BY-STEP EXPLANATION ── */
+  .explanation {
+    margin-top: 10px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    border-left: 4px solid var(--gold, #c8960c);
+    background: #fdf9ef;
+    font-size: 14px; line-height: 1.55; color: #3a3226;
+  }
+  .explanation strong { color: var(--crimson); }
+
   /* ── NAV BUTTONS ── */
   .nav-row {
     display: flex; justify-content: space-between; align-items: center;
@@ -2191,7 +2202,14 @@ function checkOpen(tabIdx, qIdx) {
     if (window.clcRecordDrillAnswer) clcRecordDrillAnswer(tabIdx, qIdx, isCorrect);
   }
 
-  MathJax.typesetPromise([fb]);
+  const expElO = document.getElementById(`exp-${tabIdx}-${qIdx}`);
+  const qO = QUESTIONS[tabIdx][qIdx];
+  if (expElO && qO.exp) {
+    expElO.innerHTML = '<strong>Λύση βήμα-βήμα:</strong> ' + escMath(qO.exp);
+    expElO.style.display = 'block';
+  }
+
+  MathJax.typesetPromise([fb, ...(expElO && qO.exp ? [expElO] : [])]);
   renderNav(tabIdx);
   renderQuestionDots(tabIdx);
   updateUnansweredBtn();
@@ -2221,6 +2239,14 @@ function chooseMCQ(tabIdx, qIdx, chosenIdx) {
     state[tabIdx].answered[qIdx] = isCorrect;
     if (isCorrect) state[tabIdx].score++;
     if (window.clcRecordDrillAnswer) clcRecordDrillAnswer(tabIdx, qIdx, isCorrect);
+  }
+
+  const expEl0 = document.getElementById(`exp-${tabIdx}-${qIdx}`);
+  const q0 = QUESTIONS[tabIdx][qIdx];
+  if (expEl0 && q0.exp) {
+    expEl0.innerHTML = '<strong>Λύση βήμα-βήμα:</strong> ' + escMath(q0.exp);
+    expEl0.style.display = 'block';
+    MathJax.typesetPromise([expEl0]);
   }
 
   renderNav(tabIdx);
@@ -2315,6 +2341,7 @@ function renderQuestion(tabIdx) {
       ? (s.answered[qIdx] ? '✓ Correct!' : `✗ Incorrect. Correct answer: ${ANSWERS[tabIdx][qIdx+1]}`)
       : '';
     html += `<div class="feedback ${fbCls}" id="fb-${tabIdx}-${qIdx}" ${alreadyAnswered?'':'style="display:none"'}>${fbTxt}</div>`;
+    html += `<div class="explanation" id="exp-${tabIdx}-${qIdx}" ${(alreadyAnswered && q.exp) ? '' : 'style="display:none"'}>${q.exp ? '<strong>Λύση βήμα-βήμα:</strong> ' + escMath(q.exp) : ''}</div>`;
   } else {
     html += `<div class="options">`;
     const correct = ANSWERS[tabIdx][qIdx+1];
@@ -2336,6 +2363,7 @@ function renderQuestion(tabIdx) {
     html += `</div>`;
     const fbCls = alreadyAnswered ? (s.answered[qIdx] ? 'correct' : 'wrong') : '';
     html += `<div class="feedback ${fbCls}" id="fb-${tabIdx}-${qIdx}" ${alreadyAnswered?'':'style="display:none"'}>${alreadyAnswered ? (s.answered[qIdx] ? '✓ Correct!' : `✗ Incorrect. Correct answer: ${correct}`) : ''}</div>`;
+    html += `<div class="explanation" id="exp-${tabIdx}-${qIdx}" ${(alreadyAnswered && q.exp) ? '' : 'style="display:none"'}>${q.exp ? '<strong>Λύση βήμα-βήμα:</strong> ' + escMath(q.exp) : ''}</div>`;
   }
 
   html += `</div><div id="nav-${tabIdx}"></div>`;
