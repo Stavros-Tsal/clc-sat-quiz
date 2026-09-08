@@ -1107,6 +1107,7 @@
 </div>
 
 <script src="auth-config.js"></script>
+<script src="progress.js"></script>
 <script>
 const HOST_SECRET = "ΒΑΣΙΛΙΚΗΟΔΟΣ";
 
@@ -1177,6 +1178,7 @@ checkAuth();
   <h1 class="welcome-title">Welcome, students!</h1>
   <p class="welcome-sub">Ready to do some SAT practice?<br>Let's get started.</p>
   <button class="welcome-next" onclick="goScreen('screen-subject')">Get Started →</button>
+  <button class="welcome-next" style="background:transparent;color:var(--crimson);box-shadow:none;border:1.5px solid var(--crimson);margin-top:14px;padding:12px 40px;font-size:14px;" onclick="promptFullReport()">📄 Πρόοδος &amp; Αναφορά</button>
 </div>
 
 <!-- ══ SCREEN 2: SUBJECT ══ -->
@@ -2186,6 +2188,7 @@ function checkOpen(tabIdx, qIdx) {
   if (!state[tabIdx].answered[qIdx]) {
     state[tabIdx].answered[qIdx] = isCorrect;
     if (isCorrect) state[tabIdx].score++;
+    if (window.clcRecordDrillAnswer) clcRecordDrillAnswer(tabIdx, qIdx, isCorrect);
   }
 
   MathJax.typesetPromise([fb]);
@@ -2217,6 +2220,7 @@ function chooseMCQ(tabIdx, qIdx, chosenIdx) {
   if (!state[tabIdx].answered[qIdx]) {
     state[tabIdx].answered[qIdx] = isCorrect;
     if (isCorrect) state[tabIdx].score++;
+    if (window.clcRecordDrillAnswer) clcRecordDrillAnswer(tabIdx, qIdx, isCorrect);
   }
 
   renderNav(tabIdx);
@@ -3038,6 +3042,11 @@ function showFinalResults() {
   const totalScore = singleModule ? m1.scaledScore : (m1.scaledScore + m2.scaledScore);
   const maxScore = 800;
   const pct = Math.round((totalScore / maxScore) * 100);
+  if (window.clcRecordMathTestAttempt) {
+    const combinedCorrect = m1.correctCount + (m2 ? m2.correctCount : 0);
+    const combinedTotal = m1.total + (m2 ? m2.total : 0);
+    clcRecordMathTestAttempt(testId, totalScore, combinedCorrect, combinedTotal);
+  }
   const grade = pct >= 90 ? '🏆 Excellent!' : pct >= 70 ? '👍 Good job!' : pct >= 50 ? '📚 Keep studying!' : '💪 You can do it!';
 
   const allBookmarks = [
@@ -3152,6 +3161,146 @@ function generateResultsPDF(studentName) {
       }
     });
   <\/script>
+</body></html>`);
+  w.document.close();
+}
+
+function promptFullReport() {
+  const name = prompt('Enter your name for the progress report:', '');
+  if (name === null) return;
+  generateFullReport(name.trim() || 'Student');
+}
+
+function generateFullReport(studentName) {
+  const p = clcLoadProgress();
+  const tabNames = ['Algebra', 'Interpretation', 'Probabilities & Statistics', 'Geometry'];
+
+  function pctOf(c, t) { return t > 0 ? Math.round((c / t) * 100) : null; }
+
+  // ---- Modules / Drills ----
+  let drillsHTML = '';
+  tabNames.forEach(function (label, i) {
+    const key = String(i);
+    const stats = p.drillStats[key] || { correct: 0, total: 0 };
+    const rate = pctOf(stats.correct, stats.total);
+    const recs = p.drills[key] || {};
+    const unsolved = Object.keys(recs)
+      .filter(function (qk) { return !recs[qk].solved; })
+      .map(function (qk) { return { qIdx: Number(qk), attempts: recs[qk].attempts }; })
+      .sort(function (a, b) { return a.qIdx - b.qIdx; });
+
+    let rows = '';
+    if (unsolved.length === 0) {
+      rows = '<div class="pr-empty">' + (stats.total > 0 ? 'Καμία εκκρεμότητα — όλες οι ερωτήσεις που έχει προσπαθήσει λύθηκαν σωστά.' : 'Δεν έχει γίνει καμία προσπάθεια ακόμα.') + '</div>';
+    } else {
+      unsolved.forEach(function (u) {
+        let qText = '';
+        try {
+          const qObj = QUESTIONS[i][u.qIdx];
+          if (qObj && qObj.q) {
+            qText = qObj.q.replace(/<img[^>]*>/g, '').replace(/<br\s*\/?>/g, ' ');
+            if (qText.length > 140) qText = qText.slice(0, 140) + '…';
+          }
+        } catch (e) {}
+        rows += '<div class="pr-q-row"><strong>Q' + (u.qIdx + 1) + '</strong> — ' + u.attempts + ' προσπάθεια/ες, ακόμα λάθος'
+          + (qText ? '<div class="pr-q-snippet">' + qText + '</div>' : '') + '</div>';
+      });
+    }
+
+    drillsHTML += '<div class="pr-block"><div class="pr-block-head"><strong>' + label + '</strong> '
+      + (rate !== null ? '<span class="pr-rate">' + rate + '% success rate (' + stats.correct + '/' + stats.total + ')</span>' : '<span class="pr-rate pr-dim">Δεν έχει ξεκινήσει</span>')
+      + '</div>' + rows + '</div>';
+  });
+
+  // ---- Math Practice Tests (1–15) ----
+  const mtStats = p.mathTestStats;
+  const mtRate = pctOf(mtStats.correct, mtStats.total);
+  let mtRows = '';
+  Object.keys(p.mathTests).map(Number).sort(function (a, b) { return a - b; }).forEach(function (testId) {
+    const attempts = p.mathTests[String(testId)];
+    if (!attempts || attempts.length === 0) return;
+    const highest = Math.max.apply(null, attempts.map(function (a) { return a.score; }));
+    mtRows += '<div class="pr-q-row"><strong>Test ' + testId + '</strong> — Highest: ' + highest + '/800 &nbsp;(' + attempts.length + ' προσπάθεια/ες)</div>';
+  });
+  if (!mtRows) mtRows = '<div class="pr-empty">Δεν έχει γίνει καμία προσπάθεια ακόμα.</div>';
+
+  // ---- Full Practice Test (1–3) ----
+  const ftStats = p.fullTestStats;
+  const ftRate = pctOf(ftStats.correct, ftStats.total);
+  let ftRows = '';
+  Object.keys(p.fullTests).map(Number).sort(function (a, b) { return a - b; }).forEach(function (testId) {
+    const attempts = p.fullTests[String(testId)];
+    if (!attempts || attempts.length === 0) return;
+    const scaledAttempts = attempts.filter(function (a) { return a.scaledScore !== null && a.scaledScore !== undefined; });
+    let bestLabel;
+    if (scaledAttempts.length > 0) {
+      const highest = Math.max.apply(null, scaledAttempts.map(function (a) { return a.scaledScore; }));
+      bestLabel = highest + '/1600';
+    } else {
+      const best = attempts.reduce(function (b, a) {
+        return (a.correctCount / a.totalCount) > (b.correctCount / b.totalCount) ? a : b;
+      });
+      bestLabel = best.correctCount + '/' + best.totalCount + ' (' + Math.round(best.correctCount / best.totalCount * 100) + '%)';
+    }
+    ftRows += '<div class="pr-q-row"><strong>Test ' + testId + '</strong> — Highest: ' + bestLabel + ' &nbsp;(' + attempts.length + ' προσπάθεια/ες)</div>';
+  });
+  if (!ftRows) ftRows = '<div class="pr-empty">Δεν έχει γίνει καμία προσπάθεια ακόμα.</div>';
+
+  // ---- Specific Practice — full history ----
+  let spHTML = '';
+  const spBanks = Object.keys(p.specificPractice);
+  if (spBanks.length === 0) {
+    spHTML = '<div class="pr-empty">Δεν έχει γίνει καμία προσπάθεια ακόμα.</div>';
+  } else {
+    spBanks.forEach(function (bank) {
+      const attempts = p.specificPractice[bank];
+      let rows = attempts.map(function (a) {
+        const d = new Date(a.date);
+        const dstr = isNaN(d.getTime()) ? '' : d.toLocaleDateString('el-GR');
+        const pctv = a.totalCount > 0 ? Math.round((a.correctCount / a.totalCount) * 100) : 0;
+        return '<div class="pr-q-row">' + dstr + ' — ' + a.correctCount + '/' + a.totalCount + ' (' + pctv + '%)</div>';
+      }).join('');
+      spHTML += '<div class="pr-block"><div class="pr-block-head"><strong>' + bank + '</strong></div>' + rows + '</div>';
+    });
+  }
+
+  const w = window.open('', '_blank');
+  w.document.write(`<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<title>CLC SAT — Πρόοδος — ${studentName}</title>
+<style>
+  body { font-family: Georgia, serif; color: #1a1a1a; padding: 32px; max-width: 800px; margin: 0 auto; }
+  h1 { color: #7B0000; font-size: 22px; margin-bottom: 4px; }
+  .meta { color: #666; font-size: 13px; margin-bottom: 24px; }
+  h2 { font-size: 15px; text-transform: uppercase; letter-spacing: 0.05em; color: #666; margin: 28px 0 10px; border-bottom: 1px solid #e0dbd3; padding-bottom: 4px; }
+  .pr-block { border-left: 4px solid #c8960c; background: #fdf9ef; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid; }
+  .pr-block-head { display:flex; justify-content:space-between; align-items:center; font-size: 14px; margin-bottom: 6px; flex-wrap: wrap; gap:6px; }
+  .pr-rate { font-weight: 700; color: #7B0000; font-size: 13px; }
+  .pr-rate.pr-dim { color: #999; font-weight: 400; }
+  .pr-q-row { font-size: 13px; color: #333; padding: 4px 0; border-top: 1px dashed #e6dfd2; }
+  .pr-q-row:first-of-type { border-top: none; }
+  .pr-q-snippet { color: #666; font-size: 12px; margin-top: 2px; }
+  .pr-empty { font-size: 13px; color: #888; font-style: italic; padding: 4px 0; }
+  .pr-print-btn { padding: 10px 22px; background: #7B0000; color: #fff; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; margin-bottom: 20px; }
+  @media print { .pr-print-btn { display:none; } body { padding: 12px; } }
+</style>
+</head><body>
+  <button class="pr-print-btn" onclick="window.print()">📄 Save as PDF / Print</button>
+  <h1>CLC SAT — Πλήρης Αναφορά Προόδου</h1>
+  <div class="meta">Μαθητής/τρια: <strong>${studentName}</strong> &nbsp;|&nbsp; ${new Date().toLocaleDateString('el-GR')}</div>
+
+  <h2>Modules / Drills</h2>
+  ${drillsHTML}
+
+  <h2>Math Practice Tests (1–15)${mtRate !== null ? ' — ' + mtRate + '% success rate' : ''}</h2>
+  ${mtRows}
+
+  <h2>Full Practice Test (1–3)${ftRate !== null ? ' — ' + ftRate + '% success rate' : ''}</h2>
+  ${ftRows}
+
+  <h2>Specific Practice — Ιστορικό όλων των προσπαθειών</h2>
+  ${spHTML}
+
 </body></html>`);
   w.document.close();
 }
