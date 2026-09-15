@@ -43,15 +43,33 @@
   .btn-ghost:hover { background: #e2d9c6; }
   #timer { font-weight: 700; color: var(--crimson); font-family: monospace; font-size: 15px; margin-left: auto; }
   .navwrap { display: flex; gap: 24px; padding: 16px 24px 60px; }
-  #palette { width: 250px; flex-shrink: 0; }
-  .palette-skill { margin-bottom: 16px; }
-  .palette-skill h4 { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--crimson);
-    margin: 0 0 6px; border-bottom: 1px solid #e2dcd0; padding-bottom: 4px; }
-  .pgrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+  #palette { width: 268px; flex-shrink: 0; display: flex; flex-direction: column; gap: 10px; }
+  .palette-skill { background: #fff; border: 1px solid #e2dcd0; border-radius: 10px; overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,.03); transition: border-color .2s ease; }
+  .palette-skill.open { border-color: #d8b978; }
+  .palette-skill-header { width: 100%; display: flex; align-items: center; gap: 9px; padding: 13px 14px;
+    background: none; border: none; cursor: pointer; text-align: left; font-family: inherit; }
+  .palette-skill-header:hover { background: #faf6ec; }
+  .psh-chevron { font-size: 10px; color: var(--gold); flex-shrink: 0; transition: transform .25s ease; display: inline-block; }
+  .palette-skill.open .psh-chevron { transform: rotate(90deg); }
+  .psh-title { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px;
+    color: var(--crimson); flex: 1; line-height: 1.35; }
+  .psh-progress { font-size: 11px; color: #a89a7d; font-weight: 700; flex-shrink: 0; background: #f7f2e6;
+    border-radius: 20px; padding: 2px 8px; }
+  .palette-skill.open .psh-progress { color: #fff; background: var(--gold); }
+  .palette-skill-collapse { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .3s ease; }
+  .palette-skill.open .palette-skill-collapse { grid-template-rows: 1fr; }
+  .palette-skill-inner { overflow: hidden; }
+  .psh-submeta { padding: 0 14px 10px; font-size: 11px; color: #a89a7d; display: flex; align-items: center; gap: 6px; }
+  .psh-flag-badge { font-size: 10px; background: #fbeeee; color: var(--crimson); border-radius: 20px;
+    padding: 1px 8px; font-weight: 700; }
+  .pgrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; padding: 0 14px 14px; }
   .pbtn { width: 34px; height: 34px; border-radius: 6px; background: #efe9dd; border: 1px solid #d8cfba; font-size: 12px;
-    display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 600; padding: 0; }
+    display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 600; padding: 0; position: relative; }
   .pbtn.answered { background: var(--gold); color: #fff; border-color: var(--gold); }
-  .pbtn.current { outline: 2px solid var(--crimson); }
+  .pbtn.current { outline: 2px solid var(--crimson); outline-offset: 1px; }
+  .pbtn.flagged::after { content: ''; position: absolute; top: -3px; right: -3px; width: 9px; height: 9px;
+    border-radius: 50%; background: var(--crimson); border: 1.5px solid #fff; }
   #main { flex: 1; max-width: 760px; }
   .card { background: #fff; border: 1px solid #e2dcd0; border-radius: 10px; padding: 26px 28px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
   .qmeta { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
@@ -190,9 +208,17 @@ function openCalc() {
 function toggleFlag() { const q = QUESTIONS[state.current]; state.flagged[q.id] = !state.flagged[q.id]; render(); }
 function selectChoice(qid, letter) { state.answers[qid] = letter; render(); }
 function sprInput(qid, val) { state.answers[qid] = val; }
-function goTo(idx) { state.current = idx; render(); }
-function nextQ() { if (state.current < QUESTIONS.length-1) { state.current++; render(); } }
-function prevQ() { if (state.current > 0) { state.current--; render(); } }
+function setCurrent(idx) { state.current = idx; state.openSkill = QUESTIONS[idx].skill; }
+function goTo(idx) { setCurrent(idx); render(); }
+function nextQ() { if (state.current < QUESTIONS.length-1) { setCurrent(state.current+1); render(); } }
+function prevQ() { if (state.current > 0) { setCurrent(state.current-1); render(); } }
+function toggleSkillPanel(skey) { state.openSkill = (state.openSkill === skey) ? null : skey; render(); }
+function formatEstTime(n) {
+  const mins = Math.round(n * 1.5);
+  const h = Math.floor(mins / 60), m = mins % 60;
+  if (h > 0) return m > 0 ? `~${h}h ${m}m` : `~${h}h`;
+  return `~${m} min`;
+}
 
 function beginTest() {
   state.screen = 'test';
@@ -259,17 +285,31 @@ function isCorrect(q) {
 }
 
 function renderPalette() {
+  if (!state.openSkill) state.openSkill = QUESTIONS[state.current].skill;
   let html = '<div id="palette">';
   SKILLS.forEach(([skey, slabel]) => {
-    html += `<div class="palette-skill"><h4>${slabel}</h4><div class="pgrid">`;
-    QUESTIONS.forEach((q, i) => {
-      if (q.skill !== skey) return;
+    const skillEntries = [];
+    QUESTIONS.forEach((q, i) => { if (q.skill === skey) skillEntries.push([q, i]); });
+    const answeredCount = skillEntries.filter(([q]) => state.answers[q.id]).length;
+    const flaggedCount = skillEntries.filter(([q]) => state.flagged[q.id]).length;
+    const isOpen = state.openSkill === skey;
+    html += `<div class="palette-skill ${isOpen ? 'open' : ''}">
+      <button class="palette-skill-header" onclick="toggleSkillPanel('${skey}')">
+        <span class="psh-chevron">&#9656;</span>
+        <span class="psh-title">${slabel}</span>
+        <span class="psh-progress">${answeredCount}/${skillEntries.length}</span>
+      </button>
+      <div class="palette-skill-collapse"><div class="palette-skill-inner">
+        <div class="psh-submeta"><span>&#9201;&#65039; ${formatEstTime(skillEntries.length)}</span>${flaggedCount > 0 ? `<span class="psh-flag-badge">&#128278; ${flaggedCount}</span>` : ''}</div>
+        <div class="pgrid">`;
+    skillEntries.forEach(([q, i]) => {
       let cls = 'pbtn';
       if (state.answers[q.id]) cls += ' answered';
       if (i === state.current) cls += ' current';
+      if (state.flagged[q.id]) cls += ' flagged';
       html += `<button class="${cls}" onclick="goTo(${i})">${q.num}</button>`;
     });
-    html += '</div></div>';
+    html += `</div></div></div></div>`;
   });
   html += '</div>';
   return html;
