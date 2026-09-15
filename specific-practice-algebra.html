@@ -213,7 +213,7 @@ const SKILL_LABEL = {}; SKILLS.forEach(s => SKILL_LABEL[s[0]] = s[1]);
 window.QUESTIONS = QUESTIONS; window.SKILLS = SKILLS; window.SKILL_LABEL = SKILL_LABEL;
 
 let state = { screen: 'intro', current: 0, answers: {}, flagged: {}, timeLeft: 120*60, timerId: null, studentName: '',
-  openSkill: null, openDifficulty: null, timerHidden: false, checked: {}, reportGroup: null };
+  openSkill: QUESTIONS[0].skill, openDifficulty: null, timerHidden: false, checked: {}, reportGroup: null };
 
 function fmtTime(s) { const m = Math.floor(s/60), sec = s%60; return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0'); }
 
@@ -367,7 +367,6 @@ function isCorrect(q) {
 }
 
 function renderPalette() {
-  if (!state.openSkill) state.openSkill = QUESTIONS[state.current].skill;
   let html = '<div id="palette">';
   SKILLS.forEach(([skey, slabel]) => {
     const skillEntries = [];
