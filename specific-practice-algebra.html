@@ -322,6 +322,40 @@ function closeGroupReport() {
   render();
 }
 
+function resetSkill(skey) {
+  if (!window.confirm('Reset all answers for ' + SKILL_LABEL[skey] + '? This cannot be undone.')) return;
+  QUESTIONS.forEach(q => {
+    if (q.skill === skey) {
+      delete state.answers[q.id];
+      delete state.flagged[q.id];
+      delete state.checked[q.id];
+    }
+  });
+  const firstIdx = QUESTIONS.findIndex(q => q.skill === skey);
+  state.current = firstIdx >= 0 ? firstIdx : 0;
+  state.reportGroup = null;
+  state.screen = 'test';
+  document.getElementById('toolbar').style.display = 'flex';
+  if (state.timerId) clearInterval(state.timerId);
+  startTimer();
+  render();
+}
+
+function resetAll() {
+  if (!window.confirm('Reset the ENTIRE practice set — all answers, flags, and progress? This cannot be undone.')) return;
+  state.answers = {};
+  state.flagged = {};
+  state.checked = {};
+  state.current = 0;
+  state.reportGroup = null;
+  state.timeLeft = 120 * 60;
+  state.screen = 'test';
+  document.getElementById('toolbar').style.display = 'flex';
+  if (state.timerId) clearInterval(state.timerId);
+  startTimer();
+  render();
+}
+
 function normalize(s) { return String(s).trim().toLowerCase().replace(/\s+/g,''); }
 
 function parseNumericAnswer(s) {
@@ -557,7 +591,10 @@ function renderReview() {
         placeholder="Enter full name" style="width:100%;box-sizing:border-box;padding:9px 10px;border:1px solid #d8d0c4;border-radius:6px;font-size:14px;font-family:inherit;">
     </div>
     <div id="studentNameDisplay" style="font-size:15px;color:#3a352c;font-weight:600;margin-bottom:6px;">${state.studentName ? 'Student: ' + state.studentName : ''}</div>`;
-  const backBtn = reportMode ? `<button class="btn-ghost" onclick="closeGroupReport()">&larr; Back to Test</button>` : '';
+  const backBtn = `<button class="btn-ghost" onclick="closeGroupReport()">&larr; Back to Test</button>`;
+  const resetBtn = reportMode
+    ? `<button class="btn-ghost" style="color:var(--red);" onclick="resetSkill('${state.reportGroup}')">Reset Skill</button>`
+    : `<button class="btn-ghost" style="color:var(--red);" onclick="resetAll()">Reset All</button>`;
 
   return `<div id="printHeader">${state.studentName || ''}</div>
   <div class="screen-center" style="max-width:760px;">
@@ -569,6 +606,7 @@ function renderReview() {
     <div class="noprint" style="margin:20px 0;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
       ${backBtn}
       <button class="btn-gold" onclick="window.print()">Export ${reportMode ? 'Section' : 'Full'} Review to PDF</button>
+      ${resetBtn}
     </div>
   </div>
   <div id="main" style="max-width:760px;margin:0 auto 60px;">${blocks}</div>`;
