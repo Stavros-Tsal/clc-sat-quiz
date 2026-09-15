@@ -64,6 +64,19 @@
   .psh-flag-badge { font-size: 10px; background: #fbeeee; color: var(--crimson); border-radius: 20px;
     padding: 1px 8px; font-weight: 700; }
   .pgrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; padding: 0 14px 14px; }
+  .group-toggle { display: flex; gap: 6px; margin-bottom: 10px; }
+  .group-toggle button { flex: 1; background: #efe9dd; color: var(--ink); font-size: 12px; padding: 8px 6px; border-radius: 8px; }
+  .group-toggle button.active { background: var(--crimson); color: #fff; }
+  .group-report-btn { width: calc(100% - 28px); margin: 0 14px 12px; background: #f3eafd; color: #5a2e94; border: 1px solid #ddc9f3;
+    font-size: 11.5px; font-weight: 700; padding: 7px 10px; border-radius: 7px; text-align: center; }
+  .group-report-btn:hover { background: #ebdcfb; }
+  #hideTimerBtn { margin-left: 8px; }
+  #timer.hidden-timer { filter: blur(6px); user-select: none; cursor: pointer; }
+  #timer.hidden-timer:hover { filter: blur(3px); }
+  .check-row { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+  .check-feedback { border-radius: 8px; padding: 10px 14px; margin-top: 10px; font-size: 13.5px; font-weight: 700; }
+  .check-feedback.ok { background: #e4f3e8; color: #1F7A3D; }
+  .check-feedback.bad { background: #fbe4e2; color: var(--red); }
   .pbtn { width: 34px; height: 34px; border-radius: 6px; background: #efe9dd; border: 1px solid #d8cfba; font-size: 12px;
     display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 600; padding: 0; position: relative; }
   .pbtn.answered { background: var(--gold); color: #fff; border-color: var(--gold); }
@@ -146,7 +159,8 @@
 <div class="toolbar" id="toolbar" style="display:none;">
   <button class="btn-ghost" onclick="openCalc()">Open Desmos Calculator ↗</button>
   <button class="btn-ghost" id="flagBtn" onclick="toggleFlag()">Flag for Review</button>
-  <div id="timer">53:00</div>
+  <div id="timer" onclick="if(state.timerHidden) toggleTimerVisibility()">53:00</div>
+  <button class="btn-ghost" id="hideTimerBtn" onclick="toggleTimerVisibility()">Hide Timer</button>
   <button class="btn-primary" onclick="showReview(true)">End &amp; Review</button>
 </div>
 
@@ -172,18 +186,30 @@ const SKILLS = [["nonlinear_functions", "Nonlinear Functions"], ["nonlinear_equa
 const SKILL_LABEL = {}; SKILLS.forEach(s => SKILL_LABEL[s[0]] = s[1]);
 window.QUESTIONS = QUESTIONS; window.SKILLS = SKILLS; window.SKILL_LABEL = SKILL_LABEL;
 
-let state = { screen: 'intro', current: 0, answers: {}, flagged: {}, timeLeft: 53*60, timerId: null };
+let state = { screen: 'intro', current: 0, answers: {}, flagged: {}, timeLeft: 53*60, timerId: null,
+  groupBy: 'skill', openGroup: null, timerHidden: false, checked: {}, reportGroup: null };
 
 function fmtTime(s) { const m = Math.floor(s/60), sec = s%60; return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0'); }
 
 function startTimer() {
-  document.getElementById('timer').textContent = fmtTime(state.timeLeft);
+  const timerEl = document.getElementById('timer');
+  timerEl.textContent = fmtTime(state.timeLeft);
+  if (state.timerHidden) timerEl.classList.add('hidden-timer');
   state.timerId = setInterval(() => {
     state.timeLeft--;
-    document.getElementById('timer').textContent = fmtTime(state.timeLeft);
-    if (state.timeLeft <= 300) document.getElementById('timer').style.color = '#B3261E';
+    const t = document.getElementById('timer');
+    if (t) t.textContent = fmtTime(state.timeLeft);
+    if (state.timeLeft <= 300 && t) t.style.color = '#B3261E';
     if (state.timeLeft <= 0) { clearInterval(state.timerId); showReview(true); }
   }, 1000);
+}
+
+function toggleTimerVisibility() {
+  state.timerHidden = !state.timerHidden;
+  const t = document.getElementById('timer');
+  const btn = document.getElementById('hideTimerBtn');
+  if (t) t.classList.toggle('hidden-timer', state.timerHidden);
+  if (btn) btn.textContent = state.timerHidden ? 'Show Timer' : 'Hide Timer';
 }
 
 function openCalc() {
@@ -195,13 +221,31 @@ function openCalc() {
 }
 
 function toggleFlag() { const q = QUESTIONS[state.current]; state.flagged[q.id] = !state.flagged[q.id]; render(); }
-function selectChoice(qid, letter) { state.answers[qid] = letter; render(); }
-function sprInput(qid, val) { state.answers[qid] = val; }
-function setCurrent(idx) { state.current = idx; state.openSkill = QUESTIONS[idx].skill; }
+function selectChoice(qid, letter) { state.answers[qid] = letter; state.checked[qid] = false; render(); }
+function sprInput(qid, val) { state.answers[qid] = val; state.checked[qid] = false; }
+function checkAnswer() {
+  const q = QUESTIONS[state.current];
+  if (q.type === 'spr') {
+    const el = document.querySelector('.spr-input');
+    if (el) state.answers[q.id] = el.value;
+  }
+  const a = state.answers[q.id];
+  if (a === undefined || a === null || a === '') return;
+  state.checked[q.id] = true;
+  render();
+}
+function groupKeyOf(q) { return state.groupBy === 'difficulty' ? q.difficulty : q.skill; }
+function setCurrent(idx) { state.current = idx; state.openGroup = groupKeyOf(QUESTIONS[idx]); }
 function goTo(idx) { setCurrent(idx); render(); }
 function nextQ() { if (state.current < QUESTIONS.length-1) { setCurrent(state.current+1); render(); } }
 function prevQ() { if (state.current > 0) { setCurrent(state.current-1); render(); } }
-function toggleSkillPanel(skey) { state.openSkill = (state.openSkill === skey) ? null : skey; render(); }
+function toggleGroupPanel(gkey) { state.openGroup = (state.openGroup === gkey) ? null : gkey; render(); }
+function setGroupBy(mode) {
+  if (state.groupBy === mode) return;
+  state.groupBy = mode;
+  state.openGroup = groupKeyOf(QUESTIONS[state.current]);
+  render();
+}
 function formatEstTime(n) {
   const mins = Math.round(n * 1.5);
   const h = Math.floor(mins / 60), m = mins % 60;
@@ -218,8 +262,25 @@ function beginTest() {
 
 function showReview(fromTest) {
   if (state.timerId) clearInterval(state.timerId);
+  state.reportGroup = null;
   state.screen = 'review';
   document.getElementById('toolbar').style.display = 'none';
+  render();
+}
+
+function showGroupReport(gkey) {
+  state.reportGroup = gkey;
+  if (state.timerId) clearInterval(state.timerId);
+  state.screen = 'review';
+  document.getElementById('toolbar').style.display = 'none';
+  render();
+}
+
+function closeGroupReport() {
+  state.reportGroup = null;
+  state.screen = 'test';
+  document.getElementById('toolbar').style.display = 'flex';
+  startTimer();
   render();
 }
 
@@ -273,32 +334,43 @@ function isCorrect(q) {
   return answersMatch(String(a), String(q.correct));
 }
 
+const DIFFICULTY_GROUPS = [['Easy', 'Easy'], ['Medium', 'Medium'], ['Hard', 'Hard']];
+function activeGroups() { return state.groupBy === 'difficulty' ? DIFFICULTY_GROUPS : SKILLS; }
+
 function renderPalette() {
-  if (!state.openSkill) state.openSkill = QUESTIONS[state.current].skill;
+  if (!state.openGroup) state.openGroup = groupKeyOf(QUESTIONS[state.current]);
   let html = '<div id="palette">';
-  SKILLS.forEach(([skey, slabel]) => {
-    const skillEntries = [];
-    QUESTIONS.forEach((q, i) => { if (q.skill === skey) skillEntries.push([q, i]); });
-    const answeredCount = skillEntries.filter(([q]) => state.answers[q.id]).length;
-    const flaggedCount = skillEntries.filter(([q]) => state.flagged[q.id]).length;
-    const isOpen = state.openSkill === skey;
+  html += `<div class="group-toggle">
+    <button class="${state.groupBy==='skill'?'active':''}" onclick="setGroupBy('skill')">By Skill</button>
+    <button class="${state.groupBy==='difficulty'?'active':''}" onclick="setGroupBy('difficulty')">By Difficulty</button>
+  </div>`;
+  activeGroups().forEach(([gkey, glabel]) => {
+    const groupEntries = [];
+    QUESTIONS.forEach((q, i) => { if (groupKeyOf(q) === gkey) groupEntries.push([q, i]); });
+    const answeredCount = groupEntries.filter(([q]) => state.answers[q.id]).length;
+    const flaggedCount = groupEntries.filter(([q]) => state.flagged[q.id]).length;
+    const isOpen = state.openGroup === gkey;
     html += `<div class="palette-skill ${isOpen ? 'open' : ''}">
-      <button class="palette-skill-header" onclick="toggleSkillPanel('${skey}')">
+      <button class="palette-skill-header" onclick="toggleGroupPanel('${gkey}')">
         <span class="psh-chevron">&#9656;</span>
-        <span class="psh-title">${slabel}</span>
-        <span class="psh-progress">${answeredCount}/${skillEntries.length}</span>
+        <span class="psh-title">${glabel}</span>
+        <span class="psh-progress">${answeredCount}/${groupEntries.length}</span>
       </button>
       <div class="palette-skill-collapse"><div class="palette-skill-inner">
-        <div class="psh-submeta"><span>&#9201;&#65039; ${formatEstTime(skillEntries.length)}</span>${flaggedCount > 0 ? `<span class="psh-flag-badge">&#128278; ${flaggedCount}</span>` : ''}</div>
+        <div class="psh-submeta"><span>&#9201;&#65039; ${formatEstTime(groupEntries.length)}</span>${flaggedCount > 0 ? `<span class="psh-flag-badge">&#128278; ${flaggedCount}</span>` : ''}</div>
         <div class="pgrid">`;
-    skillEntries.forEach(([q, i]) => {
+    groupEntries.forEach(([q, i]) => {
       let cls = 'pbtn';
       if (state.answers[q.id]) cls += ' answered';
       if (i === state.current) cls += ' current';
       if (state.flagged[q.id]) cls += ' flagged';
       html += `<button class="${cls}" onclick="goTo(${i})">${q.num}</button>`;
     });
-    html += `</div></div></div></div>`;
+    html += `</div>`;
+    if (answeredCount > 0) {
+      html += `<button class="group-report-btn" onclick="showGroupReport('${gkey}')">&#128196; Get Report for this Section</button>`;
+    }
+    html += `</div></div></div>`;
   });
   html += '</div>';
   return html;
@@ -324,6 +396,16 @@ function renderQuestion() {
   }
   const flagged = state.flagged[q.id];
   const figureHtml = q.svg ? `<div class="figure">${q.svg}</div>` : '';
+  const hasAnswer = state.answers[q.id] !== undefined && state.answers[q.id] !== null && state.answers[q.id] !== '';
+  const isChecked = !!state.checked[q.id];
+  let feedbackHtml = '';
+  if (isChecked && hasAnswer) {
+    const correct = isCorrect(q);
+    feedbackHtml = correct
+      ? `<div class="check-feedback ok">&#10003; Correct!</div>`
+      : `<div class="check-feedback bad">&#10007; Not quite &mdash; correct answer: ${q.correct}</div>
+         <div class="rt-box rt-fastest"><span class="rt-label">Fastest Way to Solve</span><ol>${q.fastest.map(s=>`<li>${s}</li>`).join('')}</ol></div>`;
+  }
   return `
   <div id="main">
     <div class="card">
@@ -335,6 +417,8 @@ function renderQuestion() {
       <div class="stem">${q.stem}</div>
       ${figureHtml}
       ${choicesHtml}
+      <div class="check-row"><button class="btn-ghost" onclick="checkAnswer()">Check Answer</button></div>
+      ${feedbackHtml}
       <div class="navbtns">
         <div><button class="btn-ghost" onclick="prevQ()" ${state.current===0?'disabled':''}>Back</button></div>
         <div><button class="flagbtn ${flagged?'on':''}" onclick="toggleFlag()">${flagged?'Flagged':'Flag for Review'}</button>
@@ -356,23 +440,28 @@ function renderIntro() {
 }
 
 function renderReview() {
+  const reportMode = !!state.reportGroup;
+  const reviewQuestions = reportMode ? QUESTIONS.filter(q => groupKeyOf(q) === state.reportGroup) : QUESTIONS;
+
   let correctCount = 0;
-  QUESTIONS.forEach(q => { if (isCorrect(q)) correctCount++; });
-  if (window.clcRecordSpecificAttempt && !window.__clcSpecificRecorded) {
+  reviewQuestions.forEach(q => { if (isCorrect(q)) correctCount++; });
+  if (!reportMode && window.clcRecordSpecificAttempt && !window.__clcSpecificRecorded) {
     window.__clcSpecificRecorded = true;
     clcRecordSpecificAttempt('Advanced Math', correctCount, QUESTIONS.length);
   }
 
   let skillRows = '';
-  SKILLS.forEach(([skey, slabel]) => {
-    const qs = QUESTIONS.filter(q => q.skill === skey);
-    const c = qs.filter(isCorrect).length;
-    skillRows += `<div class="skillrow"><span>${slabel}</span><span>${c} / ${qs.length}</span></div>`;
-  });
+  if (!reportMode) {
+    SKILLS.forEach(([skey, slabel]) => {
+      const qs = QUESTIONS.filter(q => q.skill === skey);
+      const c = qs.filter(isCorrect).length;
+      skillRows += `<div class="skillrow"><span>${slabel}</span><span>${c} / ${qs.length}</span></div>`;
+    });
+  }
 
   let blocks = '';
-  const flaggedCount = QUESTIONS.filter(q => state.flagged[q.id]).length;
-  QUESTIONS.forEach(q => {
+  const flaggedCount = reviewQuestions.filter(q => state.flagged[q.id]).length;
+  reviewQuestions.forEach(q => {
     const correct = isCorrect(q);
     const given = state.answers[q.id];
     const isFlagged = !!state.flagged[q.id];
@@ -410,13 +499,18 @@ function renderReview() {
     </div>`;
   });
 
+  const groupLabel = reportMode ? (state.groupBy === 'difficulty' ? state.reportGroup : SKILL_LABEL[state.reportGroup]) : null;
+  const titleText = reportMode ? `Section Report &mdash; ${groupLabel}` : 'Results';
+  const backBtn = reportMode ? `<button class="btn-ghost" onclick="closeGroupReport()">&larr; Back to Test</button>` : '';
+
   return `<div class="screen-center" style="max-width:760px;">
-    <h1 class="serif" style="color:var(--crimson);">Results</h1>
-    <div class="scorebig">${correctCount} / ${QUESTIONS.length}</div>
-    <div style="max-width:420px;margin:18px auto;text-align:left;">${skillRows}</div>
+    <h1 class="serif" style="color:var(--crimson);">${titleText}</h1>
+    <div class="scorebig">${correctCount} / ${reviewQuestions.length}</div>
+    ${skillRows ? `<div style="max-width:420px;margin:18px auto;text-align:left;">${skillRows}</div>` : ''}
     ${flaggedCount > 0 ? `<div style="max-width:420px;margin:0 auto 18px;text-align:left;font-size:13px;color:var(--gold);">\ud83d\udd16 ${flaggedCount} question${flaggedCount===1?'':'s'} marked for review \u2014 see gold-highlighted questions below</div>` : ''}
-    <div class="noprint" style="margin:20px 0;">
-      <button class="btn-gold" onclick="window.print()">Export Full Review to PDF</button>
+    <div class="noprint" style="margin:20px 0;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      ${backBtn}
+      <button class="btn-gold" onclick="window.print()">Export ${reportMode ? 'Section' : 'Full'} Review to PDF</button>
     </div>
   </div>
   <div id="main" style="max-width:760px;margin:0 auto 60px;">${blocks}</div>`;
