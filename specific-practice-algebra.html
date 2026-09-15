@@ -67,6 +67,21 @@
   .group-toggle { display: flex; gap: 6px; margin-bottom: 10px; }
   .group-toggle button { flex: 1; background: #efe9dd; color: var(--ink); font-size: 12px; padding: 8px 6px; border-radius: 8px; }
   .group-toggle button.active { background: var(--crimson); color: #fff; }
+  .diff-subgroups { padding: 0 14px 6px; display: flex; flex-direction: column; gap: 6px; }
+  .diff-subgroup { background: #faf7f0; border: 1px solid #ece4d3; border-radius: 8px; overflow: hidden; }
+  .diff-subgroup.open { border-color: #d8b978; }
+  .diff-subgroup-header { width: 100%; display: flex; align-items: center; gap: 8px; padding: 9px 10px;
+    background: none; border: none; cursor: pointer; text-align: left; font-family: inherit; }
+  .diff-subgroup-header:hover { background: #f3ecdc; }
+  .dsh-chevron { font-size: 9px; color: var(--gold); flex-shrink: 0; transition: transform .25s ease; display: inline-block; }
+  .diff-subgroup.open .dsh-chevron { transform: rotate(90deg); }
+  .dsh-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: var(--ink); flex: 1; }
+  .dsh-progress { font-size: 10.5px; color: #a89a7d; font-weight: 700; flex-shrink: 0; background: #f7f2e6;
+    border-radius: 20px; padding: 2px 8px; }
+  .diff-subgroup.open .dsh-progress { color: #fff; background: var(--gold); }
+  .diff-subgroup-collapse { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .25s ease; }
+  .diff-subgroup.open .diff-subgroup-collapse { grid-template-rows: 1fr; }
+  .diff-subgroup-inner { overflow: hidden; }
   .group-report-btn { width: calc(100% - 28px); margin: 0 14px 12px; background: #f3eafd; color: #5a2e94; border: 1px solid #ddc9f3;
     font-size: 11.5px; font-weight: 700; padding: 7px 10px; border-radius: 7px; text-align: center; }
   .group-report-btn:hover { background: #ebdcfb; }
@@ -198,7 +213,7 @@ const SKILL_LABEL = {}; SKILLS.forEach(s => SKILL_LABEL[s[0]] = s[1]);
 window.QUESTIONS = QUESTIONS; window.SKILLS = SKILLS; window.SKILL_LABEL = SKILL_LABEL;
 
 let state = { screen: 'intro', current: 0, answers: {}, flagged: {}, timeLeft: 120*60, timerId: null, studentName: '',
-  groupBy: 'skill', openGroup: null, timerHidden: false, checked: {}, reportGroup: null };
+  openSkill: null, openDifficulty: null, timerHidden: false, checked: {}, reportGroup: null };
 
 function fmtTime(s) { const m = Math.floor(s/60), sec = s%60; return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0'); }
 
@@ -245,16 +260,22 @@ function checkAnswer() {
   state.checked[q.id] = true;
   render();
 }
-function groupKeyOf(q) { return state.groupBy === 'difficulty' ? q.difficulty : q.skill; }
-function setCurrent(idx) { state.current = idx; state.openGroup = groupKeyOf(QUESTIONS[idx]); }
+function setCurrent(idx) {
+  state.current = idx;
+  state.openSkill = QUESTIONS[idx].skill;
+  state.openDifficulty = QUESTIONS[idx].difficulty;
+}
 function goTo(idx) { setCurrent(idx); render(); }
 function nextQ() { if (state.current < QUESTIONS.length-1) { setCurrent(state.current+1); render(); } }
 function prevQ() { if (state.current > 0) { setCurrent(state.current-1); render(); } }
-function toggleGroupPanel(gkey) { state.openGroup = (state.openGroup === gkey) ? null : gkey; render(); }
-function setGroupBy(mode) {
-  if (state.groupBy === mode) return;
-  state.groupBy = mode;
-  state.openGroup = groupKeyOf(QUESTIONS[state.current]);
+function toggleSkillPanel(skey) {
+  if (state.openSkill === skey) { state.openSkill = null; state.openDifficulty = null; }
+  else { state.openSkill = skey; state.openDifficulty = null; }
+  render();
+}
+function toggleDifficultyPanel(skey, diff) {
+  state.openSkill = skey;
+  state.openDifficulty = (state.openDifficulty === diff) ? null : diff;
   render();
 }
 function formatEstTime(n) {
@@ -345,41 +366,49 @@ function isCorrect(q) {
   return answersMatch(String(a), String(q.correct));
 }
 
-const DIFFICULTY_GROUPS = [['Easy', 'Easy'], ['Medium', 'Medium'], ['Hard', 'Hard']];
-function activeGroups() { return state.groupBy === 'difficulty' ? DIFFICULTY_GROUPS : SKILLS; }
-
 function renderPalette() {
-  if (!state.openGroup) state.openGroup = groupKeyOf(QUESTIONS[state.current]);
+  if (!state.openSkill) state.openSkill = QUESTIONS[state.current].skill;
   let html = '<div id="palette">';
-  html += `<div class="group-toggle">
-    <button class="${state.groupBy==='skill'?'active':''}" onclick="setGroupBy('skill')">By Skill</button>
-    <button class="${state.groupBy==='difficulty'?'active':''}" onclick="setGroupBy('difficulty')">By Difficulty</button>
-  </div>`;
-  activeGroups().forEach(([gkey, glabel]) => {
-    const groupEntries = [];
-    QUESTIONS.forEach((q, i) => { if (groupKeyOf(q) === gkey) groupEntries.push([q, i]); });
-    const answeredCount = groupEntries.filter(([q]) => state.answers[q.id]).length;
-    const flaggedCount = groupEntries.filter(([q]) => state.flagged[q.id]).length;
-    const isOpen = state.openGroup === gkey;
+  SKILLS.forEach(([skey, slabel]) => {
+    const skillEntries = [];
+    QUESTIONS.forEach((q, i) => { if (q.skill === skey) skillEntries.push([q, i]); });
+    const answeredCount = skillEntries.filter(([q]) => state.answers[q.id]).length;
+    const flaggedCount = skillEntries.filter(([q]) => state.flagged[q.id]).length;
+    const isOpen = state.openSkill === skey;
     html += `<div class="palette-skill ${isOpen ? 'open' : ''}">
-      <button class="palette-skill-header" onclick="toggleGroupPanel('${gkey}')">
+      <button class="palette-skill-header" onclick="toggleSkillPanel('${skey}')">
         <span class="psh-chevron">&#9656;</span>
-        <span class="psh-title">${glabel}</span>
-        <span class="psh-progress">${answeredCount}/${groupEntries.length}</span>
+        <span class="psh-title">${slabel}</span>
+        <span class="psh-progress">${answeredCount}/${skillEntries.length}</span>
       </button>
       <div class="palette-skill-collapse"><div class="palette-skill-inner">
-        <div class="psh-submeta"><span>&#9201;&#65039; ${formatEstTime(groupEntries.length)}</span>${flaggedCount > 0 ? `<span class="psh-flag-badge">&#128278; ${flaggedCount}</span>` : ''}</div>
-        <div class="pgrid">`;
-    groupEntries.forEach(([q, i]) => {
-      let cls = 'pbtn';
-      if (state.answers[q.id]) cls += ' answered';
-      if (i === state.current) cls += ' current';
-      if (state.flagged[q.id]) cls += ' flagged';
-      html += `<button class="${cls}" onclick="goTo(${i})">${q.num}</button>`;
+        <div class="psh-submeta"><span>&#9201;&#65039; ${formatEstTime(skillEntries.length)}</span>${flaggedCount > 0 ? `<span class="psh-flag-badge">&#128278; ${flaggedCount}</span>` : ''}</div>
+        <div class="diff-subgroups">`;
+    ['Easy', 'Medium', 'Hard'].forEach(diff => {
+      const diffEntries = skillEntries.filter(([q]) => q.difficulty === diff);
+      if (diffEntries.length === 0) return;
+      const diffAnswered = diffEntries.filter(([q]) => state.answers[q.id]).length;
+      const isDiffOpen = isOpen && state.openDifficulty === diff;
+      html += `<div class="diff-subgroup ${isDiffOpen ? 'open' : ''}">
+        <button class="diff-subgroup-header" onclick="toggleDifficultyPanel('${skey}','${diff}')">
+          <span class="dsh-chevron">&#9656;</span>
+          <span class="dsh-title">${diff}</span>
+          <span class="dsh-progress">${diffAnswered}/${diffEntries.length}</span>
+        </button>
+        <div class="diff-subgroup-collapse"><div class="diff-subgroup-inner">
+          <div class="pgrid">`;
+      diffEntries.forEach(([q, i]) => {
+        let cls = 'pbtn';
+        if (state.answers[q.id]) cls += ' answered';
+        if (i === state.current) cls += ' current';
+        if (state.flagged[q.id]) cls += ' flagged';
+        html += `<button class="${cls}" onclick="goTo(${i})">${q.num}</button>`;
+      });
+      html += `</div></div></div></div>`;
     });
     html += `</div>`;
     if (answeredCount > 0) {
-      html += `<button class="group-report-btn" onclick="showGroupReport('${gkey}')">&#128196; Get Report for this Section</button>`;
+      html += `<button class="group-report-btn" onclick="showGroupReport('${skey}')">&#128196; Get Report for this Section</button>`;
     }
     html += `</div></div></div>`;
   });
@@ -452,7 +481,7 @@ function renderIntro() {
 
 function renderReview() {
   const reportMode = !!state.reportGroup;
-  const reviewQuestions = reportMode ? QUESTIONS.filter(q => groupKeyOf(q) === state.reportGroup) : QUESTIONS;
+  const reviewQuestions = reportMode ? QUESTIONS.filter(q => q.skill === state.reportGroup) : QUESTIONS;
 
   let correctCount = 0;
   reviewQuestions.forEach(q => { if (isCorrect(q)) correctCount++; });
@@ -510,7 +539,7 @@ function renderReview() {
     </div>`;
   });
 
-  const groupLabel = reportMode ? (state.groupBy === 'difficulty' ? state.reportGroup : SKILL_LABEL[state.reportGroup]) : null;
+  const groupLabel = reportMode ? SKILL_LABEL[state.reportGroup] : null;
   const titleText = reportMode ? `Section Report &mdash; ${groupLabel}` : 'Results';
   const nameBlock = reportMode ? '' : `<div class="noprint" style="max-width:420px;margin:0 auto 10px;text-align:left;">
       <label style="font-size:13px;color:#8a8072;display:block;margin-bottom:4px;">Student Name (shown on the exported PDF)</label>
