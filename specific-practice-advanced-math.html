@@ -435,14 +435,12 @@ function renderPalette() {
       });
       html += `</div></div></div></div>`;
     });
-    if (answeredCount > 0) {
-      html += `<div class="diff-subgroup review-tab">
-        <button class="diff-subgroup-header" onclick="showGroupReport('${skey}')">
-          <span class="dsh-chevron">&#128196;</span>
-          <span class="dsh-title">Review</span>
-        </button>
-      </div>`;
-    }
+    html += `<div class="diff-subgroup review-tab">
+      <button class="diff-subgroup-header" onclick="showGroupReport('${skey}')">
+        <span class="dsh-chevron">&#128196;</span>
+        <span class="dsh-title">Review</span>
+      </button>
+    </div>`;
     html += `</div>`;
     html += `</div></div></div>`;
   });
