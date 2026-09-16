@@ -1264,17 +1264,17 @@ checkAuth();
     </div>
     <div class="mode-card" onclick="goScreen('screen-specific-practice')">
       <div class="icon">🧭</div>
-      <div class="label">Specific Practice</div>
-      <div class="desc">Trap-question banks by chapter &amp; sub-topic</div>
+      <div class="label">CLC Questionbank</div>
+      <div class="desc">Original questionbanks by chapter &amp; sub-topic</div>
     </div>
   </div>
   <button class="nav-back-btn" onclick="goScreen('screen-subject')">← Back</button>
 </div>
 
-<!-- ══ SCREEN: SPECIFIC PRACTICE ══ -->
+<!-- ══ SCREEN: CLC QUESTIONBANK ══ -->
 <div id="screen-specific-practice" class="screen">
-  <h2 class="subject-title">Specific Practice</h2>
-  <p class="subject-sub">Trap-question banks, organized by chapter and sub-topic</p>
+  <h2 class="subject-title">CLC Questionbank</h2>
+  <p class="subject-sub">Original questionbanks, organized by chapter and sub-topic</p>
   <div class="mode-cards">
     <a class="mode-card" href="specific-practice-advanced-math.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
       <div class="icon">📐</div>
@@ -3334,7 +3334,7 @@ function generateFullReport(studentName) {
   });
   if (!ftRows) ftRows = '<div class="pr-empty">Δεν έχει γίνει καμία προσπάθεια ακόμα.</div>';
 
-  // ---- Specific Practice — full history ----
+  // ---- CLC Questionbank — full history ----
   let spHTML = '';
   const spBanks = Object.keys(p.specificPractice);
   if (spBanks.length === 0) {
@@ -3386,7 +3386,7 @@ function generateFullReport(studentName) {
   <h2>Full Practice Test (1–3)${ftRate !== null ? ' — ' + ftRate + '% success rate' : ''}</h2>
   ${ftRows}
 
-  <h2>Specific Practice — Ιστορικό όλων των προσπαθειών</h2>
+  <h2>CLC Questionbank — Ιστορικό όλων των προσπαθειών</h2>
   ${spHTML}
 
 </body></html>`);

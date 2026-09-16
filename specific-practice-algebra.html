@@ -3,7 +3,7 @@
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CLC Digital SAT Math — Algebra Trap-Question Bank</title>
+<title>CLC Digital SAT Math — Algebra Questionbank</title>
 <script>
   MathJax = {
     tex: { inlineMath: [['\\(','\\)']] },
@@ -176,7 +176,7 @@
     <div class="crest">C</div>
     <div class="brand-text">
       <div class="name">CLC Educational Institute</div>
-      <div class="sub">Digital SAT Math · Trap-Question Skill Bank</div>
+      <div class="sub">Digital SAT Math · CLC Questionbank</div>
     </div>
   </div>
   <div class="brand-text" style="text-align:right;">
@@ -194,7 +194,7 @@
 </div>
 
 <div id="app"><div class="screen-center">
-    <h1 class="serif" style="color:var(--crimson);">Algebra Trap-Question Bank</h1>
+    <h1 class="serif" style="color:var(--crimson);">Algebra Questionbank</h1>
     <p>300 original CLC-written questions covering every official Algebra skill, with real rendered graphs, systems, and inequality regions wherever a figure genuinely helps — not just described in words.</p>
     <ul id="intro-list"><li><strong>Linear Equations in One Variable</strong> — 60 original questions</li><li><strong>Linear Functions</strong> — 60 original questions</li><li><strong>Linear Equations in Two Variables</strong> — 60 original questions</li><li><strong>Systems of Two Linear Equations in Two Variables</strong> — 60 original questions</li><li><strong>Linear Inequalities in One or Two Variables</strong> — 60 original questions</li></ul>
     <p style="font-size:13px;color:#8a8072;">Standard time: 120 minutes total. Calculator (Desmos, opens in a new tab) available throughout.</p>
@@ -513,7 +513,7 @@ function renderQuestion() {
 function renderIntro() {
   let li = SKILLS.map(([k,l]) => `<li><strong>${l}</strong> &mdash; ${QUESTIONS.filter(q => q.skill === k).length} original questions</li>`).join('');
   return `<div class="screen-center">
-    <h1 class="serif" style="color:var(--crimson);">Algebra Trap-Question Bank</h1>
+    <h1 class="serif" style="color:var(--crimson);">Algebra Questionbank</h1>
     <p>${QUESTIONS.length} original CLC-written questions covering every official Algebra skill, with real rendered graphs, systems, and inequality regions wherever a figure genuinely helps &mdash; not just described in words.</p>
     <ul id="intro-list">${li}</ul>
     <p style="font-size:13px;color:#8a8072;">Standard time: 120 minutes total. Calculator (Desmos, opens in a new tab) available throughout.</p>
