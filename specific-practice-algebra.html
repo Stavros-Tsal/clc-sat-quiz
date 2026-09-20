@@ -382,9 +382,23 @@ function parseNumericAnswer(s) {
   return NaN;
 }
 
-function answersMatch(given, correct) {
+// Number of decimal digits the student typed (Infinity for a fraction such as 8/3).
+function decimalsIn(s) {
+  s = String(s).trim().replace(/\$/g, '').replace(/,/g, '').replace(/\s+/g, '');
+  if (s.indexOf('/') !== -1) return Infinity;
+  const m = s.match(/\.(\d+)$/);
+  return m ? m[1].length : 0;
+}
+
+// Strict grading (SAT-style):
+//  - any exactly equivalent value is accepted (fraction, decimal, leading-dot, trailing zeros);
+//  - if the key is a fraction with a non-terminating decimal, a decimal is accepted only when it has
+//    at least 3 decimal places AND equals the correctly rounded or truncated value;
+//  - if the question asks for rounding (roundedKey), a MORE precise answer that rounds to the key is accepted;
+//  - nothing else is accepted (no +/- 0.01 tolerance).
+function answersMatch(given, correct, roundedKey) {
   if (correct.indexOf('|') !== -1) {
-    return correct.split('|').some(part => answersMatch(given, part.trim()));
+    return correct.split('|').some(part => answersMatch(given, part.trim(), roundedKey));
   }
   if (correct.indexOf('RANGE:') === 0) {
     const bounds = correct.split(':');
@@ -397,14 +411,21 @@ function answersMatch(given, correct) {
     return false;
   }
   if (normalize(given) === normalize(correct)) return true;
-  const numGiven = parseNumericAnswer(given);
-  const numCorrect = parseNumericAnswer(correct);
-  if (!isNaN(numGiven) && !isNaN(numCorrect)) {
-    if (Math.abs(numGiven - numCorrect) < 1e-4 * Math.max(1, Math.abs(numCorrect))) return true;
-    // Generous fallback: accept decimal approximations of equivalent fractions
-    // (e.g. correct "3/7" vs student-entered "0.43"), matching how the SAT itself
-    // grades rounded decimal equivalents of non-terminating fractions.
-    return Math.abs(numGiven - numCorrect) < 0.01 + 1e-9;
+  const g = parseNumericAnswer(given);
+  const v = parseNumericAnswer(correct);
+  if (isNaN(g) || isNaN(v)) return false;
+  if (Math.abs(g - v) <= 1e-9 * Math.max(1, Math.abs(v))) return true;
+  const kg = decimalsIn(given);
+  if (correct.indexOf('/') !== -1) {
+    if (kg === Infinity || kg < 3 || kg > 12) return false;
+    const f = Math.pow(10, kg);
+    const rounded = Number(v.toFixed(kg));
+    const truncated = Math.trunc(v * f + (v > 0 ? 1e-9 : -1e-9)) / f;
+    return Math.abs(g - rounded) < 1e-12 || Math.abs(g - truncated) < 1e-12;
+  }
+  if (roundedKey) {
+    const d = decimalsIn(correct);
+    if (kg > d && Math.abs(g - v) < 0.5 * Math.pow(10, -d) - 1e-9) return true;
   }
   return false;
 }
@@ -413,7 +434,7 @@ function isCorrect(q) {
   const a = state.answers[q.id];
   if (a === undefined || a === null || a === '') return false;
   if (q.type === 'mc') return a === q.correct;
-  return answersMatch(String(a), String(q.correct));
+  return answersMatch(String(a), String(q.correct), /round|nearest|decimal place|tenth|hundredth|thousandth/i.test(q.stem || ''));
 }
 
 function renderPalette() {
