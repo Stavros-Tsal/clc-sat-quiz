@@ -424,7 +424,7 @@ function isCorrect(q) {
   const a = state.answers[q.id];
   if (a === undefined || a === null || a === '') return false;
   if (q.type === 'mc') return a === q.correct;
-  return answersMatch(String(a), String(q.correct), /round|nearest|decimal place|tenth|hundredth|thousandth/i.test(q.stem || ''));
+  return answersMatch(String(a), String(q.correct), /\bround(?:ed|ing)?\b|nearest|decimal place|tenth|hundredth|thousandth/i.test(q.stem || ''));
 }
 
 function renderPalette() {
