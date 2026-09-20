@@ -51,7 +51,7 @@ function render(){const m=document.getElementById('m');m.innerHTML='';
  Q.forEach((q,i)=>{const s=SEC.find(x=>x[0]===i);if(s){const h=document.createElement('div');h.className='sec';h.textContent=s[1];m.appendChild(h)}
   const d=document.createElement('div');d.className='q'+(checked?(ok(q,given[i])?' right':' wrong'):'');
   let h='<div class="n">Question '+(i+1)+'</div><div class="txt">'+q.q+'</div>';
-  if(q.open){h+='<div class="open"><input type="text" inputmode="decimal" autocomplete="off" data-i="'+i+'" value="'+(given[i]||'')+'" '+(checked?'disabled':'')+' aria-label="Answer to question '+(i+1)+'"><small>Student-produced response. Fractions and decimals are accepted.</small></div>'}
+  if(q.open){h+='<div class="open"><input type="text" inputmode="text" autocomplete="off" data-i="'+i+'" value="'+(given[i]||'')+'" '+(checked?'disabled':'')+' aria-label="Answer to question '+(i+1)+'"><small>Student-produced response. Fractions and decimals are accepted.</small></div>'}
   else{q.opts.forEach((o,k)=>{const L='ABCD'[k];const cls='opt'+(given[i]===L?' sel':'')+(checked&&q.ans===L?' key':'');
    h+='<label class="'+cls+'"><input type="radio" name="q'+i+'" data-i="'+i+'" value="'+L+'" '+(given[i]===L?'checked':'')+' '+(checked?'disabled':'')+'><b>'+L+'</b><span>'+o+'</span></label>'})}
   if(checked){const r=ok(q,given[i]);h+='<div class="fb '+(r?'r':'w')+'">'+(r?'Correct.':'Incorrect.')+' Answer: '+(q.open?q.ans:q.ans)+'</div>'}
