@@ -1281,11 +1281,10 @@ checkAuth();
   <h2 class="subject-title">Fast Track</h2>
   <p class="subject-sub">Choose a module</p>
   <div class="mode-cards">
-    <div class="mode-card disabled" id="fast-track-module-1">
+    <div class="mode-card" id="fast-track-module-1" onclick="goScreen('screen-fast-track-module1')">
       <div class="icon">1️⃣</div>
       <div class="label">Module 1</div>
       <div class="desc">Practice sets</div>
-      <span class="coming-soon">Coming Soon</span>
     </div>
     <div class="mode-card disabled" id="fast-track-module-2">
       <div class="icon">2️⃣</div>
@@ -1295,6 +1294,55 @@ checkAuth();
     </div>
   </div>
   <button class="nav-back-btn" onclick="goScreen('screen-mode')">← Back</button>
+</div>
+
+<!-- ══ SCREEN: FAST TRACK · MODULE 1 ══ -->
+<div id="screen-fast-track-module1" class="screen">
+  <h2 class="subject-title">Module 1</h2>
+  <p class="subject-sub">Fast Track</p>
+  <div class="mode-cards">
+    <a class="mode-card" href="module1_part1.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+      <div class="icon">📄</div>
+      <div class="label">Part 1</div>
+    </a>
+    <a class="mode-card" href="module1_part2.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+      <div class="icon">📄</div>
+      <div class="label">Part 2</div>
+    </a>
+    <a class="mode-card" href="module1_part3.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+      <div class="icon">📄</div>
+      <div class="label">Part 3</div>
+    </a>
+    <a class="mode-card" href="module1_part4.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+      <div class="icon">📄</div>
+      <div class="label">Part 4</div>
+    </a>
+    <a class="mode-card" href="module1_part5.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+      <div class="icon">📄</div>
+      <div class="label">Part 5</div>
+    </a>
+    <a class="mode-card" href="module1_part6.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+      <div class="icon">📄</div>
+      <div class="label">Part 6</div>
+    </a>
+    <a class="mode-card" href="module1_part7.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+      <div class="icon">📄</div>
+      <div class="label">Part 7</div>
+    </a>
+    <a class="mode-card" href="module1_part8.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+      <div class="icon">📄</div>
+      <div class="label">Part 8</div>
+    </a>
+    <a class="mode-card" href="module1_part9.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+      <div class="icon">📄</div>
+      <div class="label">Part 9</div>
+    </a>
+    <a class="mode-card" href="module1_part10.html" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+      <div class="icon">📄</div>
+      <div class="label">Part 10</div>
+    </a>
+  </div>
+  <button class="nav-back-btn" onclick="goScreen('screen-fast-track')">← Back</button>
 </div>
 
 <!-- ══ SCREEN: CLC QUESTIONBANK ══ -->

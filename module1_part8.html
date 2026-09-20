@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Module 1 · Part 8</title>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']],processEscapes:true}};</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.js"></script>
+<style>
+:root{--ink:#14213d;--blue:#1d4ed8;--navy:#0f2a5c;--pale:#eef3fb;--line:#c9d6ec;--ok:#0f7b45;--bad:#b42318}
+*{box-sizing:border-box}
+body{margin:0;background:var(--pale);color:var(--ink);font:17px/1.6 Georgia,'Times New Roman',serif}
+header{background:var(--navy);color:#fff;padding:22px 20px 18px}
+header .in{max-width:820px;margin:auto}
+header .who{font:600 15px/1.2 system-ui,sans-serif;opacity:.85;margin-bottom:8px}
+header h1{margin:0;font-size:28px;font-weight:700}
+header p{margin:6px 0 0;font:14px system-ui,sans-serif;opacity:.8}
+main{max-width:820px;margin:0 auto;padding:22px 16px 90px}
+.sec{font:600 15px system-ui,sans-serif;color:var(--navy);margin:30px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--line)}
+.q{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:0 0 14px}
+.q.right{border-left:6px solid var(--ok)}.q.wrong{border-left:6px solid var(--bad)}
+.n{font:700 14px system-ui,sans-serif;color:var(--blue);margin-bottom:4px}
+.txt{margin:0 0 10px}
+.opt{display:flex;gap:10px;align-items:baseline;padding:7px 10px;margin:4px 0;border:1px solid var(--line);border-radius:8px;cursor:pointer}
+.opt:hover{background:var(--pale)}
+.opt input{margin:0}.opt b{font:700 14px system-ui,sans-serif;color:var(--navy);width:16px}
+.opt.sel{border-color:var(--blue);background:#e6eeff}
+.opt.key{border-color:var(--ok);background:#e5f6ec}
+.open input[type=text]{font:16px system-ui,sans-serif;padding:8px 10px;border:1px solid var(--line);border-radius:8px;width:220px}
+.open small{display:block;color:#5b6b8c;font:13px system-ui,sans-serif;margin-top:4px}
+.fb{font:14px system-ui,sans-serif;margin-top:8px}.fb.r{color:var(--ok)}.fb.w{color:var(--bad)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 16px;display:flex;gap:12px;justify-content:center;align-items:center;font:15px system-ui,sans-serif}
+button{font:600 15px system-ui,sans-serif;background:var(--blue);color:#fff;border:0;border-radius:8px;padding:10px 18px;cursor:pointer}
+button.alt{background:#fff;color:var(--blue);border:1px solid var(--blue)}
+button:focus-visible,input:focus-visible{outline:3px solid #93b4ff;outline-offset:2px}
+#score{font-weight:700;color:var(--navy)}
+table{border-collapse:collapse;margin:10px 0}th,td{border:1px solid var(--line);padding:5px 14px;text-align:center}
+@media print{.bar{display:none}}
+</style></head><body>
+<header><div class="in"><div class="who">Tsalapatis Stavros</div><h1>Module 1 · Part 8</h1>
+<p>SAT Math · Module 1 practice · 22 questions · 35 minutes · calculator allowed</p></div></header>
+<main id="m"></main>
+<div class="bar"><span id="prog">0 / 22 answered</span><button id="chk">Check answers</button><button class="alt" id="rst">Reset</button><span id="score"></span></div>
+<script>
+const Q=[{"q": "If $8x + 3 = 59$, what is the value of $16x + 6$?", "open": true, "ans": "118"}, {"q": "The solution to the system 4x − y = 11 and ax + 3y = −3 has x = 2. What is the value of a?", "ans": "3", "open": true}, {"q": "On average, a tree grows 51 cm every $m$ months. Which expression gives the cm it grows every $k$ years?", "ans": "D", "opts": ["$\\dfrac{17m}{4k}$", "$\\dfrac{17k}{4m}$", "$\\dfrac{612m}{k}$", "$\\dfrac{612k}{m}$"]}, {"q": "$$1x + 2y = 11$$ $$3x - 1y = 19$$ What is the value of $x + y$ for the solution $(x, y)$ to the given system of equations?", "open": true, "ans": "9"}, {"q": "The function $F(x) = \\dfrac{9}{5}(x - 273.15) + 32$ converts kelvins to °F. If temp increases by 8.80 kelvins, by how much does it increase in °F?", "ans": "A", "opts": ["15.84", "47.84", "475.83", "507.83"]}, {"q": "A machine makes 9-in, 8-in, and 3-in parts. 9-in parts = $4n$ (four times the 8-in count $n$), 3-in parts = 15. Total = 100 parts. Which equation is correct?", "ans": "D", "opts": ["$9(4n) + 8n + 3(15) = 100$", "$9n + 8n + 3n = 100$", "$4n + 15 = 100$", "$5n + 15 = 100$"]}, {"q": "Andrea is considering accepting one of two sales positions. Company A offers a yearly salary of \\$39{,}000. Company B offers a yearly salary of \\$25{,}000 plus a 4% annual commission on sales. Which of the following statements about the amount of sales is true?", "ans": "B", "opts": ["Company B's salary is less than company A's salary when the amount of sales is over \\$350{,}000.", "Company B's salary is greater than company A's salary when the amount of sales is over \\$350{,}000.", "Company B's salary is less than company A's salary when the amount of sales is over \\$250{,}000.", "Company B's salary is greater than company A's salary when the amount of sales is over \\$250{,}000."]}, {"q": "During a trip, a delivery van traveled a total of 527 miles on local roads and expressways and used a total of 16 gallons of gas. The van traveled an average of 31 miles per gallon of gas on local roads and $34\\dfrac{2}{3}$ miles per gallon of gas on expressways. Which system of equations represents this situation, where $l$ is the number of miles the van traveled on local roads and $e$ is the number of miles the van traveled on expressways?", "ans": "C", "opts": ["$l + e = 16$<br>$\\dfrac{l}{31} + \\dfrac{3e}{104} = 527$", "$l + e = 527$<br>$31l + \\dfrac{104}{3}e = 16$", "$l + e = 527$<br>$\\dfrac{l}{31} + \\dfrac{3e}{104} = 16$", "$l + e = 527$<br>$\\dfrac{31}{l} + \\dfrac{104}{3e} = 16$"]}, {"q": "Solve for this problem: $\\sqrt{50} + \\sqrt{8} = ?$", "ans": "D", "opts": ["$\\sqrt{58}$", "$\\sqrt{78}$", "$\\sqrt{88}$", "$\\sqrt{98}$"]}, {"q": "What are all possible values of $m$ for which the expression $\\dfrac{3x^2-27}{m^2-16}$ is undefined?", "ans": "D", "opts": ["3 only", "4 only", "3 and $-3$", "4 and $-4$"]}, {"q": "If $(px+5)(qx+3) = 8x^2 + rx + 15$ for all values of $x$, and $p + q = 6$, what are two possible values for $r$?", "ans": "C", "opts": ["2 and 4", "7 and 12", "22 and 26", "29 and 39"]}, {"q": "For what POSITIVE value of k does the equation x² + kx + 16 = 0 have exactly one real solution (a repeated root)?", "ans": "8", "open": true}, {"q": "Which of the following translations of the graph of $f(x)=-x^2$ would result in the graph of $g(x)=-x^2+2x+k$, where $k$ is a real number such that $k>0$?", "ans": "A", "opts": ["1 unit to the right and $k+1$ units up", "1 unit to the right and $k+1$ units down", "2 units to the left and $k-1$ units up", "2 units to the left and $k-1$ units down"]}, {"q": "The function $f(x)=x^3+1$ is graphed in the $xy$-plane. If the function $g$ is defined by $g(x)=x+k$, where $k$ is a constant, and $f(x)=g(x)$ has 3 solutions, which of the following could be the value of $k$?", "ans": "C", "opts": ["$-1$", "$0$", "$1$", "$2$"]}, {"q": "The expression 6x&#8308; + 31x&sup2; + 35 can be rewritten as (3x&sup2; + a)(2x&sup2; + b), where <i>a</i> and <i>b</i> are positive integers, or as (3x&sup2; + c)(2x&sup2; + d), where <i>c</i> and <i>d</i> are positive non-integers. What is the value of a + c?", "ans": "15.5", "open": true}, {"q": "y = 7,400(0.87)^x<br>The given equation estimates the value, in dollars, of a certain piece of equipment <i>x</i> years after it was purchased. According to the given equation, what was the estimated value, in dollars, of the piece of equipment at the time it was purchased?", "ans": "C", "opts": ["740", "6,438", "7,400", "8,700"]}, {"q": "Students who attended an optional driving test review session scored higher on average. Best conclusion?", "ans": "D", "opts": ["Session caused better scores", "Session helps anyone", "Extra sessions help in any class", "Cannot conclude cause and effect"]}, {"q": "A boxing club membership costs \\$85 per month. After 1 year, members receive a discount of \\$30 off the cost of their monthly membership. Which function gives the total cost $c(t)$, in dollars, that a new member pays after $t$ months of membership, where $t \\geq 12$?", "ans": "C", "opts": ["$c(t) = 1{,}020+55t$", "$c(t) = 55t+85$", "$c(t) = 360+55t$", "$c(t) = 1{,}020+85(t-12)$"]}, {"q": "Stand sells $x$ tomatoes, $y$ cucumbers, $z$ onions. $P(\\text{not cucumber})$ = ?", "ans": "C", "opts": ["$\\dfrac{z+x}{y}$", "$\\dfrac{z+x-y}{z+x+y}$", "$1 - \\dfrac{y}{z+x+y}$", "$1 - \\dfrac{y}{z+x}$"]}, {"q": "An isosceles right triangle has a hypotenuse of length $10\\sqrt{2}$. What is the length of one of its legs?", "open": true, "ans": "10"}, {"q": "The endpoints of a line segment in the $xy$-plane are $(-3, 9)$ and $(7, -1)$. What is the sum of the $x$- and $y$-coordinates of the midpoint of the segment?", "opts": ["6", "8", "10", "12"], "ans": "A"}, {"q": "$$x^2 + y^2 + 10x - 4y - 20 = 0$$ The given equation defines a circle in the $xy$-plane with center $(h, k)$. What is the value of $h + k$?", "opts": ["-7", "-3", "3", "5"], "ans": "B"}];
+const SEC=[[0,'Algebra'],[8,'Advanced Math'],[16,'Problem-Solving and Data Analysis'],[19,'Geometry and Trigonometry']];
+const given={};let checked=false;
+function num(s){s=String(s).trim().replace(/\u2212/g,'-').replace(/,/g,'');
+ let m=s.match(/^(-?\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)$/);if(m)return parseFloat(m[1])/parseFloat(m[2]);
+ m=s.match(/^-?(\d+)?\.?\d+$/);return m?parseFloat(s):NaN}
+function ok(q,g){if(g===undefined||g==='')return false;if(q.open){const a=num(q.ans),b=num(g);return !isNaN(b)&&Math.abs(a-b)<1e-4*Math.max(1,Math.abs(a))}return g===q.ans}
+function render(){const m=document.getElementById('m');m.innerHTML='';
+ Q.forEach((q,i)=>{const s=SEC.find(x=>x[0]===i);if(s){const h=document.createElement('div');h.className='sec';h.textContent=s[1];m.appendChild(h)}
+  const d=document.createElement('div');d.className='q'+(checked?(ok(q,given[i])?' right':' wrong'):'');
+  let h='<div class="n">Question '+(i+1)+'</div><div class="txt">'+q.q+'</div>';
+  if(q.open){h+='<div class="open"><input type="text" inputmode="decimal" autocomplete="off" data-i="'+i+'" value="'+(given[i]||'')+'" '+(checked?'disabled':'')+' aria-label="Answer to question '+(i+1)+'"><small>Student-produced response. Fractions and decimals are accepted.</small></div>'}
+  else{q.opts.forEach((o,k)=>{const L='ABCD'[k];const cls='opt'+(given[i]===L?' sel':'')+(checked&&q.ans===L?' key':'');
+   h+='<label class="'+cls+'"><input type="radio" name="q'+i+'" data-i="'+i+'" value="'+L+'" '+(given[i]===L?'checked':'')+' '+(checked?'disabled':'')+'><b>'+L+'</b><span>'+o+'</span></label>'})}
+  if(checked){const r=ok(q,given[i]);h+='<div class="fb '+(r?'r':'w')+'">'+(r?'Correct.':'Incorrect.')+' Answer: '+(q.open?q.ans:q.ans)+'</div>'}
+  d.innerHTML=h;m.appendChild(d)});
+ bind();typeset();prog()}
+function bind(){document.querySelectorAll('input[type=radio]').forEach(e=>e.onchange=()=>{given[e.dataset.i]=e.value;render()});
+ document.querySelectorAll('input[type=text]').forEach(e=>e.oninput=()=>{given[e.dataset.i]=e.value;prog()})}
+function prog(){const n=Object.values(given).filter(v=>v!==''&&v!==undefined).length;document.getElementById('prog').textContent=n+' / 22 answered'}
+function typeset(){if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise().catch(()=>{})}
+document.getElementById('chk').onclick=()=>{checked=true;const c=Q.filter((q,i)=>ok(q,given[i])).length;document.getElementById('score').textContent='Score: '+c+' / 22';render();window.scrollTo(0,0)};
+document.getElementById('rst').onclick=()=>{for(const k in given)delete given[k];checked=false;document.getElementById('score').textContent='';render();window.scrollTo(0,0)};
+render();window.addEventListener('load',()=>setTimeout(typeset,600));
+</script></body></html>
