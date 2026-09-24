@@ -23,14 +23,7 @@
   h1, h2, h3, .serif { font-family: 'Playfair Display', Georgia, serif; }
   .topbar { background: linear-gradient(135deg, var(--crimson), #7a0022); color: #fff; padding: 14px 24px;
     display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
-  .brand { display: flex; align-items: center; gap: 12px; }
-  .crest { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--gold); display: flex;
-    align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 700;
-    font-size: 18px; color: var(--gold); background: rgba(0,0,0,.15); }
   .brand-text .name { font-family: 'Playfair Display', serif; font-size: 20px; letter-spacing: .5px; }
-  .brand-text .sub { font-size: 11px; opacity: .85; letter-spacing: 1px; text-transform: uppercase; }
-  .confbanner { background: var(--ink); color: var(--gold); text-align: center; font-size: 11px; letter-spacing: 1.5px;
-    padding: 5px; text-transform: uppercase; }
   .toolbar { display: flex; gap: 10px; align-items: center; padding: 8px 24px; background: #fff;
     border-bottom: 1px solid #e2dcd0; position: sticky; top: 0; z-index: 50; flex-wrap: wrap; }
   button { font-family: 'Inter', Arial, sans-serif; cursor: pointer; border: none; border-radius: 6px; padding: 8px 14px;
@@ -145,68 +138,61 @@
   .review-choice.wrongpick { background: #fbe4e2; border-color: var(--red); }
   .scorebig { font-family: 'Playfair Display', serif; font-size: 52px; color: var(--crimson); margin: 10px 0; }
   .skillrow { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #ddd4c0; font-size: 14px; }
-  footer.conf { text-align: center; padding: 22px; font-size: 11px; color: #8a8072; letter-spacing: 1px; text-transform: uppercase; }
-  #printHeader { display: none; }
   @media print {
-    .toolbar, #calc-toast, #palette, .noprint { display: none !important; }
+    .toolbar, #calc-toast, #palette, footer.conf .noprint { display: none !important; }
     .navwrap { display: block; }
     * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .flagged-block { border-left-width: 4px !important; }
-    #printHeader {
-      display: block;
-      position: fixed;
-      top: 10px;
-      right: 20px;
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--crimson, #8c1d1d);
-      font-family: inherit;
-      z-index: 999;
-    }
   }
   #intro-list { text-align: left; margin: 20px auto; max-width: 480px; }
   #intro-list li { margin-bottom: 6px; }
+  .mode-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 16px; margin: 28px 0; }
+  .mode-card-btn { background: #fff; border: 1.5px solid #e2dcd0; border-radius: 12px; padding: 20px 18px; cursor: pointer;
+    text-align: left; font-family: inherit; transition: .15s; }
+  .mode-card-btn:hover { border-color: var(--gold); box-shadow: 0 3px 10px rgba(0,0,0,.06); transform: translateY(-1px); }
+  .mode-card-btn .mc-icon { font-size: 26px; margin-bottom: 8px; }
+  .mode-card-btn .mc-title { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--crimson); font-weight: 700; margin-bottom: 4px; }
+  .mode-card-btn .mc-desc { font-size: 12.5px; color: #6b6459; line-height: 1.5; }
+  .skill-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 12px; margin: 24px 0; text-align: left; }
+  .skill-pick-btn { background: #fff; border: 1.5px solid #e2dcd0; border-radius: 10px; padding: 14px 16px; cursor: pointer;
+    font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink); text-align: left; }
+  .skill-pick-btn:hover { border-color: var(--gold); background: #fdfaf3; }
+  .diff-check-row { display: flex; flex-direction: column; gap: 10px; max-width: 340px; margin: 22px auto; text-align: left; }
+  .diff-check-label { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1.5px solid #ddd4c0; border-radius: 8px; cursor: pointer; font-size: 14px; }
+  .diff-check-label:hover { border-color: var(--gold); }
+  .diff-check-label input { width: 16px; height: 16px; }
+  .diff-check-label.checked { border-color: var(--crimson); background: #fbeeee; }
+  .time-hint { font-size: 13px; color: var(--gold); font-weight: 700; margin-top: 4px; }
 </style>
 </head>
 <body>
 
-<div class="confbanner">Reserved for CLC Students Only · Not for Distribution</div>
 <div class="topbar">
-  <div class="brand">
-    <div class="crest">C</div>
-    <div class="brand-text">
-      <div class="name">CLC Educational Institute</div>
-      <div class="sub">Digital SAT Math · College Board Related Questionbank</div>
-    </div>
-  </div>
-  <div class="brand-text" style="text-align:right;">
+  <div class="brand-text">
     <div class="name" style="font-size:16px;">Algebra</div>
-    <div class="sub">300 Original Questions · 5 Skills</div>
   </div>
 </div>
 
 <div class="toolbar" id="toolbar" style="display:none;">
   <button class="btn-ghost" onclick="openCalc()">Open Desmos Calculator ↗</button>
   <button class="btn-ghost" id="flagBtn" onclick="toggleFlag()">Flag for Review</button>
-  <div id="timer" onclick="if(state.timerHidden) toggleTimerVisibility()">80:00</div>
-  <button class="btn-ghost" id="hideTimerBtn" onclick="toggleTimerVisibility()">Hide Timer</button>
-  <button class="btn-primary" onclick="showReview(true)">End &amp; Review</button>
+  <span id="rapidBadge" style="display:none;font-weight:700;color:#5a2e94;background:#f3eafd;border:1px solid #ddc9f3;border-radius:20px;padding:5px 12px;font-size:12.5px;margin-left:auto;">⚡ Rapid Fire &mdash; no time limit</span>
+  <div id="timerWrap" style="display:flex;align-items:center;gap:8px;margin-left:auto;">
+    <div id="timer" style="margin-left:0;" onclick="if(state.timerHidden) toggleTimerVisibility()">80:00</div>
+    <button class="btn-ghost" id="hideTimerBtn" onclick="toggleTimerVisibility()">Hide Timer</button>
+  </div>
+  <button class="btn-primary" id="endReviewBtn" onclick="showReview(true)">End &amp; Review</button>
 </div>
 
 <div id="app"><div class="screen-center">
     <h1 class="serif" style="color:var(--crimson);">Algebra Questionbank</h1>
-    <p>300 original CLC-written questions covering every official Algebra skill, with real rendered graphs, systems, and inequality regions wherever a figure genuinely helps — not just described in words.</p>
-    <ul id="intro-list"><li><strong>Linear Equations in One Variable</strong> — 60 original questions</li><li><strong>Linear Functions</strong> — 60 original questions</li><li><strong>Linear Equations in Two Variables</strong> — 60 original questions</li><li><strong>Systems of Two Linear Equations in Two Variables</strong> — 60 original questions</li><li><strong>Linear Inequalities in One or Two Variables</strong> — 60 original questions</li></ul>
-    <p style="font-size:13px;color:#8a8072;">Standard time: 120 minutes total. Calculator (Desmos, opens in a new tab) available throughout.</p>
-    <button class="btn-primary" style="padding:12px 28px;font-size:15px;" onclick="beginTest()">Begin Practice Set</button>
+    <p>Loading…</p>
   </div></div>
 
 <div id="calc-toast">
   <div class="ct-title">Desmos opened in a new tab</div>
   <div>Keep both windows open and switch between them — some browsers block Desmos from being embedded directly on this page, so it opens separately instead.</div>
 </div>
-
-<footer class="conf noprint">CLC Educational Institute · Chalandri, Athens · Internal Practice Material · Reserved for CLC Students Only</footer>
 
 <script src="progress.js"></script>
 <script>
@@ -219,8 +205,6 @@ SKILLS.forEach(([skey]) => {
     QUESTIONS.forEach((q, i) => { if (q.skill === skey && q.difficulty === diff) ORDERED_QUESTIONS.push(i); });
   });
 });
-const NAV_POS = {};
-ORDERED_QUESTIONS.forEach((qi, pos) => { NAV_POS[qi] = pos; });
 const SKILL_NUM = {};
 SKILLS.forEach(([skey]) => {
   ['Easy','Medium','Hard'].forEach(diff => {
@@ -230,14 +214,17 @@ SKILLS.forEach(([skey]) => {
 });
 window.QUESTIONS = QUESTIONS; window.SKILLS = SKILLS; window.SKILL_LABEL = SKILL_LABEL;
 
-let state = { screen: 'intro', current: ORDERED_QUESTIONS[0], answers: {}, flagged: {}, timeLeft: 120*60, timerId: null, studentName: '',
-  openSkill: QUESTIONS[0].skill, openDifficulty: null, timerHidden: false, checked: {}, reportGroup: null };
+let state = { screen: 'intro', mode: null, selectedSkill: null, selectedDiffs: [],
+  sessionOrder: [], current: null, answers: {}, flagged: {}, timeLeft: 0, timerId: null, timedMode: true,
+  openSkill: null, openDifficulty: null, timerHidden: false, checked: {}, reportGroup: null };
 
 function fmtTime(s) { const m = Math.floor(s/60), sec = s%60; return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0'); }
 
 function startTimer() {
+  if (!state.timedMode) return;
   const timerEl = document.getElementById('timer');
   timerEl.textContent = fmtTime(state.timeLeft);
+  timerEl.style.color = 'var(--crimson)';
   if (state.timerHidden) timerEl.classList.add('hidden-timer');
   state.timerId = setInterval(() => {
     state.timeLeft--;
@@ -278,12 +265,20 @@ function checkAnswer() {
   state.checked[q.id] = true;
   render();
 }
+function revealAnswer() {
+  const q = QUESTIONS[state.current];
+  state.checked[q.id] = true;
+  state.revealed = state.revealed || {};
+  state.revealed[q.id] = true;
+  render();
+}
+function sessionPos(idx) { return state.sessionOrder.indexOf(idx); }
 function setCurrent(idx) {
   state.current = idx;
 }
 function goTo(idx) { setCurrent(idx); render(); }
-function nextQ() { const pos = NAV_POS[state.current]; if (pos < ORDERED_QUESTIONS.length-1) { setCurrent(ORDERED_QUESTIONS[pos+1]); render(); } }
-function prevQ() { const pos = NAV_POS[state.current]; if (pos > 0) { setCurrent(ORDERED_QUESTIONS[pos-1]); render(); } }
+function nextQ() { const pos = sessionPos(state.current); if (pos < state.sessionOrder.length-1) { setCurrent(state.sessionOrder[pos+1]); render(); } else { showReview(true); } }
+function prevQ() { const pos = sessionPos(state.current); if (pos > 0) { setCurrent(state.sessionOrder[pos-1]); render(); } }
 function toggleSkillPanel(skey) {
   if (state.openSkill === skey) { state.openSkill = null; state.openDifficulty = null; }
   else { state.openSkill = skey; state.openDifficulty = null; }
@@ -301,16 +296,94 @@ function formatEstTime(n) {
   return `~${m} min`;
 }
 
-function beginTest() {
+// ══ Mode selection & session setup ══
+
+function backToIntro() {
+  if (state.timerId) clearInterval(state.timerId);
+  state.screen = 'intro';
+  state.mode = null;
+  state.selectedSkill = null;
+  state.selectedDiffs = [];
+  document.getElementById('toolbar').style.display = 'none';
+  render();
+}
+
+function selectMode(mode) {
+  state.mode = mode;
+  if (mode === 'chapter') {
+    startChapterReview();
+  } else if (mode === 'skill') {
+    state.screen = 'skillpick';
+    render();
+  } else if (mode === 'rapid') {
+    startRapidFire();
+  }
+}
+
+function startChapterReview() {
+  window.alert('Whole Chapter Review: you have 3 hours (180 minutes) to complete all ' + QUESTIONS.length + ' questions in Algebra. The timer starts now — good luck!');
+  startSession(ORDERED_QUESTIONS.slice(), 180 * 60, true);
+}
+
+function pickSkill(skey) {
+  state.selectedSkill = skey;
+  state.selectedDiffs = [];
+  state.screen = 'diffpick';
+  render();
+}
+
+function toggleDiffChoice(diff) {
+  const i = state.selectedDiffs.indexOf(diff);
+  if (i === -1) state.selectedDiffs.push(diff); else state.selectedDiffs.splice(i, 1);
+  render();
+}
+
+function buildSkillOrder(skey, diffs) {
+  const order = [];
+  ['Easy','Medium','Hard'].forEach(d => {
+    if (diffs.indexOf(d) === -1) return;
+    QUESTIONS.forEach((q, i) => { if (q.skill === skey && q.difficulty === d) order.push(i); });
+  });
+  return order;
+}
+
+function startSkillReview() {
+  if (state.selectedDiffs.length === 0) return;
+  const order = buildSkillOrder(state.selectedSkill, state.selectedDiffs);
+  const minutes = state.selectedDiffs.length <= 1 ? 35 : 75;
+  window.alert('Skill Review \u2014 ' + SKILL_LABEL[state.selectedSkill] + ' (' + state.selectedDiffs.join(', ') + '): you have ' + minutes + ' minutes for ' + order.length + ' questions. The timer starts now \u2014 good luck!');
+  startSession(order, minutes * 60, true);
+}
+
+function startRapidFire() {
+  startSession(ORDERED_QUESTIONS.slice(), 0, false);
+}
+
+function startSession(order, seconds, timed) {
+  state.sessionOrder = order;
+  state.current = order[0];
+  state.answers = {};
+  state.flagged = {};
+  state.checked = {};
+  state.revealed = {};
+  state.timeLeft = seconds;
+  state.timedMode = timed;
+  state.openSkill = QUESTIONS[order[0]].skill;
+  state.openDifficulty = null;
+  state.reportGroup = null;
   state.screen = 'test';
   document.getElementById('toolbar').style.display = 'flex';
-  startTimer();
+  document.getElementById('endReviewBtn').style.display = (state.mode === 'skill') ? 'none' : '';
+  document.getElementById('timerWrap').style.display = timed ? 'flex' : 'none';
+  document.getElementById('rapidBadge').style.display = timed ? 'none' : '';
+  if (state.timerId) clearInterval(state.timerId);
+  if (timed) startTimer();
   render();
 }
 
 function showReview(fromTest) {
   if (state.timerId) clearInterval(state.timerId);
-  state.reportGroup = null;
+  state.reportGroup = (state.mode === 'skill') ? state.selectedSkill : null;
   state.screen = 'review';
   document.getElementById('toolbar').style.display = 'none';
   render();
@@ -325,10 +398,14 @@ function showGroupReport(gkey) {
 }
 
 function closeGroupReport() {
-  state.reportGroup = null;
+  state.reportGroup = (state.mode === 'skill') ? state.selectedSkill : null;
   state.screen = 'test';
   document.getElementById('toolbar').style.display = 'flex';
-  startTimer();
+  document.getElementById('endReviewBtn').style.display = (state.mode === 'skill') ? 'none' : '';
+  document.getElementById('timerWrap').style.display = state.timedMode ? 'flex' : 'none';
+  document.getElementById('rapidBadge').style.display = state.timedMode ? 'none' : '';
+  if (state.timerId) clearInterval(state.timerId);
+  if (state.timedMode) startTimer();
   render();
 }
 
@@ -339,30 +416,30 @@ function resetSkill(skey) {
       delete state.answers[q.id];
       delete state.flagged[q.id];
       delete state.checked[q.id];
+      delete state.revealed[q.id];
     }
   });
-  const firstIdx = ORDERED_QUESTIONS.find(idx => QUESTIONS[idx].skill === skey);
-  state.current = firstIdx >= 0 ? firstIdx : 0;
-  state.reportGroup = null;
-  state.screen = 'test';
-  document.getElementById('toolbar').style.display = 'flex';
-  if (state.timerId) clearInterval(state.timerId);
-  startTimer();
-  render();
+  const firstIdx = state.sessionOrder.find(idx => QUESTIONS[idx].skill === skey);
+  state.current = firstIdx >= 0 ? firstIdx : state.sessionOrder[0];
+  closeGroupReport();
 }
 
 function resetAll() {
-  if (!window.confirm('Reset the ENTIRE practice set — all answers, flags, and progress? This cannot be undone.')) return;
+  if (!window.confirm('Reset this ENTIRE session \u2014 all answers, flags, and progress? This cannot be undone.')) return;
   state.answers = {};
   state.flagged = {};
   state.checked = {};
-  state.current = 0;
-  state.reportGroup = null;
-  state.timeLeft = 120 * 60;
+  state.revealed = {};
+  state.current = state.sessionOrder[0];
+  state.reportGroup = (state.mode === 'skill') ? state.selectedSkill : null;
+  state.timeLeft = state.mode === 'chapter' ? 180*60 : (state.mode === 'skill' ? (state.selectedDiffs.length<=1?35:75)*60 : 0);
   state.screen = 'test';
   document.getElementById('toolbar').style.display = 'flex';
+  document.getElementById('endReviewBtn').style.display = (state.mode === 'skill') ? 'none' : '';
+  document.getElementById('timerWrap').style.display = state.timedMode ? 'flex' : 'none';
+  document.getElementById('rapidBadge').style.display = state.timedMode ? 'none' : '';
   if (state.timerId) clearInterval(state.timerId);
-  startTimer();
+  if (state.timedMode) startTimer();
   render();
 }
 
@@ -438,10 +515,13 @@ function isCorrect(q) {
 }
 
 function renderPalette() {
+  const skillsToShow = state.mode === 'skill' ? SKILLS.filter(([k]) => k === state.selectedSkill) : SKILLS;
+  const allowedDiffs = state.mode === 'skill' ? state.selectedDiffs : ['Easy','Medium','Hard'];
+  const showReviewTab = state.mode === 'skill'; // "purple" per-skill review only in Skill Review mode
   let html = '<div id="palette">';
-  SKILLS.forEach(([skey, slabel]) => {
+  skillsToShow.forEach(([skey, slabel]) => {
     const skillEntries = [];
-    QUESTIONS.forEach((q, i) => { if (q.skill === skey) skillEntries.push([q, i]); });
+    QUESTIONS.forEach((q, i) => { if (q.skill === skey && state.sessionOrder.indexOf(i) !== -1) skillEntries.push([q, i]); });
     const answeredCount = skillEntries.filter(([q]) => state.answers[q.id]).length;
     const flaggedCount = skillEntries.filter(([q]) => state.flagged[q.id]).length;
     const isOpen = state.openSkill === skey;
@@ -454,7 +534,7 @@ function renderPalette() {
       <div class="palette-skill-collapse"><div class="palette-skill-inner">
         <div class="psh-submeta"><span>&#9201;&#65039; ${formatEstTime(skillEntries.length)}</span>${flaggedCount > 0 ? `<span class="psh-flag-badge">&#128278; ${flaggedCount}</span>` : ''}</div>
         <div class="diff-subgroups">`;
-    ['Easy', 'Medium', 'Hard'].forEach(diff => {
+    allowedDiffs.forEach(diff => {
       const diffEntries = skillEntries.filter(([q]) => q.difficulty === diff);
       if (diffEntries.length === 0) return;
       const diffAnswered = diffEntries.filter(([q]) => state.answers[q.id]).length;
@@ -476,12 +556,14 @@ function renderPalette() {
       });
       html += `</div></div></div></div>`;
     });
-    html += `<div class="diff-subgroup review-tab">
-      <button class="diff-subgroup-header" onclick="showGroupReport('${skey}')">
-        <span class="dsh-chevron">&#128196;</span>
-        <span class="dsh-title">Review</span>
-      </button>
-    </div>`;
+    if (showReviewTab) {
+      html += `<div class="diff-subgroup review-tab">
+        <button class="diff-subgroup-header" onclick="showGroupReport('${skey}')">
+          <span class="dsh-chevron">&#128196;</span>
+          <span class="dsh-title">Review</span>
+        </button>
+      </div>`;
+    }
     html += `</div>`;
     html += `</div></div></div>`;
   });
@@ -511,14 +593,20 @@ function renderQuestion() {
   const figureHtml = q.svg ? `<div class="figure">${q.svg}</div>` : '';
   const hasAnswer = state.answers[q.id] !== undefined && state.answers[q.id] !== null && state.answers[q.id] !== '';
   const isChecked = !!state.checked[q.id];
+  const isRevealed = !!(state.revealed && state.revealed[q.id]);
   let feedbackHtml = '';
-  if (isChecked && hasAnswer) {
+  if (isRevealed && !(isChecked && hasAnswer)) {
+    feedbackHtml = `<div class="check-feedback bad">Correct answer: ${q.correct}</div>
+       <div class="rt-box rt-fastest"><span class="rt-label">Fastest Way to Solve</span><ol>${q.fastest.map(s=>`<li>${s}</li>`).join('')}</ol></div>`;
+  } else if (isChecked && hasAnswer) {
     const correct = isCorrect(q);
     feedbackHtml = correct
       ? `<div class="check-feedback ok">&#10003; Correct!</div>`
       : `<div class="check-feedback bad">&#10007; Not quite &mdash; correct answer: ${q.correct}</div>
          <div class="rt-box rt-fastest"><span class="rt-label">Fastest Way to Solve</span><ol>${q.fastest.map(s=>`<li>${s}</li>`).join('')}</ol></div>`;
   }
+  const pos = sessionPos(state.current);
+  const revealBtn = state.mode === 'rapid' ? `<button class="btn-ghost" onclick="revealAnswer()">Show Answer</button>` : '';
   return `
   <div id="main">
     <div class="card">
@@ -530,43 +618,87 @@ function renderQuestion() {
       <div class="stem">${q.stem}</div>
       ${figureHtml}
       ${choicesHtml}
-      <div class="check-row"><button class="btn-ghost" onclick="checkAnswer()">Check Answer</button></div>
+      <div class="check-row"><button class="btn-ghost" onclick="checkAnswer()">Check Answer</button>${revealBtn}</div>
       ${feedbackHtml}
       <div class="navbtns">
-        <div><button class="btn-ghost" onclick="prevQ()" ${NAV_POS[state.current]===0?'disabled':''}>Back</button></div>
+        <div><button class="btn-ghost" onclick="prevQ()" ${pos===0?'disabled':''}>Back</button></div>
         <div><button class="flagbtn ${flagged?'on':''}" onclick="toggleFlag()">${flagged?'Flagged':'Flag for Review'}</button>
-        <button class="btn-primary" onclick="nextQ()">${NAV_POS[state.current]===ORDERED_QUESTIONS.length-1?'Finish':'Next'}</button></div>
+        <button class="btn-primary" onclick="nextQ()">${pos===state.sessionOrder.length-1?'Finish':'Next'}</button></div>
       </div>
     </div>
   </div>`;
 }
 
 function renderIntro() {
-  let li = SKILLS.map(([k,l]) => `<li><strong>${l}</strong> &mdash; ${QUESTIONS.filter(q => q.skill === k).length} original questions</li>`).join('');
-  return `<div class="screen-center">
+  return `<div class="screen-center" style="max-width:820px;">
     <h1 class="serif" style="color:var(--crimson);">Algebra Questionbank</h1>
-    <p>${QUESTIONS.length} original CLC-written questions covering every official Algebra skill, with real rendered graphs, systems, and inequality regions wherever a figure genuinely helps &mdash; not just described in words.</p>
-    <ul id="intro-list">${li}</ul>
-    <p style="font-size:13px;color:#8a8072;">Standard time: 120 minutes total. Calculator (Desmos, opens in a new tab) available throughout.</p>
-    <button class="btn-primary" style="padding:12px 28px;font-size:15px;" onclick="beginTest()">Begin Practice Set</button>
+    <div class="mode-grid">
+      <button class="mode-card-btn" onclick="selectMode('chapter')">
+        <div class="mc-icon">📘</div>
+        <div class="mc-title">Whole Chapter Review</div>
+      </button>
+      <button class="mode-card-btn" onclick="selectMode('skill')">
+        <div class="mc-icon">🎯</div>
+        <div class="mc-title">Skill Review</div>
+      </button>
+      <button class="mode-card-btn" onclick="selectMode('rapid')">
+        <div class="mc-icon">⚡</div>
+        <div class="mc-title">Rapid Fire Questions</div>
+      </button>
+    </div>
+  </div>`;
+}
+
+function renderSkillPick() {
+  let cards = SKILLS.map(([skey, slabel]) => {
+    return `<button class="skill-pick-btn" onclick="pickSkill('${skey}')"><strong>${slabel}</strong></button>`;
+  }).join('');
+  return `<div class="screen-center" style="max-width:780px;">
+    <h1 class="serif" style="color:var(--crimson);">Skill Review</h1>
+    <div class="skill-grid">${cards}</div>
+    <button class="nav-back-btn btn-ghost" style="padding:8px 18px;" onclick="backToIntro()">&larr; Back</button>
+  </div>`;
+}
+
+function renderDiffPick() {
+  const skey = state.selectedSkill;
+  const diffs = ['Easy','Medium','Hard'];
+  let rows = diffs.map(d => {
+    const n = QUESTIONS.filter(q => q.skill === skey && q.difficulty === d).length;
+    if (n === 0) return '';
+    const checked = state.selectedDiffs.indexOf(d) !== -1;
+    return `<label class="diff-check-label ${checked?'checked':''}">
+      <input type="checkbox" ${checked?'checked':''} onchange="toggleDiffChoice('${d}')"> ${d}
+    </label>`;
+  }).join('');
+  const n = state.selectedDiffs.length;
+  const timeText = n === 0 ? '' : (n === 1 ? 'You will get 35 minutes.' : 'You will get 75 minutes.');
+  return `<div class="screen-center" style="max-width:520px;">
+    <h1 class="serif" style="color:var(--crimson);">${SKILL_LABEL[skey]}</h1>
+    <div class="diff-check-row">${rows}</div>
+    <div class="time-hint">${timeText}</div>
+    <div style="margin-top:22px;display:flex;gap:10px;justify-content:center;">
+      <button class="btn-ghost" onclick="state.selectedSkill=null; state.selectedDiffs=[]; state.screen='skillpick'; render();">&larr; Back</button>
+      <button class="btn-primary" ${n===0?'disabled':''} onclick="startSkillReview()">Start Skill Review</button>
+    </div>
   </div>`;
 }
 
 function renderReview() {
   const reportMode = !!state.reportGroup;
   const reviewQuestions = reportMode
-    ? ORDERED_QUESTIONS.filter(idx => QUESTIONS[idx].skill === state.reportGroup).map(idx => QUESTIONS[idx])
-    : ORDERED_QUESTIONS.map(idx => QUESTIONS[idx]);
+    ? state.sessionOrder.filter(idx => QUESTIONS[idx].skill === state.reportGroup).map(idx => QUESTIONS[idx])
+    : state.sessionOrder.map(idx => QUESTIONS[idx]);
 
   let correctCount = 0;
   reviewQuestions.forEach(q => { if (isCorrect(q)) correctCount++; });
-  if (!reportMode && window.clcRecordSpecificAttempt && !window.__clcSpecificRecorded) {
+  if (!reportMode && state.mode === 'chapter' && window.clcRecordSpecificAttempt && !window.__clcSpecificRecorded) {
     window.__clcSpecificRecorded = true;
     clcRecordSpecificAttempt('Algebra', correctCount, QUESTIONS.length);
   }
 
   let skillRows = '';
-  if (!reportMode) {
+  if (!reportMode && state.mode === 'chapter') {
     SKILLS.forEach(([skey, slabel]) => {
       const qs = QUESTIONS.filter(q => q.skill === skey);
       const c = qs.filter(isCorrect).length;
@@ -616,21 +748,14 @@ function renderReview() {
 
   const groupLabel = reportMode ? SKILL_LABEL[state.reportGroup] : null;
   const titleText = reportMode ? `Section Report &mdash; ${groupLabel}` : 'Results';
-  const nameBlock = reportMode ? '' : `<div class="noprint" style="max-width:420px;margin:0 auto 10px;text-align:left;">
-      <label style="font-size:13px;color:#8a8072;display:block;margin-bottom:4px;">Student Name (shown on the exported PDF)</label>
-      <input type="text" id="studentNameInput" value="${state.studentName || ''}" oninput="setStudentName(this.value)"
-        placeholder="Enter full name" style="width:100%;box-sizing:border-box;padding:9px 10px;border:1px solid #d8d0c4;border-radius:6px;font-size:14px;font-family:inherit;">
-    </div>
-    <div id="studentNameDisplay" style="font-size:15px;color:#3a352c;font-weight:600;margin-bottom:6px;">${state.studentName ? 'Student: ' + state.studentName : ''}</div>`;
-  const backBtn = `<button class="btn-ghost" onclick="closeGroupReport()">&larr; Back to Test</button>`;
+  const backBtn = `<button class="btn-ghost" onclick="closeGroupReport()">&larr; Back to Test</button>
+    <button class="btn-ghost" onclick="backToIntro()">&larr; Back to Menu</button>`;
   const resetBtn = reportMode
     ? `<button class="btn-ghost" style="color:var(--red);" onclick="resetSkill('${state.reportGroup}')">Reset Skill</button>`
     : `<button class="btn-ghost" style="color:var(--red);" onclick="resetAll()">Reset All</button>`;
 
-  return `<div id="printHeader">${state.studentName || ''}</div>
-  <div class="screen-center" style="max-width:760px;">
+  return `<div class="screen-center" style="max-width:760px;">
     <h1 class="serif" style="color:var(--crimson);">${titleText}</h1>
-    ${nameBlock}
     <div class="scorebig">${correctCount} / ${reviewQuestions.length}</div>
     ${skillRows ? `<div style="max-width:420px;margin:18px auto;text-align:left;">${skillRows}</div>` : ''}
     ${flaggedCount > 0 ? `<div style="max-width:420px;margin:0 auto 18px;text-align:left;font-size:13px;color:var(--gold);">\ud83d\udd16 ${flaggedCount} question${flaggedCount===1?'':'s'} marked for review \u2014 see gold-highlighted questions below</div>` : ''}
@@ -643,17 +768,11 @@ function renderReview() {
   <div id="main" style="max-width:760px;margin:0 auto 60px;">${blocks}</div>`;
 }
 
-function setStudentName(val) {
-  state.studentName = val;
-  const disp = document.getElementById('studentNameDisplay');
-  if (disp) disp.textContent = val ? ('Student: ' + val) : '';
-  const ph = document.getElementById('printHeader');
-  if (ph) ph.textContent = val || '';
-}
-
 function render() {
   const app = document.getElementById('app');
   if (state.screen === 'intro') { app.innerHTML = renderIntro(); }
+  else if (state.screen === 'skillpick') { app.innerHTML = renderSkillPick(); }
+  else if (state.screen === 'diffpick') { app.innerHTML = renderDiffPick(); }
   else if (state.screen === 'test') { app.innerHTML = `<div class="navwrap">${renderPalette()}${renderQuestion()}</div>`; }
   else { app.innerHTML = renderReview(); }
   if (window.MathJax && MathJax.typesetPromise) { MathJax.typesetPromise([app]).catch(() => {}); }
