@@ -1009,18 +1009,21 @@
     position: fixed;
     bottom: 8px; left: 12px;
     font-size: 10.5px;
+    line-height: 1.4;
     color: var(--muted);
     opacity: 0.55;
     letter-spacing: 0.2px;
     z-index: 40;
     pointer-events: none;
     background: rgba(248,246,242,0.7);
-    padding: 2px 6px;
+    padding: 3px 7px;
     border-radius: 4px;
     user-select: none;
   }
+  .site-credit .legal { display: block; font-size: 9px; opacity: 0.85; }
   @media (max-width: 640px) {
     .site-credit { font-size: 9.5px; bottom: 6px; left: 8px; }
+    .site-credit .legal { font-size: 8px; }
   }
 
   /* ── REFERENCE MODAL ── */
@@ -3638,7 +3641,7 @@ function resetTestTimer() {
   </div>
 </div>
 
-<div class="site-credit">Developed by Tsalapatis Stavros</div>
+<div class="site-credit">Developed and Tested by Tsalapatis Stavros<span class="legal">© 2026 Tsalapatis Stavros. All rights reserved. Unauthorized reproduction or distribution is prohibited.</span></div>
 
 <div class="img-lightbox-overlay" id="imgLightboxOverlay" onclick="closeImgLightbox()">
   <button class="img-lightbox-close" onclick="closeImgLightbox(event)" aria-label="Close">&times;</button>
