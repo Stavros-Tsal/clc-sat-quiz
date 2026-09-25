@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CLC — Λυμένες Ασκήσεις</title>
+<title>Λυμένες Ασκήσεις</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Crimson+Text:wght@400;600&display=swap" rel="stylesheet">
@@ -83,7 +83,7 @@
 <header>
   <a class="back-btn" href="../index.html#screen-solved-exercises">← Πίσω στις Λυμένες Ασκήσεις</a>
   <h1 id="doc-title">Λυμένες Ασκήσεις</h1>
-  <span class="badge">CLC · Tsalapatis Stavros</span>
+  <span class="badge">Tsalapatis Stavros</span>
 </header>
 
 <main id="viewer-main">
@@ -92,7 +92,7 @@
   </div>
 </main>
 
-<div class="notice">© Tsalapatis Stavros — CLC Educational Institute. Απαγορεύεται η αναδημοσίευση ή διανομή.</div>
+<div class="notice">© Tsalapatis Stavros. Απαγορεύεται η αναδημοσίευση ή διανομή.</div>
 
 <script>
   function qs(name){
@@ -103,7 +103,7 @@
   const title = qs('title');
   if (title) {
     document.getElementById('doc-title').textContent = title;
-    document.title = title + ' — CLC';
+    document.title = title;
   }
   const main = document.getElementById('viewer-main');
   if (src) {
