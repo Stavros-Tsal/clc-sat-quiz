@@ -15,13 +15,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --crimson: #7B0000; --gold: #c8960c; --cream: #f8f6f2; --ink: #1a1a1a;
+    --crimson: #0D5EAF; --gold: #5DADE2; --cream: #f8f6f2; --ink: #1a1a1a;
     --green: #1a6b3a; --red: #8b1515;
   }
   * { box-sizing: border-box; }
   body { margin: 0; font-family: 'Inter', Arial, sans-serif; background: var(--cream); color: var(--ink); }
   h1, h2, h3, .serif { font-family: 'Playfair Display', Georgia, serif; }
-  .topbar { background: linear-gradient(135deg, var(--crimson), #7a0022); color: #fff; padding: 14px 24px;
+  .topbar { background: linear-gradient(135deg, var(--crimson), #063970); color: #fff; padding: 14px 24px;
     display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
   .brand-text .name { font-family: 'Playfair Display', serif; font-size: 20px; letter-spacing: .5px; }
   .toolbar { display: flex; gap: 10px; align-items: center; padding: 8px 24px; background: #fff;
@@ -54,7 +54,7 @@
   .palette-skill.open .palette-skill-collapse { grid-template-rows: 1fr; }
   .palette-skill-inner { overflow: hidden; }
   .psh-submeta { padding: 0 14px 10px; font-size: 11px; color: #a89a7d; display: flex; align-items: center; gap: 6px; }
-  .psh-flag-badge { font-size: 10px; background: #fbeeee; color: var(--crimson); border-radius: 20px;
+  .psh-flag-badge { font-size: 10px; background: #EAF4FC; color: var(--crimson); border-radius: 20px;
     padding: 1px 8px; font-weight: 700; }
   .pgrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; padding: 0 14px 14px; }
   .group-toggle { display: flex; gap: 6px; margin-bottom: 10px; }
@@ -98,11 +98,11 @@
   .card { background: #fff; border: 1px solid #e2dcd0; border-radius: 10px; padding: 26px 28px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
   .qmeta { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
   .tag { font-size: 11px; text-transform: uppercase; letter-spacing: .6px; padding: 3px 9px; border-radius: 20px; font-weight: 700; }
-  .tag-skill { background: #f1e6d3; color: var(--gold); }
+  .tag-skill { background: #F3FAFF; color: var(--gold); }
   .tag-diff-easy { background: #e4f3e8; color: var(--green); }
   .tag-diff-medium { background: #fdf1da; color: #9c6b0a; }
   .tag-diff-hard { background: #fbe4e2; color: var(--red); }
-  .tag-flagged { background: #f1e6d3; color: var(--gold); border: 1px solid var(--gold); }
+  .tag-flagged { background: #F3FAFF; color: var(--gold); border: 1px solid var(--gold); }
   .flagged-block { border-left: 4px solid var(--gold); padding-left: 14px; }
   .qnum { font-weight: 700; color: var(--crimson); font-family: 'Playfair Display', serif; font-size: 20px; }
   .stem { font-size: 17px; line-height: 1.6; margin: 14px 0 10px; }
@@ -111,15 +111,15 @@
   .choices { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
   .choice { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 1.5px solid #ddd4c0;
     border-radius: 8px; cursor: pointer; }
-  .choice:hover { border-color: var(--gold); background: #fdfaf3; }
-  .choice.selected { border-color: var(--crimson); background: #fbeeee; }
+  .choice:hover { border-color: var(--gold); background: #F3FAFF; }
+  .choice.selected { border-color: var(--crimson); background: #EAF4FC; }
   .choice .letter { width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid #999; display: flex;
     align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
   .choice.selected .letter { background: var(--crimson); color: #fff; border-color: var(--crimson); }
   .spr-input { padding: 10px 12px; border: 1.5px solid #ddd4c0; border-radius: 8px; font-size: 16px; width: 220px; }
   .navbtns { display: flex; justify-content: space-between; margin-top: 22px; }
   .flagbtn { background: none; border: 1px solid #ddd4c0; color: var(--ink); }
-  .flagbtn.on { background: #fbeeee; border-color: var(--crimson); color: var(--crimson); }
+  .flagbtn.on { background: #EAF4FC; border-color: var(--crimson); color: var(--crimson); }
   #calc-toast {
     position: fixed; right: 20px; bottom: 20px; max-width: 280px; background: #fff; border: 1px solid #e2dcd0;
     border-radius: 10px; box-shadow: 0 6px 24px rgba(0,0,0,.2); padding: 14px 16px; z-index: 200; display: none; font-size: 13px;
@@ -128,7 +128,7 @@
   #calc-toast .ct-title { font-weight: 700; color: var(--crimson); margin-bottom: 4px; }  .screen-center { max-width: 640px; margin: 60px auto; text-align: center; padding: 0 20px; }
   .review-block { margin-bottom: 42px; padding-bottom: 30px; border-bottom: 2px solid #e2dcd0; }
   .rt-box { border-radius: 8px; padding: 12px 14px; margin-top: 8px; font-size: 14px; line-height: 1.55; }
-  .rt-rule { background: #f1e6d3; border-left: 4px solid var(--gold); }
+  .rt-rule { background: #F3FAFF; border-left: 4px solid var(--gold); }
   .rt-tip { background: #e6f1ea; border-left: 4px solid var(--green); }
   .rt-trap { background: #fbe9e7; border-left: 4px solid var(--red); }
   .rt-fastest { background: #eef1fb; border-left: 4px solid #3b5bdb; }
@@ -157,12 +157,12 @@
   .skill-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 12px; margin: 24px 0; text-align: left; }
   .skill-pick-btn { background: #fff; border: 1.5px solid #e2dcd0; border-radius: 10px; padding: 14px 16px; cursor: pointer;
     font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink); text-align: left; }
-  .skill-pick-btn:hover { border-color: var(--gold); background: #fdfaf3; }
+  .skill-pick-btn:hover { border-color: var(--gold); background: #F3FAFF; }
   .diff-check-row { display: flex; flex-direction: column; gap: 10px; max-width: 340px; margin: 22px auto; text-align: left; }
   .diff-check-label { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1.5px solid #ddd4c0; border-radius: 8px; cursor: pointer; font-size: 14px; }
   .diff-check-label:hover { border-color: var(--gold); }
   .diff-check-label input { width: 16px; height: 16px; }
-  .diff-check-label.checked { border-color: var(--crimson); background: #fbeeee; }
+  .diff-check-label.checked { border-color: var(--crimson); background: #EAF4FC; }
   .time-hint { font-size: 13px; color: var(--gold); font-weight: 700; margin-top: 4px; }
 </style>
 </head>

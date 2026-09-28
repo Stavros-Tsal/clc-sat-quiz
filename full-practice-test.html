@@ -8,10 +8,10 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --crimson: #7B0000;
-    --crimson-light: #a01010;
-    --gold: #c8960c;
-    --gold-light: #e8b840;
+    --crimson: #0D5EAF;
+    --crimson-light: #1E88E5;
+    --gold: #5DADE2;
+    --gold-light: #AEDFF7;
     --bg: #f8f6f2;
     --card: #ffffff;
     --text: #1a1a1a;
@@ -41,7 +41,7 @@
   }
 
   .timer-bar {
-    background: #5a0000; padding: 0 32px; display: flex; align-items: center; gap: 24px;
+    background: #063970; padding: 0 32px; display: flex; align-items: center; gap: 24px;
     height: 44px; border-bottom: 1px solid rgba(255,255,255,0.1);
   }
   .timer-display {
@@ -52,7 +52,7 @@
   .timer-display.danger { color: #ff6b6b; animation: pulse 1s ease-in-out infinite; }
   @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
   .timer-progress { flex: 1; height: 4px; background: rgba(255,255,255,0.12); border-radius: 99px; overflow: hidden; max-width: 260px; }
-  .timer-progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #e8b840, #fff); transition: width 1s linear, background 1s; }
+  .timer-progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #AEDFF7, #fff); transition: width 1s linear, background 1s; }
   .timer-progress-fill.warning { background: linear-gradient(90deg, #ff9800, #ffcc02); }
   .timer-progress-fill.danger { background: linear-gradient(90deg, #ff4444, #ff8888); }
   .timer-controls { display: flex; gap: 6px; }
@@ -73,13 +73,13 @@
     line-height: 1.5; text-align: left; transition: all 0.15s; font-family: Arial, sans-serif;
     color: var(--text); width: 100%;
   }
-  .opt-btn:hover:not(:disabled) { border-color: var(--crimson); background: #fff8f8; }
+  .opt-btn:hover:not(:disabled) { border-color: var(--crimson); background: #EAF4FC; }
   .opt-btn .opt-letter {
     min-width: 28px; height: 28px; border-radius: 50%; background: #fff; border: 1.5px solid var(--border);
     display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;
     color: var(--muted); flex-shrink: 0;
   }
-  .opt-btn.selected { border-color: var(--crimson); background: #fff8f8; }
+  .opt-btn.selected { border-color: var(--crimson); background: #EAF4FC; }
   .opt-btn.selected .opt-letter { background: var(--crimson); border-color: var(--crimson); color: #fff; }
   .opt-btn:disabled { cursor: default; }
 
@@ -146,9 +146,9 @@
     position: fixed; bottom: 28px; right: 96px; display: flex; align-items: center; gap: 7px;
     padding: 0 18px; height: 58px; border-radius: 30px; background: #fff; border: 2px solid var(--crimson);
     color: var(--crimson); font-size: 13px; font-weight: 600; cursor: pointer; letter-spacing: 0.3px;
-    box-shadow: 0 4px 16px rgba(123,0,0,0.12); z-index: 200; transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(13,94,175,0.12); z-index: 200; transition: all 0.2s;
   }
-  .ref-fab:hover { background: var(--crimson); color: #fff; box-shadow: 0 6px 22px rgba(123,0,0,0.28); transform: translateY(-1px); }
+  .ref-fab:hover { background: var(--crimson); color: #fff; box-shadow: 0 6px 22px rgba(13,94,175,0.28); transform: translateY(-1px); }
   .ref-fab .ref-icon { font-size: 18px; }
   .ref-modal { display: none; position: fixed; inset: 0; z-index: 600; background: rgba(0,0,0,0.65); align-items: center; justify-content: center; padding: 20px; }
   .ref-modal.active { display: flex; }

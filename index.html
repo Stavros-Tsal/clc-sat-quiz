@@ -18,10 +18,10 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --crimson: #7B0000;
-    --crimson-light: #a01010;
-    --gold: #c8960c;
-    --gold-light: #e8b840;
+    --crimson: #0D5EAF;
+    --crimson-light: #1E88E5;
+    --gold: #5DADE2;
+    --gold-light: #AEDFF7;
     --bg: #f8f6f2;
     --card: #ffffff;
     --text: #1a1a1a;
@@ -43,7 +43,7 @@
   /* ── AUTH GATE ── */
   #auth-gate {
     position: fixed; inset: 0; z-index: 99999;
-    background: linear-gradient(135deg, var(--crimson) 0%, #4a0000 100%);
+    background: linear-gradient(135deg, var(--crimson) 0%, #063970 100%);
     display: flex; align-items: center; justify-content: center;
     padding: 20px;
   }
@@ -120,12 +120,12 @@
     transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
     white-space: nowrap;
   }
-  .tab-btn:hover { color: var(--crimson); background: rgba(123,0,0,0.06); }
+  .tab-btn:hover { color: var(--crimson); background: rgba(13,94,175,0.06); }
   .tab-btn.active {
     color: #fff;
     background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-light) 100%);
     font-weight: 600;
-    box-shadow: 0 4px 14px rgba(123,0,0,0.28);
+    box-shadow: 0 4px 14px rgba(13,94,175,0.28);
   }
 
   /* ── PANEL ── */
@@ -244,7 +244,7 @@
   }
   .opt-btn:hover:not(:disabled) {
     border-color: var(--crimson);
-    background: #fff8f8;
+    background: #EAF4FC;
   }
   .opt-btn .opt-letter {
     min-width: 28px; height: 28px;
@@ -259,7 +259,7 @@
   }
   .opt-btn.selected {
     border-color: var(--crimson);
-    background: #fff8f8;
+    background: #EAF4FC;
   }
   .opt-btn.selected .opt-letter {
     background: var(--crimson);
@@ -363,7 +363,7 @@
     margin-top: 10px;
     padding: 14px 16px;
     border-radius: 8px;
-    border-left: 4px solid var(--gold, #c8960c);
+    border-left: 4px solid var(--gold, #5DADE2);
     background: #fdf9ef;
     font-size: 14px; line-height: 1.55; color: #3a3226;
   }
@@ -500,7 +500,7 @@
   .timer-progress-fill {
     height: 100%;
     border-radius: 99px;
-    background: linear-gradient(90deg, #e8b840, #fff);
+    background: linear-gradient(90deg, #AEDFF7, #fff);
     transition: width 1s linear, background 1s;
   }
   .timer-progress-fill.warning {
@@ -635,7 +635,7 @@
     background: #fdf0f0 !important; border-color: #e57373 !important; color: #8b1515 !important;
   }
   .qdot-answered {
-    background: rgba(200,150,12,0.15) !important; border-color: var(--gold) !important; color: var(--gold) !important;
+    background: rgba(93,173,226,0.15) !important; border-color: var(--gold) !important; color: var(--gold) !important;
   }
   .qdot-bm .bm-dot,
   .qdot.qdot-bm .bm-dot {
@@ -661,17 +661,17 @@
     transition: all 0.15s;
     white-space: nowrap;
   }
-  .bm-btn:hover { border-color: var(--gold); color: #7a5a00; background: #fffbee; }
+  .bm-btn:hover { border-color: var(--gold); color: #0B4A7A; background: #EAF4FC; }
   .bm-btn.bm-active {
-    background: #fffbee; border-color: var(--gold);
-    color: #7a5a00; font-weight: 600;
+    background: #EAF4FC; border-color: var(--gold);
+    color: #0B4A7A; font-weight: 600;
   }
 
   /* Bookmarked summary in score screen */
   .bookmark-summary {
     margin-top: 28px; text-align: left;
     max-width: 600px; margin-inline: auto;
-    background: #fffbee;
+    background: #EAF4FC;
     border: 1.5px solid var(--gold);
     border-radius: 10px; padding: 16px 20px;
   }
@@ -687,7 +687,7 @@
     padding: 4px 10px;
     background: #fff; border: 1.5px solid var(--gold);
     border-radius: 6px; font-size: 12px; font-weight: 600;
-    color: #7a5a00; cursor: pointer;
+    color: #0B4A7A; cursor: pointer;
   }
   .bookmark-chip:hover { background: var(--gold); color: #fff; }
 
@@ -704,13 +704,13 @@
     cursor: pointer;
     font-size: 13px; font-weight: 600;
     color: var(--crimson);
-    box-shadow: 0 4px 16px rgba(123,0,0,0.15);
+    box-shadow: 0 4px 16px rgba(13,94,175,0.15);
     z-index: 200;
     transition: all 0.2s;
   }
   .unanswered-btn:hover {
     background: var(--crimson); color: #fff;
-    box-shadow: 0 6px 22px rgba(123,0,0,0.3);
+    box-shadow: 0 6px 22px rgba(13,94,175,0.3);
     transform: translateY(-1px);
   }
   .unanswered-badge {
@@ -753,7 +753,7 @@
   .welcome-logo {
     width: 110px;
     margin-bottom: 28px;
-    filter: drop-shadow(0 4px 16px rgba(123,0,0,0.15));
+    filter: drop-shadow(0 4px 16px rgba(13,94,175,0.15));
   }
   .welcome-title {
     font-family: 'Playfair Display', serif;
@@ -775,13 +775,13 @@
     border: none; border-radius: 50px;
     font-size: 17px; font-weight: 600;
     cursor: pointer; letter-spacing: 0.5px;
-    box-shadow: 0 6px 24px rgba(123,0,0,0.25);
+    box-shadow: 0 6px 24px rgba(13,94,175,0.25);
     transition: all 0.2s;
   }
   .welcome-next:hover {
     background: var(--crimson-light);
     transform: translateY(-2px);
-    box-shadow: 0 10px 32px rgba(123,0,0,0.3);
+    box-shadow: 0 10px 32px rgba(13,94,175,0.3);
   }
   .welcome-divider {
     width: 60px; height: 3px;
@@ -828,7 +828,7 @@
   .subject-card:hover {
     border-color: var(--crimson);
     transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(123,0,0,0.15);
+    box-shadow: 0 12px 32px rgba(13,94,175,0.15);
   }
   .subject-card .icon { font-size: 44px; }
   .subject-card .label {
@@ -879,7 +879,7 @@
     background: var(--crimson);
     color: #fff;
     transform: translateX(-3px);
-    box-shadow: 0 5px 16px rgba(123,0,0,0.3);
+    box-shadow: 0 5px 16px rgba(13,94,175,0.3);
   }
   @media (max-width: 480px) {
     .nav-back-btn { top: 12px; left: 12px; padding: 8px 14px 8px 12px; font-size: 13px; }
@@ -897,7 +897,7 @@
   }
   .mode-subject-badge {
     display: inline-flex; align-items: center; gap: 6px;
-    background: #fff8f8; border: 1.5px solid #f0d0d0;
+    background: #EAF4FC; border: 1.5px solid #C6E2F5;
     border-radius: 99px; padding: 6px 16px;
     font-size: 13px; font-weight: 600; color: var(--crimson);
     margin-bottom: 28px;
@@ -922,7 +922,7 @@
   .mode-card:hover:not(.disabled) {
     border-color: var(--crimson);
     transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(123,0,0,0.15);
+    box-shadow: 0 12px 32px rgba(13,94,175,0.15);
   }
   .mode-card.disabled {
     opacity: 0.45; cursor: not-allowed;
@@ -957,14 +957,14 @@
     color: var(--crimson);
     font-size: 13px; font-weight: 600;
     cursor: pointer; letter-spacing: 0.3px;
-    box-shadow: 0 4px 16px rgba(123,0,0,0.12);
+    box-shadow: 0 4px 16px rgba(13,94,175,0.12);
     z-index: 200;
     transition: all 0.2s;
     display: none;
   }
   .ref-fab:hover {
     background: var(--crimson); color: #fff;
-    box-shadow: 0 6px 22px rgba(123,0,0,0.28);
+    box-shadow: 0 6px 22px rgba(13,94,175,0.28);
     transform: translateY(-1px);
   }
   .ref-fab .ref-icon { font-size: 18px; }
@@ -1153,7 +1153,7 @@ checkAuth();
 
 <!-- ══ SCREEN 1: WELCOME ══ -->
 <div id="screen-welcome" class="screen active">
-  <img src="assets/greek-flag.png" alt="Greek flag" style="width:120px;height:auto;border-radius:5px;box-shadow:0 4px 16px rgba(123,0,0,0.15);margin-bottom:14px;">
+  <img src="assets/greek-flag.png" alt="Greek flag" style="width:120px;height:auto;border-radius:5px;box-shadow:0 4px 16px rgba(13,94,175,0.15);margin-bottom:14px;">
   <p style="font-family:'Playfair Display', serif; font-style:italic; font-weight:600; font-size:15px; color:var(--muted); letter-spacing:0.3px; margin-bottom:18px;">Greek SAT Platform</p>
   <div class="welcome-divider"></div>
   <h1 class="welcome-title">Welcome, students!</h1>
@@ -1686,7 +1686,7 @@ checkAuth();
   <div style="max-width:420px;margin:0 auto 16px;">
     <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">Choose your timing:</p>
     <div style="display:flex;gap:10px;">
-      <button id="dur-btn-1-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(200,150,12,0.15);color:#fff;" onclick="selectDuration(1,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
+      <button id="dur-btn-1-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(93,173,226,0.15);color:#fff;" onclick="selectDuration(1,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
       <button id="dur-btn-1-50" class="back-btn" style="flex:1;border:1px solid rgba(255,255,255,0.15);" onclick="selectDuration(1,50)">Extra Time<br><span style="font-size:11px;color:var(--muted)">50 min / module</span></button>
     </div>
   </div>
@@ -1716,7 +1716,7 @@ checkAuth();
   <div style="max-width:420px;margin:0 auto 16px;">
     <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">Choose your timing:</p>
     <div style="display:flex;gap:10px;">
-      <button id="dur-btn-2-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(200,150,12,0.15);color:#fff;" onclick="selectDuration(2,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
+      <button id="dur-btn-2-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(93,173,226,0.15);color:#fff;" onclick="selectDuration(2,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
       <button id="dur-btn-2-50" class="back-btn" style="flex:1;border:1px solid rgba(255,255,255,0.15);" onclick="selectDuration(2,50)">Extra Time<br><span style="font-size:11px;color:var(--muted)">50 min / module</span></button>
     </div>
   </div>
@@ -1746,7 +1746,7 @@ checkAuth();
   <div style="max-width:420px;margin:0 auto 16px;">
     <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">Choose your timing:</p>
     <div style="display:flex;gap:10px;">
-      <button id="dur-btn-3-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(200,150,12,0.15);color:#fff;" onclick="selectDuration(3,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
+      <button id="dur-btn-3-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(93,173,226,0.15);color:#fff;" onclick="selectDuration(3,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
       <button id="dur-btn-3-50" class="back-btn" style="flex:1;border:1px solid rgba(255,255,255,0.15);" onclick="selectDuration(3,50)">Extra Time<br><span style="font-size:11px;color:var(--muted)">50 min / module</span></button>
     </div>
   </div>
@@ -1776,7 +1776,7 @@ checkAuth();
   <div style="max-width:420px;margin:0 auto 16px;">
     <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">Choose your timing:</p>
     <div style="display:flex;gap:10px;">
-      <button id="dur-btn-4-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(200,150,12,0.15);color:#fff;" onclick="selectDuration(4,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
+      <button id="dur-btn-4-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(93,173,226,0.15);color:#fff;" onclick="selectDuration(4,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
       <button id="dur-btn-4-50" class="back-btn" style="flex:1;border:1px solid rgba(255,255,255,0.15);" onclick="selectDuration(4,50)">Extra Time<br><span style="font-size:11px;color:var(--muted)">50 min / module</span></button>
     </div>
   </div>
@@ -1806,7 +1806,7 @@ checkAuth();
   <div style="max-width:420px;margin:0 auto 16px;">
     <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">Choose your timing:</p>
     <div style="display:flex;gap:10px;">
-      <button id="dur-btn-5-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(200,150,12,0.15);color:#fff;" onclick="selectDuration(5,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
+      <button id="dur-btn-5-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(93,173,226,0.15);color:#fff;" onclick="selectDuration(5,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
       <button id="dur-btn-5-50" class="back-btn" style="flex:1;border:1px solid rgba(255,255,255,0.15);" onclick="selectDuration(5,50)">Extra Time<br><span style="font-size:11px;color:var(--muted)">50 min / module</span></button>
     </div>
   </div>
@@ -1836,7 +1836,7 @@ checkAuth();
   <div style="max-width:420px;margin:0 auto 16px;">
     <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">Choose your timing:</p>
     <div style="display:flex;gap:10px;">
-      <button id="dur-btn-6-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(200,150,12,0.15);color:#fff;" onclick="selectDuration(6,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
+      <button id="dur-btn-6-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(93,173,226,0.15);color:#fff;" onclick="selectDuration(6,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
       <button id="dur-btn-6-50" class="back-btn" style="flex:1;border:1px solid rgba(255,255,255,0.15);" onclick="selectDuration(6,50)">Extra Time<br><span style="font-size:11px;color:var(--muted)">50 min / module</span></button>
     </div>
   </div>
@@ -1866,7 +1866,7 @@ checkAuth();
   <div style="max-width:420px;margin:0 auto 16px;">
     <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">Choose your timing:</p>
     <div style="display:flex;gap:10px;">
-      <button id="dur-btn-7-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(200,150,12,0.15);color:#fff;" onclick="selectDuration(7,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
+      <button id="dur-btn-7-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(93,173,226,0.15);color:#fff;" onclick="selectDuration(7,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
       <button id="dur-btn-7-50" class="back-btn" style="flex:1;border:1px solid rgba(255,255,255,0.15);" onclick="selectDuration(7,50)">Extra Time<br><span style="font-size:11px;color:var(--muted)">50 min / module</span></button>
     </div>
   </div>
@@ -1896,7 +1896,7 @@ checkAuth();
   <div style="max-width:420px;margin:0 auto 16px;">
     <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">Choose your timing:</p>
     <div style="display:flex;gap:10px;">
-      <button id="dur-btn-8-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(200,150,12,0.15);color:#fff;" onclick="selectDuration(8,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
+      <button id="dur-btn-8-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(93,173,226,0.15);color:#fff;" onclick="selectDuration(8,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
       <button id="dur-btn-8-50" class="back-btn" style="flex:1;border:1px solid rgba(255,255,255,0.15);" onclick="selectDuration(8,50)">Extra Time<br><span style="font-size:11px;color:var(--muted)">50 min / module</span></button>
     </div>
   </div>
@@ -1926,7 +1926,7 @@ checkAuth();
   <div style="max-width:420px;margin:0 auto 16px;">
     <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">Choose your timing:</p>
     <div style="display:flex;gap:10px;">
-      <button id="dur-btn-9-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(200,150,12,0.15);color:#fff;" onclick="selectDuration(9,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
+      <button id="dur-btn-9-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(93,173,226,0.15);color:#fff;" onclick="selectDuration(9,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
       <button id="dur-btn-9-50" class="back-btn" style="flex:1;border:1px solid rgba(255,255,255,0.15);" onclick="selectDuration(9,50)">Extra Time<br><span style="font-size:11px;color:var(--muted)">50 min / module</span></button>
     </div>
   </div>
@@ -1956,7 +1956,7 @@ checkAuth();
   <div style="max-width:420px;margin:0 auto 16px;">
     <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">Choose your timing:</p>
     <div style="display:flex;gap:10px;">
-      <button id="dur-btn-10-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(200,150,12,0.15);color:#fff;" onclick="selectDuration(10,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
+      <button id="dur-btn-10-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(93,173,226,0.15);color:#fff;" onclick="selectDuration(10,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
       <button id="dur-btn-10-50" class="back-btn" style="flex:1;border:1px solid rgba(255,255,255,0.15);" onclick="selectDuration(10,50)">Extra Time<br><span style="font-size:11px;color:var(--muted)">50 min / module</span></button>
     </div>
   </div>
@@ -1985,7 +1985,7 @@ checkAuth();
   <div style="max-width:420px;margin:0 auto 16px;">
     <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">Choose your timing:</p>
     <div style="display:flex;gap:10px;">
-      <button id="dur-btn-11-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(200,150,12,0.15);color:#fff;" onclick="selectDuration(11,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
+      <button id="dur-btn-11-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(93,173,226,0.15);color:#fff;" onclick="selectDuration(11,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
       <button id="dur-btn-11-50" class="back-btn" style="flex:1;border:1px solid rgba(255,255,255,0.15);" onclick="selectDuration(11,50)">Extra Time<br><span style="font-size:11px;color:var(--muted)">50 min / module</span></button>
     </div>
   </div>
@@ -2014,7 +2014,7 @@ checkAuth();
   <div style="max-width:420px;margin:0 auto 16px;">
     <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">Choose your timing:</p>
     <div style="display:flex;gap:10px;">
-      <button id="dur-btn-12-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(200,150,12,0.15);color:#fff;" onclick="selectDuration(12,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
+      <button id="dur-btn-12-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(93,173,226,0.15);color:#fff;" onclick="selectDuration(12,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
       <button id="dur-btn-12-50" class="back-btn" style="flex:1;border:1px solid rgba(255,255,255,0.15);" onclick="selectDuration(12,50)">Extra Time<br><span style="font-size:11px;color:var(--muted)">50 min / module</span></button>
     </div>
   </div>
@@ -2044,7 +2044,7 @@ checkAuth();
   <div style="max-width:420px;margin:0 auto 16px;">
     <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">Choose your timing:</p>
     <div style="display:flex;gap:10px;">
-      <button id="dur-btn-13-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(200,150,12,0.15);color:#fff;" onclick="selectDuration(13,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
+      <button id="dur-btn-13-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(93,173,226,0.15);color:#fff;" onclick="selectDuration(13,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
       <button id="dur-btn-13-50" class="back-btn" style="flex:1;border:1px solid rgba(255,255,255,0.15);" onclick="selectDuration(13,50)">Extra Time<br><span style="font-size:11px;color:var(--muted)">50 min / module</span></button>
     </div>
   </div>
@@ -2074,7 +2074,7 @@ checkAuth();
   <div style="max-width:420px;margin:0 auto 16px;">
     <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">Choose your timing:</p>
     <div style="display:flex;gap:10px;">
-      <button id="dur-btn-14-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(200,150,12,0.15);color:#fff;" onclick="selectDuration(14,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
+      <button id="dur-btn-14-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(93,173,226,0.15);color:#fff;" onclick="selectDuration(14,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min / module</span></button>
       <button id="dur-btn-14-50" class="back-btn" style="flex:1;border:1px solid rgba(255,255,255,0.15);" onclick="selectDuration(14,50)">Extra Time<br><span style="font-size:11px;color:var(--muted)">50 min / module</span></button>
     </div>
   </div>
@@ -2098,7 +2098,7 @@ checkAuth();
   <div style="max-width:420px;margin:0 auto 16px;">
     <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">Choose your timing:</p>
     <div style="display:flex;gap:10px;">
-      <button id="dur-btn-15-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(200,150,12,0.15);color:#fff;" onclick="selectDuration(15,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min</span></button>
+      <button id="dur-btn-15-35" class="back-btn" style="flex:1;border:1px solid var(--gold);background:rgba(93,173,226,0.15);color:#fff;" onclick="selectDuration(15,35)">Standard<br><span style="font-size:11px;color:var(--muted)">35 min</span></button>
       <button id="dur-btn-15-50" class="back-btn" style="flex:1;border:1px solid rgba(255,255,255,0.15);" onclick="selectDuration(15,50)">Extra Time<br><span style="font-size:11px;color:var(--muted)">50 min</span></button>
     </div>
   </div>
@@ -2250,7 +2250,7 @@ checkAuth();
     <button onclick="clearInterval(testTimerInterval);clearInterval(breakInterval);goScreen('screen-test-list')" style="margin-left:auto;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:500;">← Exit</button>
   </header>
 
-  <div class="timer-bar" id="test-timer-bar" style="background:#5a0000;">
+  <div class="timer-bar" id="test-timer-bar" style="background:#063970;">
     <span class="timer-label">Time</span>
     <span class="timer-display" id="test-timer-display">35:00</span>
     <div class="timer-progress" id="test-timer-progress-wrap">
@@ -2868,7 +2868,7 @@ function selectDuration(testId, mins) {
   selectedDuration[testId] = mins;
   const std = document.getElementById(`dur-btn-${testId}-35`);
   const ext = document.getElementById(`dur-btn-${testId}-50`);
-  const activeStyle = 'border:1px solid var(--gold);background:rgba(200,150,12,0.15);color:#fff;';
+  const activeStyle = 'border:1px solid var(--gold);background:rgba(93,173,226,0.15);color:#fff;';
   const inactiveStyle = 'border:1px solid rgba(255,255,255,0.15);';
   if (std) std.style.cssText += (mins === 35 ? activeStyle : inactiveStyle);
   if (ext) ext.style.cssText += (mins === 50 ? activeStyle : inactiveStyle);
@@ -3349,10 +3349,10 @@ function generateResultsPDF(studentName) {
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"><\/script>
 <style>
   body { font-family: Georgia, serif; color: #1a1a1a; padding: 32px; max-width: 800px; margin: 0 auto; }
-  h1 { color: #7B0000; font-size: 22px; margin-bottom: 4px; }
+  h1 { color: #0D5EAF; font-size: 22px; margin-bottom: 4px; }
   .meta { color: #666; font-size: 13px; margin-bottom: 20px; }
-  .score-box { border: 2px solid #7B0000; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; }
-  .score-box .big { font-size: 32px; font-weight: 700; color: #7B0000; }
+  .score-box { border: 2px solid #0D5EAF; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; }
+  .score-box .big { font-size: 32px; font-weight: 700; color: #0D5EAF; }
   h2 { font-size: 15px; text-transform: uppercase; letter-spacing: 0.05em; color: #666; margin: 24px 0 8px; border-bottom: 1px solid #e0dbd3; padding-bottom: 4px; }
   .pdf-q { border-left: 4px solid #ccc; padding: 8px 12px; margin-bottom: 10px; page-break-inside: avoid; }
   .pdf-q.pdf-ok { border-left-color: #1a6b3a; background: #f5faf7; }
@@ -3493,18 +3493,18 @@ function generateFullReport(studentName) {
 <title>CLC SAT — Πρόοδος — ${studentName}</title>
 <style>
   body { font-family: Georgia, serif; color: #1a1a1a; padding: 32px; max-width: 800px; margin: 0 auto; }
-  h1 { color: #7B0000; font-size: 22px; margin-bottom: 4px; }
+  h1 { color: #0D5EAF; font-size: 22px; margin-bottom: 4px; }
   .meta { color: #666; font-size: 13px; margin-bottom: 24px; }
   h2 { font-size: 15px; text-transform: uppercase; letter-spacing: 0.05em; color: #666; margin: 28px 0 10px; border-bottom: 1px solid #e0dbd3; padding-bottom: 4px; }
-  .pr-block { border-left: 4px solid #c8960c; background: #fdf9ef; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid; }
+  .pr-block { border-left: 4px solid #5DADE2; background: #fdf9ef; padding: 10px 14px; margin-bottom: 12px; page-break-inside: avoid; }
   .pr-block-head { display:flex; justify-content:space-between; align-items:center; font-size: 14px; margin-bottom: 6px; flex-wrap: wrap; gap:6px; }
-  .pr-rate { font-weight: 700; color: #7B0000; font-size: 13px; }
+  .pr-rate { font-weight: 700; color: #0D5EAF; font-size: 13px; }
   .pr-rate.pr-dim { color: #999; font-weight: 400; }
   .pr-q-row { font-size: 13px; color: #333; padding: 4px 0; border-top: 1px dashed #e6dfd2; }
   .pr-q-row:first-of-type { border-top: none; }
   .pr-q-snippet { color: #666; font-size: 12px; margin-top: 2px; }
   .pr-empty { font-size: 13px; color: #888; font-style: italic; padding: 4px 0; }
-  .pr-print-btn { padding: 10px 22px; background: #7B0000; color: #fff; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; margin-bottom: 20px; }
+  .pr-print-btn { padding: 10px 22px; background: #0D5EAF; color: #fff; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; margin-bottom: 20px; }
   @media print { .pr-print-btn { display:none; } body { padding: 12px; } }
 </style>
 </head><body>
