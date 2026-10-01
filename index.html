@@ -72,6 +72,11 @@
   }
   #cal-buttons a:hover { background: var(--crimson); color: #fff; }
   body.guest #cal-buttons { display: none; }
+  /* When a screen shows the fixed Back button, drop the menu button below it */
+  body:has(.screen.active .nav-back-btn) #cal-buttons { top: 66px; left: 18px; }
+  @media (max-width: 480px) {
+    body:has(.screen.active .nav-back-btn) #cal-buttons { top: 56px; left: 12px; }
+  }
 
   /* ── AUTH GATE ── */
   #auth-gate {
