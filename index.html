@@ -1312,8 +1312,34 @@ checkAuth();
 <!-- ══ SCREEN: COLLEGE BOARD · MATH ══ -->
 <div id="screen-cb-math" class="screen">
   <h2 class="subject-title">College Board · Math</h2>
-  <p class="subject-sub">Ο φάκελος θα συμπληρωθεί σύντομα.</p>
+  <p class="subject-sub">Διάλεξε φάκελο</p>
+  <div class="mode-cards">
+    <div class="mode-card" onclick="goScreen('screen-cb-math-sat')">
+      <div class="icon">📁</div>
+      <div class="label">SAT</div>
+      <div class="desc">Math · SAT</div>
+    </div>
+    <div class="mode-card" onclick="goScreen('screen-cb-math-psat')">
+      <div class="icon">📁</div>
+      <div class="label">PSAT</div>
+      <div class="desc">Math · PSAT</div>
+    </div>
+  </div>
   <button class="nav-back-btn" onclick="goScreen('screen-college-board')">← Back</button>
+</div>
+
+<!-- ══ SCREEN: COLLEGE BOARD · MATH · SAT ══ -->
+<div id="screen-cb-math-sat" class="screen">
+  <h2 class="subject-title">College Board · Math · SAT</h2>
+  <p class="subject-sub">Ο φάκελος θα συμπληρωθεί σύντομα.</p>
+  <button class="nav-back-btn" onclick="goScreen('screen-cb-math')">← Back</button>
+</div>
+
+<!-- ══ SCREEN: COLLEGE BOARD · MATH · PSAT ══ -->
+<div id="screen-cb-math-psat" class="screen">
+  <h2 class="subject-title">College Board · Math · PSAT</h2>
+  <p class="subject-sub">Ο φάκελος θα συμπληρωθεί σύντομα.</p>
+  <button class="nav-back-btn" onclick="goScreen('screen-cb-math')">← Back</button>
 </div>
 
 <!-- ══ SCREEN: COLLEGE BOARD · ENGLISH ══ -->
