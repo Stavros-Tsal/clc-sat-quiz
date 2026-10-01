@@ -73,9 +73,9 @@
   #cal-buttons a:hover { background: var(--crimson); color: #fff; }
   body.guest #cal-buttons { display: none; }
   /* When a screen shows the fixed Back button, drop the menu button below it */
-  body:has(.screen.active .nav-back-btn) #cal-buttons { top: 66px; left: 18px; }
+  body.has-back #cal-buttons { top: 66px; left: 18px; }
   @media (max-width: 480px) {
-    body:has(.screen.active .nav-back-btn) #cal-buttons { top: 56px; left: 12px; }
+    body.has-back #cal-buttons { top: 56px; left: 12px; }
   }
 
   /* ── AUTH GATE ── */
@@ -2925,6 +2925,7 @@ function goScreen(id, subject) {
     // unanswered-btn is drill-quiz specific (uses QUESTIONS/activeTab); keep hidden in test mode
   }
   document.getElementById(id).classList.add('active');
+  document.body.classList.toggle('has-back', !!document.getElementById(id).querySelector('.nav-back-btn'));
   if (subject) {
     document.getElementById('mode-badge').textContent = subject === 'Math' ? '📐 Math' : '📖 English';
   }
