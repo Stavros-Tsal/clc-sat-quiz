@@ -1207,6 +1207,11 @@ checkAuth();
       <div class="label">Full Practice Test</div>
       <div class="desc">Πλήρες Digital SAT · R&amp;W + Math, 4 modules, χρονόμετρο</div>
     </div>
+    <div class="subject-card" onclick="goScreen('screen-college-board')">
+      <div class="icon">🏛️</div>
+      <div class="label">College Board</div>
+      <div class="desc">Υλικό από το College Board · Math &amp; English</div>
+    </div>
     <div class="subject-card" onclick="window.open('https://www.youtube.com/@stavrostsalapatis5030','_blank','noopener')" role="link" tabindex="0">
       <div class="icon">▶️</div>
       <div class="label">YouTube Channel</div>
@@ -1283,6 +1288,39 @@ checkAuth();
     </a>
   </div>
   <button class="nav-back-btn" onclick="goScreen('screen-subject')">← Back</button>
+</div>
+
+<!-- ══ SCREEN: COLLEGE BOARD ══ -->
+<div id="screen-college-board" class="screen">
+  <h2 class="subject-title">College Board</h2>
+  <p class="subject-sub">Διάλεξε φάκελο</p>
+  <div class="mode-cards">
+    <div class="mode-card" onclick="goScreen('screen-cb-math')">
+      <div class="icon">📁</div>
+      <div class="label">Math</div>
+      <div class="desc">Υλικό College Board για Math</div>
+    </div>
+    <div class="mode-card" onclick="goScreen('screen-cb-english')">
+      <div class="icon">📁</div>
+      <div class="label">English</div>
+      <div class="desc">Υλικό College Board για English</div>
+    </div>
+  </div>
+  <button class="nav-back-btn" onclick="goScreen('screen-subject')">← Back</button>
+</div>
+
+<!-- ══ SCREEN: COLLEGE BOARD · MATH ══ -->
+<div id="screen-cb-math" class="screen">
+  <h2 class="subject-title">College Board · Math</h2>
+  <p class="subject-sub">Ο φάκελος θα συμπληρωθεί σύντομα.</p>
+  <button class="nav-back-btn" onclick="goScreen('screen-college-board')">← Back</button>
+</div>
+
+<!-- ══ SCREEN: COLLEGE BOARD · ENGLISH ══ -->
+<div id="screen-cb-english" class="screen">
+  <h2 class="subject-title">College Board · English</h2>
+  <p class="subject-sub">Ο φάκελος θα συμπληρωθεί σύντομα.</p>
+  <button class="nav-back-btn" onclick="goScreen('screen-college-board')">← Back</button>
 </div>
 
 <!-- ══ SCREEN 3: MODE ══ -->
