@@ -1421,8 +1421,82 @@ checkAuth();
 <!-- ══ SCREEN: COLLEGE BOARD · MATH · PSAT ══ -->
 <div id="screen-cb-math-psat" class="screen">
   <h2 class="subject-title">College Board · Math · PSAT</h2>
-  <p class="subject-sub">Ο φάκελος θα συμπληρωθεί σύντομα.</p>
+  <p class="subject-sub">Διάλεξε chapter</p>
+  <div class="mode-cards">
+    <div class="mode-card" onclick="goScreen('screen-cb-math-psat-algebra')">
+      <div class="icon">📁</div>
+      <div class="label">Algebra</div>
+      <div class="desc">5 skills · Homework &amp; Review</div>
+    </div>
+    <div class="mode-card" onclick="goScreen('screen-cb-math-psat-advanced-math')">
+      <div class="icon">📁</div>
+      <div class="label">Advanced Math</div>
+      <div class="desc">3 skills · Homework &amp; Review</div>
+    </div>
+    <div class="mode-card" onclick="goScreen('screen-cb-math-psat-psda')">
+      <div class="icon">📁</div>
+      <div class="label">PSDA</div>
+      <div class="desc">6 skills · Homework &amp; Review</div>
+    </div>
+    <div class="mode-card" onclick="goScreen('screen-cb-math-psat-geometry')">
+      <div class="icon">📁</div>
+      <div class="label">Geometry and Trigonometry</div>
+      <div class="desc">3 skills · Homework &amp; Review</div>
+    </div>
+  </div>
   <button class="nav-back-btn" onclick="goScreen('screen-cb-math')">← Back</button>
+</div>
+<!-- ══ SCREEN: COLLEGE BOARD · MATH · PSAT · ALGEBRA ══ -->
+<div id="screen-cb-math-psat-algebra" class="screen">
+  <h2 class="subject-title">Algebra</h2>
+  <p class="subject-sub">College Board · Math · PSAT</p>
+  <div class="cb-skills">
+    <div class="cb-skill"><div class="cb-skill-name">Linear Equations in One Variable</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-equations-one-variable_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-equations-one-variable_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Linear Functions</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-functions_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-functions_Review-15.html">Review</a><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_Linear-Functions_Extra-Homework-30-and-Review-15.html">Extra Homework &amp; Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Linear Equations in Two Variables</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-equations-two-variables_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-equations-two-variables_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Systems of Two Linear Equations in Two Variables</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_systems-two-linear-equations-two-variables_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_systems-two-linear-equations-two-variables_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Linear Inequalities in One or Two Variables</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-inequalities-one-or-two-variables_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-inequalities-one-or-two-variables_Review-15.html">Review</a></div></div>
+  </div>
+  <button class="nav-back-btn" onclick="goScreen('screen-cb-math-psat')">← Back</button>
+</div>
+
+<!-- ══ SCREEN: COLLEGE BOARD · MATH · PSAT · ADVANCED MATH ══ -->
+<div id="screen-cb-math-psat-advanced-math" class="screen">
+  <h2 class="subject-title">Advanced Math</h2>
+  <p class="subject-sub">College Board · Math · PSAT</p>
+  <div class="cb-skills">
+    <div class="cb-skill"><div class="cb-skill-name">Equivalent Expressions</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_equivalent-expressions_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_equivalent-expressions_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Nonlinear Equations in One Variable and Systems of Equations in Two Variables</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_nonlinear-equations-systems_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_nonlinear-equations-systems_Review-15.html">Review</a><a class="cb-link" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_Nonlinear-Equations-in-One-Variable-and-Systems-of-Equations-in-Two-Variables_Extra-Homework-30-and-Review-15.html">Extra Homework &amp; Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Nonlinear Functions</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_nonlinear-functions_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_nonlinear-functions_Review-15.html">Review</a><a class="cb-link" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_Nonlinear-Functions_Extra-Homework-30-and-Review-15.html">Extra Homework &amp; Review</a></div></div>
+  </div>
+  <button class="nav-back-btn" onclick="goScreen('screen-cb-math-psat')">← Back</button>
+</div>
+
+<!-- ══ SCREEN: COLLEGE BOARD · MATH · PSAT · PSDA ══ -->
+<div id="screen-cb-math-psat-psda" class="screen">
+  <h2 class="subject-title">PSDA</h2>
+  <p class="subject-sub">College Board · Math · PSAT</p>
+  <div class="cb-skills">
+    <div class="cb-skill"><div class="cb-skill-name">Ratios, Rates, Proportional Relationships, and Units</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_ratios-rates-proportional-relationships-units_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_ratios-rates-proportional-relationships-units_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Percentages</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_percentages_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_percentages_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">One-Variable Data: Distributions and Measures of Center and Spread</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_one-variable-data-distributions-center-spread_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_one-variable-data-distributions-center-spread_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Two-Variable Data: Models and Scatterplots</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_two-variable-data-models-scatterplots_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_two-variable-data-models-scatterplots_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Probability and Conditional Probability</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_probability-conditional-probability_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_probability-conditional-probability_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Inference from Sample Statistics and Margin of Error</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_inference-sample-statistics-margin-error_Homework-24.html">Homework</a><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_inference-sample-statistics-margin-error_Review-15.html">Review</a></div></div>
+  </div>
+  <button class="nav-back-btn" onclick="goScreen('screen-cb-math-psat')">← Back</button>
+</div>
+
+<!-- ══ SCREEN: COLLEGE BOARD · MATH · PSAT · GEOMETRY AND TRIGONOMETRY ══ -->
+<div id="screen-cb-math-psat-geometry" class="screen">
+  <h2 class="subject-title">Geometry and Trigonometry</h2>
+  <p class="subject-sub">College Board · Math · PSAT</p>
+  <div class="cb-skills">
+    <div class="cb-skill"><div class="cb-skill-name">Area and Volume</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Geometry-and-Trigonometry/PSAT-Geometry_area-volume_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Geometry-and-Trigonometry/PSAT-Geometry_area-volume_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Lines, Angles, and Triangles</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Geometry-and-Trigonometry/PSAT-Geometry_lines-angles-triangles_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Geometry-and-Trigonometry/PSAT-Geometry_lines-angles-triangles_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Right Triangles and Trigonometry</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Geometry-and-Trigonometry/PSAT-Geometry_right-triangles-trigonometry_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Geometry-and-Trigonometry/PSAT-Geometry_right-triangles-trigonometry_Review-15.html">Review</a></div></div>
+  </div>
+  <button class="nav-back-btn" onclick="goScreen('screen-cb-math-psat')">← Back</button>
 </div>
 
 <!-- ══ SCREEN: COLLEGE BOARD · ENGLISH ══ -->
