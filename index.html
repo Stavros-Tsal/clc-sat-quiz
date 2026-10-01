@@ -40,6 +40,23 @@
     min-height: 100vh;
   }
 
+  /* ── GUEST / MEMBER VISIBILITY ── */
+  body.guest .member-only { display: none !important; }
+  body:not(.guest) .guest-only { display: none !important; }
+  .auth-alt-btn {
+    width: 100%; padding: 12px; margin-top: 10px; background: #fff; color: var(--crimson);
+    border: 1.5px solid var(--crimson); border-radius: 9px; font-size: 15px; font-weight: 600; cursor: pointer;
+    transition: all 0.15s; font-family: 'Inter', sans-serif;
+  }
+  .auth-alt-btn:hover { background: var(--crimson); color: #fff; }
+  .auth-submit-btn { font-family: 'Inter', sans-serif; }
+  .guest-login-link {
+    position: fixed; top: 12px; right: 14px; z-index: 900; padding: 8px 16px; border-radius: 20px;
+    background: #fff; color: var(--crimson); border: 1.5px solid var(--crimson); font-size: 13px; font-weight: 600;
+    cursor: pointer; font-family: 'Inter', sans-serif; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  .guest-login-link:hover { background: var(--crimson); color: #fff; }
+
   /* ── AUTH GATE ── */
   #auth-gate {
     position: fixed; inset: 0; z-index: 99999;
@@ -1106,18 +1123,24 @@
   <div class="auth-card">
     <img src="assets/greek-flag.png" alt="Greek flag" style="width:90px;height:auto;border-radius:4px;box-shadow:0 4px 16px rgba(0,0,0,0.2);margin-bottom:14px;">
     <h1 style="font-style:italic;font-weight:600;">Greek SAT Platform</h1>
-    <p class="auth-sub">Συνδέσου για να συνεχίσεις</p>
-    <form id="auth-form" onsubmit="return handleLogin(event)">
+    <p class="auth-sub" id="auth-sub">Επίλεξε τρόπο εισόδου</p>
+    <div id="auth-choice">
+      <button type="button" class="auth-alt-btn" onclick="enterAsGuest()">Είσοδος ως επισκέπτης</button>
+      <button type="button" class="auth-submit-btn" onclick="showPasswordForm()">Είσοδος με κωδικό</button>
+    </div>
+    <form id="auth-form" onsubmit="return handleLogin(event)" style="display:none;">
       <div class="auth-field">
         <label for="auth-password">Password</label>
         <input type="password" id="auth-password" autocomplete="current-password" required>
       </div>
       <button type="submit" class="auth-submit-btn">Σύνδεση</button>
+      <button type="button" class="auth-alt-btn" onclick="showChoice()">← Πίσω</button>
       <div class="auth-error" id="auth-error"></div>
     </form>
   </div>
 </div>
 
+<button type="button" class="guest-login-link guest-only" onclick="showGate()">🔑 Είσοδος με κωδικό</button>
 <script src="auth-config.js"></script>
 <script src="progress.js"></script>
 <script>
@@ -1131,6 +1154,32 @@ async function sha256Hex(str) {
 function hideAuthGate() {
   document.getElementById('auth-gate').classList.add('hidden');
 }
+function setMode(mode) {
+  // mode: 'member' | 'guest'
+  document.body.classList.toggle('guest', mode === 'guest');
+}
+function showChoice() {
+  document.getElementById('auth-choice').style.display = '';
+  document.getElementById('auth-form').style.display = 'none';
+  document.getElementById('auth-sub').textContent = 'Επίλεξε τρόπο εισόδου';
+  document.getElementById('auth-error').textContent = '';
+}
+function showPasswordForm() {
+  document.getElementById('auth-choice').style.display = 'none';
+  document.getElementById('auth-form').style.display = '';
+  document.getElementById('auth-sub').textContent = 'Συνδέσου με τον κωδικό της εβδομάδας';
+  document.getElementById('auth-password').focus();
+}
+function showGate() {
+  showChoice();
+  document.getElementById('auth-gate').classList.remove('hidden');
+}
+function enterAsGuest() {
+  localStorage.setItem('clc_guest', '1');
+  setMode('guest');
+  hideAuthGate();
+  goScreen('screen-welcome');
+}
 
 async function checkAuth() {
   // 1. Host bypass via secret URL param
@@ -1138,6 +1187,8 @@ async function checkAuth() {
   const hostParam = params.get('host');
   if (hostParam && hostParam === HOST_SECRET) {
     localStorage.setItem('clc_host', '1');
+    localStorage.removeItem('clc_guest');
+    setMode('member');
     // Clean the secret out of the URL bar
     params.delete('host');
     const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '') + window.location.hash;
@@ -1148,6 +1199,7 @@ async function checkAuth() {
 
   // 2. Already-verified host on this device
   if (localStorage.getItem('clc_host') === '1') {
+    setMode('member');
     hideAuthGate();
     return;
   }
@@ -1155,6 +1207,14 @@ async function checkAuth() {
   // 3. Already-logged-in on this device (password hash matches the current one)
   const savedHash = localStorage.getItem('clc_auth');
   if (savedHash && savedHash === PASSWORD_HASH) {
+    setMode('member');
+    hideAuthGate();
+    return;
+  }
+
+  // 4. Guest on this device
+  if (localStorage.getItem('clc_guest') === '1') {
+    setMode('guest');
     hideAuthGate();
     return;
   }
@@ -1173,7 +1233,10 @@ async function handleLogin(e) {
     // Store the hash itself (not the raw password) so that when the weekly
     // password rotates, previously-saved devices are naturally logged out.
     localStorage.setItem('clc_auth', hash);
+    localStorage.removeItem('clc_guest');
+    setMode('member');
     hideAuthGate();
+    goScreen('screen-welcome');
   } else {
     errorEl.textContent = 'Λάθος password.';
   }
@@ -1198,13 +1261,13 @@ checkAuth();
   <h2 class="subject-title">Choose a subject</h2>
   <p class="subject-sub">What would you like to practice today?</p>
   <div class="subject-cards">
-    <div class="subject-card disabled" onclick="goScreen('screen-mode','English')">
+    <div class="subject-card disabled member-only" onclick="goScreen('screen-mode','English')">
       <div class="icon">📖</div>
       <div class="label">English</div>
       <div class="desc">Reading, Writing & Language</div>
       <span class="coming-soon">Coming Soon</span>
     </div>
-    <div class="subject-card" onclick="goScreen('screen-mode','Math')">
+    <div class="subject-card member-only" onclick="goScreen('screen-mode','Math')">
       <div class="icon">📐</div>
       <div class="label">Math</div>
       <div class="desc">Algebra, Data Analysis, Geometry & more</div>
@@ -1233,64 +1296,69 @@ checkAuth();
   <h2 class="subject-title">Full Practice Test</h2>
   <p class="subject-sub">Πλήρες Digital SAT · R&amp;W + Math, 4 modules, χρονόμετρο</p>
   <div class="mode-cards">
-    <a class="mode-card" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-01.html" style="text-decoration:none;color:inherit;">
+    <a class="mode-card member-only" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-01.html" style="text-decoration:none;color:inherit;">
       <div class="icon">📄</div>
       <div class="label">Test 1</div>
       <div class="desc">Πλήρες τεστ 4 modules με χρονόμετρο</div>
     </a>
-    <a class="mode-card" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-02.html" style="text-decoration:none;color:inherit;">
+    <a class="mode-card member-only" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-02.html" style="text-decoration:none;color:inherit;">
       <div class="icon">📄</div>
       <div class="label">Test 2</div>
       <div class="desc">Πλήρες τεστ 4 modules με χρονόμετρο</div>
     </a>
-    <a class="mode-card" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-03.html" style="text-decoration:none;color:inherit;">
+    <a class="mode-card member-only" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-03.html" style="text-decoration:none;color:inherit;">
       <div class="icon">📄</div>
       <div class="label">Test 3</div>
       <div class="desc">Πλήρες τεστ 4 modules με χρονόμετρο</div>
     </a>
-    <a class="mode-card" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-04.html" style="text-decoration:none;color:inherit;">
+    <a class="mode-card member-only" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-04.html" style="text-decoration:none;color:inherit;">
       <div class="icon">📄</div>
       <div class="label">Test 4</div>
       <div class="desc">Πλήρες τεστ 4 modules με χρονόμετρο</div>
     </a>
-    <a class="mode-card" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-05.html" style="text-decoration:none;color:inherit;">
+    <a class="mode-card member-only" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-05.html" style="text-decoration:none;color:inherit;">
       <div class="icon">📄</div>
       <div class="label">Test 5</div>
       <div class="desc">Πλήρες τεστ 4 modules με χρονόμετρο</div>
     </a>
-    <a class="mode-card" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-06.html" style="text-decoration:none;color:inherit;">
+    <a class="mode-card member-only" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-06.html" style="text-decoration:none;color:inherit;">
       <div class="icon">📄</div>
       <div class="label">Test 6</div>
       <div class="desc">Πλήρες τεστ 4 modules με χρονόμετρο</div>
     </a>
-    <a class="mode-card" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-07.html" style="text-decoration:none;color:inherit;">
+    <a class="mode-card member-only" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-07.html" style="text-decoration:none;color:inherit;">
       <div class="icon">📄</div>
       <div class="label">Test 7</div>
       <div class="desc">Πλήρες τεστ 4 modules με χρονόμετρο</div>
     </a>
-    <a class="mode-card" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-08.html" style="text-decoration:none;color:inherit;">
+    <a class="mode-card member-only" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-08.html" style="text-decoration:none;color:inherit;">
       <div class="icon">📄</div>
       <div class="label">Test 8</div>
       <div class="desc">Πλήρες τεστ 4 modules με χρονόμετρο</div>
     </a>
-    <a class="mode-card" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-09.html" style="text-decoration:none;color:inherit;">
+    <a class="mode-card member-only" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-09.html" style="text-decoration:none;color:inherit;">
       <div class="icon">📄</div>
       <div class="label">Test 9</div>
       <div class="desc">Πλήρες τεστ 4 modules με χρονόμετρο</div>
     </a>
-    <a class="mode-card" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-10.html" style="text-decoration:none;color:inherit;">
+    <a class="mode-card member-only" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-10.html" style="text-decoration:none;color:inherit;">
       <div class="icon">📄</div>
       <div class="label">Test 10</div>
       <div class="desc">Πλήρες τεστ 4 modules με χρονόμετρο</div>
     </a>
-    <a class="mode-card" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-11.html" style="text-decoration:none;color:inherit;">
+    <a class="mode-card member-only" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-11.html" style="text-decoration:none;color:inherit;">
       <div class="icon">📄</div>
       <div class="label">Test 11</div>
       <div class="desc">Πλήρες τεστ 4 modules με χρονόμετρο</div>
     </a>
-    <a class="mode-card" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-12.html" style="text-decoration:none;color:inherit;">
+    <a class="mode-card member-only" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-12.html" style="text-decoration:none;color:inherit;">
       <div class="icon">📄</div>
       <div class="label">Test 12</div>
+      <div class="desc">Πλήρες τεστ 4 modules με χρονόμετρο</div>
+    </a>
+    <a class="mode-card guest-only" href="https://stavros-tsal.github.io/sat-full-practice-tests/SAT-Full-Practice-Test-12.html" style="text-decoration:none;color:inherit;">
+      <div class="icon">📄</div>
+      <div class="label">Practice Test 1</div>
       <div class="desc">Πλήρες τεστ 4 modules με χρονόμετρο</div>
     </a>
   </div>
@@ -1368,11 +1436,11 @@ checkAuth();
   <h2 class="subject-title">Algebra</h2>
   <p class="subject-sub">College Board · Math · SAT</p>
   <div class="cb-skills">
-    <div class="cb-skill"><div class="cb-skill-name">Linear Equations in One Variable</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Algebra/Algebra_linear-equations-one-variable_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/sat/Algebra/Algebra_linear-equations-one-variable_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Linear Functions</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Algebra/Algebra_linear-functions_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/sat/Algebra/Algebra_linear-functions_Review-15.html">Review</a><a class="cb-link" href="college-board/math/sat/Algebra/Algebra_Linear-Functions_Extra-Homework-30-and-Review-15.html">Extra Homework &amp; Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Linear Equations in Two Variables</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Algebra/Algebra_linear-equations-two-variables_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/sat/Algebra/Algebra_linear-equations-two-variables_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Systems of Two Linear Equations in Two Variables</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Algebra/Algebra_systems-two-linear-equations-two-variables_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/sat/Algebra/Algebra_systems-two-linear-equations-two-variables_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Linear Inequalities in One or Two Variables</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Algebra/Algebra_linear-inequalities-one-or-two-variables_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/sat/Algebra/Algebra_linear-inequalities-one-or-two-variables_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Linear Equations in One Variable</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Algebra/Algebra_linear-equations-one-variable_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/sat/Algebra/Algebra_linear-equations-one-variable_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Linear Functions</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Algebra/Algebra_linear-functions_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/sat/Algebra/Algebra_linear-functions_Review-15.html">Review</a><a class="cb-link member-only" href="college-board/math/sat/Algebra/Algebra_Linear-Functions_Extra-Homework-30-and-Review-15.html">Extra Homework &amp; Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Linear Equations in Two Variables</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Algebra/Algebra_linear-equations-two-variables_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/sat/Algebra/Algebra_linear-equations-two-variables_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Systems of Two Linear Equations in Two Variables</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Algebra/Algebra_systems-two-linear-equations-two-variables_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/sat/Algebra/Algebra_systems-two-linear-equations-two-variables_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Linear Inequalities in One or Two Variables</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Algebra/Algebra_linear-inequalities-one-or-two-variables_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/sat/Algebra/Algebra_linear-inequalities-one-or-two-variables_Review-15.html">Review</a></div></div>
   </div>
   <button class="nav-back-btn" onclick="goScreen('screen-cb-math-sat')">← Back</button>
 </div>
@@ -1382,9 +1450,9 @@ checkAuth();
   <h2 class="subject-title">Advanced Math</h2>
   <p class="subject-sub">College Board · Math · SAT</p>
   <div class="cb-skills">
-    <div class="cb-skill"><div class="cb-skill-name">Equivalent Expressions</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Advanced-Math/Advanced-Math_Equivalent-Expressions_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/sat/Advanced-Math/Advanced-Math_Equivalent-Expressions_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Nonlinear Equations in One Variable and Systems of Equations in Two Variables</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Advanced-Math/Advanced-Math_Nonlinear-Equations-in-One-Variable-and-Systems-of-Equations-in-Two-Variables_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/sat/Advanced-Math/Advanced-Math_Nonlinear-Equations-in-One-Variable-and-Systems-of-Equations-in-Two-Variables_Review-15.html">Review</a><a class="cb-link" href="college-board/math/sat/Advanced-Math/Advanced-Math_Nonlinear-Equations-in-One-Variable-and-Systems-of-Equations-in-Two-Variables_Extra-Homework-30-and-Review-15.html">Extra Homework &amp; Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Nonlinear Functions</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Advanced-Math/Advanced-Math_Nonlinear-Functions_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/sat/Advanced-Math/Advanced-Math_Nonlinear-Functions_Review-15.html">Review</a><a class="cb-link" href="college-board/math/sat/Advanced-Math/Advanced-Math_Nonlinear-Functions_Extra-Homework-30-and-Review-15.html">Extra Homework &amp; Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Equivalent Expressions</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Advanced-Math/Advanced-Math_Equivalent-Expressions_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/sat/Advanced-Math/Advanced-Math_Equivalent-Expressions_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Nonlinear Equations in One Variable and Systems of Equations in Two Variables</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Advanced-Math/Advanced-Math_Nonlinear-Equations-in-One-Variable-and-Systems-of-Equations-in-Two-Variables_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/sat/Advanced-Math/Advanced-Math_Nonlinear-Equations-in-One-Variable-and-Systems-of-Equations-in-Two-Variables_Review-15.html">Review</a><a class="cb-link member-only" href="college-board/math/sat/Advanced-Math/Advanced-Math_Nonlinear-Equations-in-One-Variable-and-Systems-of-Equations-in-Two-Variables_Extra-Homework-30-and-Review-15.html">Extra Homework &amp; Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Nonlinear Functions</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Advanced-Math/Advanced-Math_Nonlinear-Functions_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/sat/Advanced-Math/Advanced-Math_Nonlinear-Functions_Review-15.html">Review</a><a class="cb-link member-only" href="college-board/math/sat/Advanced-Math/Advanced-Math_Nonlinear-Functions_Extra-Homework-30-and-Review-15.html">Extra Homework &amp; Review</a></div></div>
   </div>
   <button class="nav-back-btn" onclick="goScreen('screen-cb-math-sat')">← Back</button>
 </div>
@@ -1394,13 +1462,13 @@ checkAuth();
   <h2 class="subject-title">PSDA</h2>
   <p class="subject-sub">College Board · Math · SAT</p>
   <div class="cb-skills">
-    <div class="cb-skill"><div class="cb-skill-name">Ratios, Rates, Proportional Relationships, and Units</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_ratios-rates-proportional-relationships-units_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_ratios-rates-proportional-relationships-units_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Percentages</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_percentages_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_percentages_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">One-Variable Data: Distributions and Measures of Center and Spread</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_one-variable-data-distributions-center-spread_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_one-variable-data-distributions-center-spread_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Two-Variable Data: Models and Scatterplots</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_two-variable-data-models-scatterplots_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_two-variable-data-models-scatterplots_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Probability and Conditional Probability</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_probability-conditional-probability_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_probability-conditional-probability_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Inference from Sample Statistics and Margin of Error</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_inference-sample-statistics-margin-error_Homework-27.html">Homework</a><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_inference-sample-statistics-margin-error_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Evaluating Statistical Claims: Observational Studies and Experiments</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_evaluating-statistical-claims-studies-experiments_Homework-12.html">Homework</a><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_evaluating-statistical-claims-studies-experiments_Review-12.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Ratios, Rates, Proportional Relationships, and Units</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_ratios-rates-proportional-relationships-units_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/sat/PSDA/PSDA_ratios-rates-proportional-relationships-units_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Percentages</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_percentages_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/sat/PSDA/PSDA_percentages_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">One-Variable Data: Distributions and Measures of Center and Spread</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_one-variable-data-distributions-center-spread_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/sat/PSDA/PSDA_one-variable-data-distributions-center-spread_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Two-Variable Data: Models and Scatterplots</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_two-variable-data-models-scatterplots_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/sat/PSDA/PSDA_two-variable-data-models-scatterplots_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Probability and Conditional Probability</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_probability-conditional-probability_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/sat/PSDA/PSDA_probability-conditional-probability_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Inference from Sample Statistics and Margin of Error</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_inference-sample-statistics-margin-error_Homework-27.html">Homework</a><a class="cb-link member-only" href="college-board/math/sat/PSDA/PSDA_inference-sample-statistics-margin-error_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Evaluating Statistical Claims: Observational Studies and Experiments</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/PSDA/PSDA_evaluating-statistical-claims-studies-experiments_Homework-12.html">Homework</a><a class="cb-link member-only" href="college-board/math/sat/PSDA/PSDA_evaluating-statistical-claims-studies-experiments_Review-12.html">Review</a></div></div>
   </div>
   <button class="nav-back-btn" onclick="goScreen('screen-cb-math-sat')">← Back</button>
 </div>
@@ -1410,10 +1478,10 @@ checkAuth();
   <h2 class="subject-title">Geometry and Trigonometry</h2>
   <p class="subject-sub">College Board · Math · SAT</p>
   <div class="cb-skills">
-    <div class="cb-skill"><div class="cb-skill-name">Area and Volume</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Geometry-and-Trigonometry/Geometry-and-Trigonometry_Area-and-Volume_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/sat/Geometry-and-Trigonometry/Geometry-and-Trigonometry_Area-and-Volume_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Lines Angles and Triangles</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Geometry-and-Trigonometry/Geometry-and-Trigonometry_Lines-Angles-and-Triangles_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/sat/Geometry-and-Trigonometry/Geometry-and-Trigonometry_Lines-Angles-and-Triangles_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Right Triangles and Trigonometry</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Geometry-and-Trigonometry/Geometry-and-Trigonometry_Right-Triangles-and-Trigonometry_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/sat/Geometry-and-Trigonometry/Geometry-and-Trigonometry_Right-Triangles-and-Trigonometry_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Circles</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Geometry-and-Trigonometry/Geometry-and-Trigonometry_Circles_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/sat/Geometry-and-Trigonometry/Geometry-and-Trigonometry_Circles_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Area and Volume</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Geometry-and-Trigonometry/Geometry-and-Trigonometry_Area-and-Volume_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/sat/Geometry-and-Trigonometry/Geometry-and-Trigonometry_Area-and-Volume_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Lines Angles and Triangles</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Geometry-and-Trigonometry/Geometry-and-Trigonometry_Lines-Angles-and-Triangles_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/sat/Geometry-and-Trigonometry/Geometry-and-Trigonometry_Lines-Angles-and-Triangles_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Right Triangles and Trigonometry</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Geometry-and-Trigonometry/Geometry-and-Trigonometry_Right-Triangles-and-Trigonometry_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/sat/Geometry-and-Trigonometry/Geometry-and-Trigonometry_Right-Triangles-and-Trigonometry_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Circles</div><div class="cb-links"><a class="cb-link" href="college-board/math/sat/Geometry-and-Trigonometry/Geometry-and-Trigonometry_Circles_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/sat/Geometry-and-Trigonometry/Geometry-and-Trigonometry_Circles_Review-15.html">Review</a></div></div>
   </div>
   <button class="nav-back-btn" onclick="goScreen('screen-cb-math-sat')">← Back</button>
 </div>
@@ -1451,11 +1519,11 @@ checkAuth();
   <h2 class="subject-title">Algebra</h2>
   <p class="subject-sub">College Board · Math · PSAT</p>
   <div class="cb-skills">
-    <div class="cb-skill"><div class="cb-skill-name">Linear Equations in One Variable</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-equations-one-variable_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-equations-one-variable_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Linear Functions</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-functions_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-functions_Review-15.html">Review</a><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_Linear-Functions_Extra-Homework-30-and-Review-15.html">Extra Homework &amp; Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Linear Equations in Two Variables</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-equations-two-variables_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-equations-two-variables_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Systems of Two Linear Equations in Two Variables</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_systems-two-linear-equations-two-variables_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_systems-two-linear-equations-two-variables_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Linear Inequalities in One or Two Variables</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-inequalities-one-or-two-variables_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-inequalities-one-or-two-variables_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Linear Equations in One Variable</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-equations-one-variable_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-equations-one-variable_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Linear Functions</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-functions_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-functions_Review-15.html">Review</a><a class="cb-link member-only" href="college-board/math/psat/Algebra/PSAT-Algebra_Linear-Functions_Extra-Homework-30-and-Review-15.html">Extra Homework &amp; Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Linear Equations in Two Variables</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-equations-two-variables_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-equations-two-variables_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Systems of Two Linear Equations in Two Variables</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_systems-two-linear-equations-two-variables_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/psat/Algebra/PSAT-Algebra_systems-two-linear-equations-two-variables_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Linear Inequalities in One or Two Variables</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-inequalities-one-or-two-variables_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/psat/Algebra/PSAT-Algebra_linear-inequalities-one-or-two-variables_Review-15.html">Review</a></div></div>
   </div>
   <button class="nav-back-btn" onclick="goScreen('screen-cb-math-psat')">← Back</button>
 </div>
@@ -1465,9 +1533,9 @@ checkAuth();
   <h2 class="subject-title">Advanced Math</h2>
   <p class="subject-sub">College Board · Math · PSAT</p>
   <div class="cb-skills">
-    <div class="cb-skill"><div class="cb-skill-name">Equivalent Expressions</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_equivalent-expressions_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_equivalent-expressions_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Nonlinear Equations in One Variable and Systems of Equations in Two Variables</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_nonlinear-equations-systems_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_nonlinear-equations-systems_Review-15.html">Review</a><a class="cb-link" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_Nonlinear-Equations-in-One-Variable-and-Systems-of-Equations-in-Two-Variables_Extra-Homework-30-and-Review-15.html">Extra Homework &amp; Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Nonlinear Functions</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_nonlinear-functions_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_nonlinear-functions_Review-15.html">Review</a><a class="cb-link" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_Nonlinear-Functions_Extra-Homework-30-and-Review-15.html">Extra Homework &amp; Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Equivalent Expressions</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_equivalent-expressions_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_equivalent-expressions_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Nonlinear Equations in One Variable and Systems of Equations in Two Variables</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_nonlinear-equations-systems_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_nonlinear-equations-systems_Review-15.html">Review</a><a class="cb-link member-only" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_Nonlinear-Equations-in-One-Variable-and-Systems-of-Equations-in-Two-Variables_Extra-Homework-30-and-Review-15.html">Extra Homework &amp; Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Nonlinear Functions</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_nonlinear-functions_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_nonlinear-functions_Review-15.html">Review</a><a class="cb-link member-only" href="college-board/math/psat/Advanced-Math/PSAT-Advanced-Math_Nonlinear-Functions_Extra-Homework-30-and-Review-15.html">Extra Homework &amp; Review</a></div></div>
   </div>
   <button class="nav-back-btn" onclick="goScreen('screen-cb-math-psat')">← Back</button>
 </div>
@@ -1477,12 +1545,12 @@ checkAuth();
   <h2 class="subject-title">PSDA</h2>
   <p class="subject-sub">College Board · Math · PSAT</p>
   <div class="cb-skills">
-    <div class="cb-skill"><div class="cb-skill-name">Ratios, Rates, Proportional Relationships, and Units</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_ratios-rates-proportional-relationships-units_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_ratios-rates-proportional-relationships-units_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Percentages</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_percentages_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_percentages_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">One-Variable Data: Distributions and Measures of Center and Spread</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_one-variable-data-distributions-center-spread_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_one-variable-data-distributions-center-spread_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Two-Variable Data: Models and Scatterplots</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_two-variable-data-models-scatterplots_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_two-variable-data-models-scatterplots_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Probability and Conditional Probability</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_probability-conditional-probability_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_probability-conditional-probability_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Inference from Sample Statistics and Margin of Error</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_inference-sample-statistics-margin-error_Homework-24.html">Homework</a><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_inference-sample-statistics-margin-error_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Ratios, Rates, Proportional Relationships, and Units</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_ratios-rates-proportional-relationships-units_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/psat/PSDA/PSAT-PSDA_ratios-rates-proportional-relationships-units_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Percentages</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_percentages_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/psat/PSDA/PSAT-PSDA_percentages_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">One-Variable Data: Distributions and Measures of Center and Spread</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_one-variable-data-distributions-center-spread_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/psat/PSDA/PSAT-PSDA_one-variable-data-distributions-center-spread_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Two-Variable Data: Models and Scatterplots</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_two-variable-data-models-scatterplots_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/psat/PSDA/PSAT-PSDA_two-variable-data-models-scatterplots_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Probability and Conditional Probability</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_probability-conditional-probability_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/psat/PSDA/PSAT-PSDA_probability-conditional-probability_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Inference from Sample Statistics and Margin of Error</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/PSDA/PSAT-PSDA_inference-sample-statistics-margin-error_Homework-24.html">Homework</a><a class="cb-link member-only" href="college-board/math/psat/PSDA/PSAT-PSDA_inference-sample-statistics-margin-error_Review-15.html">Review</a></div></div>
   </div>
   <button class="nav-back-btn" onclick="goScreen('screen-cb-math-psat')">← Back</button>
 </div>
@@ -1492,9 +1560,9 @@ checkAuth();
   <h2 class="subject-title">Geometry and Trigonometry</h2>
   <p class="subject-sub">College Board · Math · PSAT</p>
   <div class="cb-skills">
-    <div class="cb-skill"><div class="cb-skill-name">Area and Volume</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Geometry-and-Trigonometry/PSAT-Geometry_area-volume_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Geometry-and-Trigonometry/PSAT-Geometry_area-volume_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Lines, Angles, and Triangles</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Geometry-and-Trigonometry/PSAT-Geometry_lines-angles-triangles_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Geometry-and-Trigonometry/PSAT-Geometry_lines-angles-triangles_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Right Triangles and Trigonometry</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Geometry-and-Trigonometry/PSAT-Geometry_right-triangles-trigonometry_Homework-30.html">Homework</a><a class="cb-link" href="college-board/math/psat/Geometry-and-Trigonometry/PSAT-Geometry_right-triangles-trigonometry_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Area and Volume</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Geometry-and-Trigonometry/PSAT-Geometry_area-volume_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/psat/Geometry-and-Trigonometry/PSAT-Geometry_area-volume_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Lines, Angles, and Triangles</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Geometry-and-Trigonometry/PSAT-Geometry_lines-angles-triangles_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/psat/Geometry-and-Trigonometry/PSAT-Geometry_lines-angles-triangles_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Right Triangles and Trigonometry</div><div class="cb-links"><a class="cb-link" href="college-board/math/psat/Geometry-and-Trigonometry/PSAT-Geometry_right-triangles-trigonometry_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/math/psat/Geometry-and-Trigonometry/PSAT-Geometry_right-triangles-trigonometry_Review-15.html">Review</a></div></div>
   </div>
   <button class="nav-back-btn" onclick="goScreen('screen-cb-math-psat')">← Back</button>
 </div>
@@ -1558,10 +1626,10 @@ checkAuth();
   <h2 class="subject-title">Craft and Structure</h2>
   <p class="subject-sub">College Board · English · SAT</p>
   <div class="cb-skills">
-    <div class="cb-skill"><div class="cb-skill-name">Words in Context</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/craft-and-structure/words-in-context/SAT-English_words-in-context_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/sat/craft-and-structure/words-in-context/SAT-English_words-in-context_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Text Structure and Purpose</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/craft-and-structure/text-structure-and-purpose/SAT-English_text-structure-and-purpose_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/sat/craft-and-structure/text-structure-and-purpose/SAT-English_text-structure-and-purpose_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Cross-Text Connections</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/craft-and-structure/cross-text-connections/SAT-English_cross-text-connections_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/sat/craft-and-structure/cross-text-connections/SAT-English_cross-text-connections_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">College Board Related Questions</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/craft-and-structure/College-Board-Related-Questions-craft-and-structure.html">Questions</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Words in Context</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/craft-and-structure/words-in-context/SAT-English_words-in-context_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/english/sat/craft-and-structure/words-in-context/SAT-English_words-in-context_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Text Structure and Purpose</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/craft-and-structure/text-structure-and-purpose/SAT-English_text-structure-and-purpose_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/english/sat/craft-and-structure/text-structure-and-purpose/SAT-English_text-structure-and-purpose_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Cross-Text Connections</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/craft-and-structure/cross-text-connections/SAT-English_cross-text-connections_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/english/sat/craft-and-structure/cross-text-connections/SAT-English_cross-text-connections_Review-15.html">Review</a></div></div>
+    <div class="cb-skill member-only"><div class="cb-skill-name">College Board Related Questions</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/craft-and-structure/College-Board-Related-Questions-craft-and-structure.html">Questions</a></div></div>
   </div>
   <button class="nav-back-btn" onclick="goScreen('screen-cb-english-sat')">← Back</button>
 </div>
@@ -1571,10 +1639,10 @@ checkAuth();
   <h2 class="subject-title">Information and Ideas</h2>
   <p class="subject-sub">College Board · English · SAT</p>
   <div class="cb-skills">
-    <div class="cb-skill"><div class="cb-skill-name">Central Ideas and Details</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/information-and-ideas/central-ideas-and-details/SAT-English_central-ideas-and-details_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/sat/information-and-ideas/central-ideas-and-details/SAT-English_central-ideas-and-details_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Command of Evidence</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/information-and-ideas/command-of-evidence/SAT-English_command-of-evidence_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/sat/information-and-ideas/command-of-evidence/SAT-English_command-of-evidence_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Inferences</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/information-and-ideas/inferences/SAT-English_inferences_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/sat/information-and-ideas/inferences/SAT-English_inferences_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">College Board Related Questions</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/information-and-ideas/College-Board-Related-Questions-information-and-ideas.html">Questions</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Central Ideas and Details</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/information-and-ideas/central-ideas-and-details/SAT-English_central-ideas-and-details_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/english/sat/information-and-ideas/central-ideas-and-details/SAT-English_central-ideas-and-details_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Command of Evidence</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/information-and-ideas/command-of-evidence/SAT-English_command-of-evidence_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/english/sat/information-and-ideas/command-of-evidence/SAT-English_command-of-evidence_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Inferences</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/information-and-ideas/inferences/SAT-English_inferences_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/english/sat/information-and-ideas/inferences/SAT-English_inferences_Review-15.html">Review</a></div></div>
+    <div class="cb-skill member-only"><div class="cb-skill-name">College Board Related Questions</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/information-and-ideas/College-Board-Related-Questions-information-and-ideas.html">Questions</a></div></div>
   </div>
   <button class="nav-back-btn" onclick="goScreen('screen-cb-english-sat')">← Back</button>
 </div>
@@ -1584,9 +1652,9 @@ checkAuth();
   <h2 class="subject-title">Standard English Conventions</h2>
   <p class="subject-sub">College Board · English · SAT</p>
   <div class="cb-skills">
-    <div class="cb-skill"><div class="cb-skill-name">Boundaries</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/standard-english-conventions/boundaries/SAT-English_boundaries_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/sat/standard-english-conventions/boundaries/SAT-English_boundaries_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Form, Structure, and Sense</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/standard-english-conventions/form-structure-and-sense/SAT-English_form-structure-and-sense_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/sat/standard-english-conventions/form-structure-and-sense/SAT-English_form-structure-and-sense_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">College Board Related Questions</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/standard-english-conventions/College-Board-Related-Questions-standard-english-conventions.html">Questions</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Boundaries</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/standard-english-conventions/boundaries/SAT-English_boundaries_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/english/sat/standard-english-conventions/boundaries/SAT-English_boundaries_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Form, Structure, and Sense</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/standard-english-conventions/form-structure-and-sense/SAT-English_form-structure-and-sense_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/english/sat/standard-english-conventions/form-structure-and-sense/SAT-English_form-structure-and-sense_Review-15.html">Review</a></div></div>
+    <div class="cb-skill member-only"><div class="cb-skill-name">College Board Related Questions</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/standard-english-conventions/College-Board-Related-Questions-standard-english-conventions.html">Questions</a></div></div>
   </div>
   <button class="nav-back-btn" onclick="goScreen('screen-cb-english-sat')">← Back</button>
 </div>
@@ -1596,9 +1664,9 @@ checkAuth();
   <h2 class="subject-title">Expression of Ideas</h2>
   <p class="subject-sub">College Board · English · SAT</p>
   <div class="cb-skills">
-    <div class="cb-skill"><div class="cb-skill-name">Rhetorical Synthesis</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/expression-of-ideas/rhetorical-synthesis/SAT-English_rhetorical-synthesis_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/sat/expression-of-ideas/rhetorical-synthesis/SAT-English_rhetorical-synthesis_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Transitions</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/expression-of-ideas/transitions/SAT-English_transitions_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/sat/expression-of-ideas/transitions/SAT-English_transitions_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">College Board Related Questions</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/expression-of-ideas/College-Board-Related-Questions-expression-of-ideas.html">Questions</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Rhetorical Synthesis</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/expression-of-ideas/rhetorical-synthesis/SAT-English_rhetorical-synthesis_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/english/sat/expression-of-ideas/rhetorical-synthesis/SAT-English_rhetorical-synthesis_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Transitions</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/expression-of-ideas/transitions/SAT-English_transitions_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/english/sat/expression-of-ideas/transitions/SAT-English_transitions_Review-15.html">Review</a></div></div>
+    <div class="cb-skill member-only"><div class="cb-skill-name">College Board Related Questions</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/expression-of-ideas/College-Board-Related-Questions-expression-of-ideas.html">Questions</a></div></div>
   </div>
   <button class="nav-back-btn" onclick="goScreen('screen-cb-english-sat')">← Back</button>
 </div>
@@ -2735,7 +2803,9 @@ document.addEventListener('keydown', e => {
 // ── SCREEN NAVIGATION ──
 let __isHistoryNav = false;
 
+const GUEST_SCREENS = /^screen-(welcome|subject|full-practice-list|college-board|cb-)/;
 function goScreen(id, subject) {
+  if (document.body.classList.contains('guest') && !GUEST_SCREENS.test(id)) id = 'screen-subject';
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   if (id !== 'screen-quiz' && id !== 'screen-test-quiz') {
     const fab = document.getElementById('desmos-fab');
