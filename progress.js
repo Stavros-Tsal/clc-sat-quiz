@@ -6,6 +6,8 @@
 // ═══════════════════════════════════════════════════════════════════
 (function () {
   const KEY = 'clc_progress_v1';
+  const DRILL_TABS = { '0': 'Algebra', '1': 'Interpretation', '2': 'Probabilities & Statistics', '3': 'Geometry' };
+  function report(rec) { try { if (window.clcReport) window.clcReport(rec); } catch (e) {} }
 
   function defaultProgress() {
     return {
@@ -64,6 +66,7 @@
     p.drillStats[tabKey].total += 1;
     if (isCorrect) p.drillStats[tabKey].correct += 1;
     save(p);
+    report({ src: 'drill', subject: 'math', chapter: DRILL_TABS[tabKey] || ('Tab ' + tabKey), kind: 'Drill', ref: tabKey + '-' + qKey, correct: isCorrect ? 1 : 0, total: 1 });
   };
 
   // Record one completed Math Practice Test attempt (Test 1–15, scaled /800).
@@ -75,6 +78,7 @@
     p.mathTestStats.correct += correctCount;
     p.mathTestStats.total += totalCount;
     save(p);
+    report({ src: 'mathtest', subject: 'math', chapter: 'Math Practice Test', skill: 'test-' + key, kind: 'MathTest', ref: 'math-test-' + key, correct: correctCount, total: totalCount, score: scaledScore });
   };
 
   // Record one completed Full Practice Test attempt (Test 1–3, R&W+Math).
@@ -92,6 +96,7 @@
     p.fullTestStats.correct += correctCount;
     p.fullTestStats.total += totalCount;
     save(p);
+    report({ src: 'full', subject: 'both', chapter: 'Full Practice Test', skill: 'test-' + key, kind: 'FullTest', ref: 'full-test-' + key, correct: correctCount, total: totalCount, score: scaledScore });
   };
 
   // Record one completed Specific Practice attempt (Advanced Math / Algebra / PSDA).
@@ -104,6 +109,7 @@
       date: new Date().toISOString()
     });
     save(p);
+    report({ src: 'specific', subject: 'math', chapter: bankName, kind: 'Specific', ref: bankName, correct: correctCount, total: totalCount });
   };
 
   window.clcLoadProgress = load;

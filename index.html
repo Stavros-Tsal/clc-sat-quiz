@@ -1146,6 +1146,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="results.js"></script>
 <script src="progress.js"></script>
 <script>
 // Access: members sign in with Google; the email must exist in the Firestore "students" collection
@@ -1189,10 +1190,13 @@ const CAL_IDS = {
   '2': 'OTJjZDBiOWYyMzgzMDI5NjY4NzIzYzQ0YmU5MjVmNjMyODYxMTg3NzAwNmEzYzkxZGNkMDc4MDU1ZDEyNzBmYUBncm91cC5jYWxlbmRhci5nb29nbGUuY29t'
 };
 function calUrl(g) { return 'https://calendar.google.com/calendar/u/0/r?cid=' + CAL_IDS[g]; }
-function setCalButtons(groups) {
+function setCalButtons(groups, isAdmin) {
   const box = document.getElementById('cal-buttons');
   if (!box) return;
   box.innerHTML = '';
+  const pr = document.createElement('a');
+  pr.href = 'progress.html'; pr.textContent = isAdmin ? '📊 Reports μαθητών' : '📊 Η πρόοδός μου';
+  box.appendChild(pr);
   groups.forEach(function (g) {
     if (!CAL_IDS[g]) return;
     const a = document.createElement('a');
@@ -1204,7 +1208,7 @@ function setCalButtons(groups) {
 async function isAllowed(user) {
   const email = (user.email || '').trim().toLowerCase();
   if (!email) return false;
-  if (email === ADMIN_EMAIL) { setCalButtons(['1', '2']); return true; }
+  if (email === ADMIN_EMAIL) { setCalButtons(['1', '2'], true); return true; }
   const snap = await fbDb.collection('students').where('email', '==', email).limit(1).get();
   if (snap.empty) return false;
   const g = String((snap.docs[0].data() || {}).group || '').trim();
@@ -1243,6 +1247,7 @@ function initAuth() {
         localStorage.removeItem('clc_guest');
         setMode('member');
         hideAuthGate();
+        if (window.clcMigrateOnce) setTimeout(clcMigrateOnce, 2500);
         if (!document.querySelector('.screen.active') || document.querySelector('.screen.active').id === 'screen-welcome') goScreen('screen-welcome');
       } else {
         const em = user.email;

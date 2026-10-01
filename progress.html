@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Η πρόοδός μου — Greek SAT</title>
+<style>
+  :root { --blue:#0d5eaf; --ink:#1d2433; --muted:#667085; --line:#e4e7ec; --bg:#f6f8fb; --ok:#1a8f5a; --mid:#d98a00; --low:#c0392b; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bg); color:var(--ink); line-height:1.45; }
+  header { background:#fff; border-bottom:1px solid var(--line); padding:14px 20px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; position:sticky; top:0; z-index:5; }
+  header h1 { font-size:18px; margin:0; flex:1; min-width:200px; }
+  a.back, button.btn, select { font:inherit; font-size:14px; padding:7px 14px; border-radius:18px; border:1.5px solid var(--blue); background:#fff; color:var(--blue); cursor:pointer; text-decoration:none; }
+  a.back:hover, button.btn:hover { background:var(--blue); color:#fff; }
+  select { max-width:280px; }
+  main { max-width:980px; margin:0 auto; padding:18px 16px 60px; }
+  .msg { text-align:center; color:var(--muted); padding:60px 10px; }
+  .msg button { margin-top:14px; }
+  h2 { font-size:17px; margin:30px 0 10px; padding-bottom:6px; border-bottom:2px solid var(--blue); }
+  h3 { font-size:15px; margin:18px 0 6px; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px 14px; }
+  .card .v { font-size:24px; font-weight:700; }
+  .card .l { font-size:12px; color:var(--muted); }
+  table { width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--line); border-radius:10px; overflow:hidden; font-size:14px; }
+  th, td { padding:8px 10px; text-align:left; border-bottom:1px solid var(--line); vertical-align:middle; }
+  th { background:#f1f4f9; font-size:12px; text-transform:uppercase; letter-spacing:.4px; color:var(--muted); }
+  tr:last-child td { border-bottom:none; }
+  td.n, th.n { text-align:right; white-space:nowrap; }
+  .bar { height:8px; border-radius:5px; background:#e9edf3; min-width:70px; overflow:hidden; }
+  .bar i { display:block; height:100%; }
+  .g { background:var(--ok); } .m { background:var(--mid); } .r { background:var(--low); }
+  .chap td { background:#eef4fb; font-weight:700; }
+  .small { color:var(--muted); font-size:12px; }
+  .tabs { display:flex; gap:8px; margin:6px 0 0; flex-wrap:wrap; }
+  .tabs button { font:inherit; font-size:14px; padding:6px 14px; border-radius:16px; border:1px solid var(--line); background:#fff; cursor:pointer; }
+  .tabs button.on { background:var(--blue); border-color:var(--blue); color:#fff; }
+  @media print { header .btn, header select, header a { display:none; } }
+  @media (max-width:640px) { th:nth-child(4), td:nth-child(4) { display:none; } }
+</style>
+</head>
+<body>
+<header>
+  <a class="back" href="index.html">← Αρχική</a>
+  <h1 id="title">Η πρόοδός μου</h1>
+  <select id="who" style="display:none"></select>
+  <button class="btn" onclick="window.print()">Εκτύπωση / PDF</button>
+</header>
+<main id="main"><div class="msg">Φόρτωση…</div></main>
+
+<script src="results.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const CH_NAMES = {
+  'Algebra':'Algebra', 'Advanced-Math':'Advanced Math', 'PSDA':'Problem-Solving & Data Analysis', 'Geometry-and-Trigonometry':'Geometry & Trigonometry',
+  'craft-and-structure':'Craft and Structure', 'information-and-ideas':'Information and Ideas',
+  'standard-english-conventions':'Standard English Conventions', 'expression-of-ideas':'Expression of Ideas'
+};
+const MATH_ORDER = ['Algebra','Advanced-Math','PSDA','Geometry-and-Trigonometry'];
+const EN_ORDER = ['craft-and-structure','information-and-ideas','standard-english-conventions','expression-of-ideas'];
+const KIND_LABEL = { Homework:'Homework', Review:'Review', Extra:'Extra' };
+function chName(c) { return CH_NAMES[c] || c; }
+function skName(s) { return String(s || '—').replace(/-/g, ' ').replace(/^./, c => c.toUpperCase()); }
+
+function cls(p) { return p >= 80 ? 'g' : p >= 60 ? 'm' : 'r'; }
+function bar(p) { return '<div class="bar"><i class="' + cls(p) + '" style="width:' + Math.max(2, Math.min(100, p)) + '%"></i></div>'; }
+const r1 = x => Math.round(x * 10) / 10;
+
+// mean of attempt percentages
+function meanPct(a) { return a.length ? r1(a.reduce((s, x) => s + (x.pct || 0), 0) / a.length) : null; }
+// pooled (sum correct / sum total) — used for single-question records
+function pooled(a) { const c = a.reduce((s, x) => s + x.correct, 0), t = a.reduce((s, x) => s + x.total, 0); return t ? r1(100 * c / t) : null; }
+function tot(a) { return a.reduce((s, x) => s + x.total, 0); }
+function groupBy(a, f) { const m = new Map(); a.forEach(x => { const k = f(x); if (!m.has(k)) m.set(k, []); m.get(k).push(x); }); return m; }
+function sortChapters(keys, order) { return keys.slice().sort((a, b) => { const i = order.indexOf(a), j = order.indexOf(b); return (i < 0 ? 99 : i) - (j < 0 ? 99 : j) || a.localeCompare(b); }); }
+
+function cell(p, n) { return p == null ? '<td class="n small">—</td><td></td><td class="n small">0</td>' : '<td class="n"><b>' + p + '%</b></td><td>' + bar(p) + '</td><td class="n small">' + n + '</td>'; }
+
+// ── College Board homework/review tables ──
+function cbTable(att, subject, order) {
+  const rows = att.filter(x => x.src === 'cb' && x.subject === subject);
+  if (!rows.length) return '<p class="small">Δεν υπάρχουν προσπάθειες ακόμα.</p>';
+  let h = '<table><tr><th>Κεφάλαιο / Skill</th><th class="n">Μ.Ο. όλων των προσπαθειών</th><th></th><th class="n">Προσπάθειες</th><th>Homework · Review</th></tr>';
+  const byCh = groupBy(rows, x => x.chapter);
+  sortChapters([...byCh.keys()], order).forEach(ch => {
+    const a = byCh.get(ch);
+    h += '<tr class="chap"><td>' + esc(chName(ch)) + '</td>' + cell(meanPct(a), a.length) + '<td></td></tr>';
+    const bySk = groupBy(a, x => x.skill);
+    [...bySk.keys()].sort().forEach(sk => {
+      const s = bySk.get(sk), hw = s.filter(x => x.kind === 'Homework'), rv = s.filter(x => x.kind === 'Review'), ex = s.filter(x => x.kind === 'Extra');
+      const part = (lab, arr) => arr.length ? lab + ' ' + meanPct(arr) + '% (' + arr.length + ')' : '';
+      h += '<tr><td>' + esc(skName(sk)) + '</td>' + cell(meanPct(s), s.length) + '<td class="small">' + [part('HW', hw), part('Rev', rv), part('Extra', ex)].filter(Boolean).join(' · ') + '</td></tr>';
+    });
+  });
+  return h + '</table>';
+}
+
+// ── Related questions (per skill, pooled) ──
+function rqTable(att) {
+  const rows = att.filter(x => x.src === 'rq');
+  if (!rows.length) return '<p class="small">Δεν υπάρχουν απαντήσεις ακόμα.</p>';
+  let h = '<table><tr><th>Κεφάλαιο / Skill</th><th class="n">Ποσοστό σωστών</th><th></th><th class="n">Απαντήσεις</th></tr>';
+  const byCh = groupBy(rows, x => x.chapter);
+  sortChapters([...byCh.keys()], EN_ORDER).forEach(ch => {
+    const a = byCh.get(ch);
+    h += '<tr class="chap"><td>' + esc(chName(ch)) + '</td><td class="n"><b>' + pooled(a) + '%</b></td><td>' + bar(pooled(a)) + '</td><td class="n small">' + tot(a) + '</td></tr>';
+    const bySk = groupBy(a, x => x.skill);
+    [...bySk.keys()].sort().forEach(sk => { const s = bySk.get(sk); h += '<tr><td>' + esc(skName(sk)) + '</td><td class="n"><b>' + pooled(s) + '%</b></td><td>' + bar(pooled(s)) + '</td><td class="n small">' + tot(s) + '</td></tr>'; });
+  });
+  return h + '</table>';
+}
+
+// ── Drills (per chapter) ──
+function drillTable(att) {
+  const rows = att.filter(x => x.src === 'drill');
+  if (!rows.length) return '<p class="small">Δεν υπάρχουν απαντήσεις ακόμα.</p>';
+  let h = '<table><tr><th>Κεφάλαιο</th><th class="n">Ποσοστό σωστών</th><th></th><th class="n">Απαντήσεις</th></tr>';
+  const byCh = groupBy(rows, x => x.chapter);
+  [...byCh.keys()].sort().forEach(ch => { const a = byCh.get(ch); h += '<tr><td>' + esc(ch) + '</td><td class="n"><b>' + pooled(a) + '%</b></td><td>' + bar(pooled(a)) + '</td><td class="n small">' + tot(a) + '</td></tr>'; });
+  return h + '</table>';
+}
+
+// ── Practice tests ──
+function testTable(att, src, label, usesScore, maxScore) {
+  const rows = att.filter(x => x.src === src);
+  if (!rows.length) return '<p class="small">Δεν υπάρχουν προσπάθειες ακόμα.</p>';
+  const val = x => usesScore && x.score != null ? x.score : x.pct;
+  const unit = usesScore ? '' : '%';
+  const avg = a => { const v = a.map(val).filter(v => v != null && !isNaN(v)); return v.length ? r1(v.reduce((s, y) => s + y, 0) / v.length) : null; };
+  let h = '<table><tr><th>' + label + '</th><th class="n">Μ.Ο.' + (usesScore ? ' (σκορ)' : '') + '</th><th></th><th class="n">Προσπάθειες</th></tr>';
+  const all = avg(rows);
+  h += '<tr class="chap"><td>Συνολικά</td><td class="n"><b>' + (all == null ? '—' : all + unit) + '</b></td><td>' + (all == null ? '' : bar(usesScore ? 100 * all / maxScore : all)) + '</td><td class="n small">' + rows.length + '</td></tr>';
+  const by = groupBy(rows, x => x.ref || x.skill || '');
+  [...by.keys()].sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).forEach(k => {
+    const a = by.get(k), v = avg(a);
+    h += '<tr><td>' + esc(k.replace(/^math-test-/, 'Math Test ').replace(/^full-test-/, 'Full Test ').replace(/^module(\d)_part(\d+)$/, 'Module $1 · Part $2')) + '</td><td class="n"><b>' + (v == null ? '—' : v + unit) + '</b></td><td>' + (v == null ? '' : bar(usesScore ? 100 * v / maxScore : v)) + '</td><td class="n small">' + a.length + '</td></tr>';
+  });
+  return h + '</table>';
+}
+
+function summaryCards(att) {
+  const f = (arr, fn) => { const v = fn(arr); return v == null ? '—' : v + '%'; };
+  const cb = att.filter(x => x.src === 'cb');
+  const cards = [
+    ['College Board Math', f(cb.filter(x => x.subject === 'math'), meanPct), cb.filter(x => x.subject === 'math').length + ' προσπάθειες'],
+    ['College Board English', f(cb.filter(x => x.subject === 'english'), meanPct), cb.filter(x => x.subject === 'english').length + ' προσπάθειες'],
+    ['Related Questions', f(att.filter(x => x.src === 'rq'), pooled), tot(att.filter(x => x.src === 'rq')) + ' απαντήσεις'],
+    ['Drills', f(att.filter(x => x.src === 'drill'), pooled), tot(att.filter(x => x.src === 'drill')) + ' απαντήσεις'],
+    ['Fast Track', f(att.filter(x => x.src === 'fasttrack'), meanPct), att.filter(x => x.src === 'fasttrack').length + ' προσπάθειες']
+  ];
+  const sc = src => { const v = att.filter(x => x.src === src && x.score != null).map(x => x.score); return v.length ? r1(v.reduce((s, y) => s + y, 0) / v.length) : null; };
+  const mt = sc('mathtest'), ft = sc('full');
+  cards.push(['Math Practice Tests (Μ.Ο. σκορ)', mt == null ? '—' : mt, att.filter(x => x.src === 'mathtest').length + ' προσπάθειες']);
+  cards.push(['Full Practice Tests (Μ.Ο. σκορ)', ft == null ? '—' : ft, att.filter(x => x.src === 'full').length + ' προσπάθειες']);
+  return '<div class="cards">' + cards.map(c => '<div class="card"><div class="v">' + c[1] + '</div><div class="l">' + c[0] + '</div><div class="l">' + c[2] + '</div></div>').join('') + '</div>';
+}
+
+function renderReport(att, who) {
+  if (!att.length) { $('main').innerHTML = '<div class="msg">Δεν υπάρχουν καταγεγραμμένα αποτελέσματα' + (who ? ' για ' + esc(who) : '') + ' ακόμα.</div>'; return; }
+  let h = summaryCards(att);
+  h += '<h2>College Board — Math (Homework / Review ανά skill)</h2>' + cbTable(att, 'math', MATH_ORDER);
+  h += '<h2>College Board — English (Homework / Review ανά skill)</h2>' + cbTable(att, 'english', EN_ORDER);
+  h += '<h2>College Board — Related Questions (English)</h2>' + rqTable(att);
+  h += '<h2>Drills (Math)</h2>' + drillTable(att);
+  h += '<h2>Fast Track</h2>' + testTable(att, 'fasttrack', 'Module / Part', false);
+  h += '<h2>Math Practice Tests</h2>' + testTable(att, 'mathtest', 'Test', true, 800);
+  h += '<h2>Full Practice Tests</h2>' + testTable(att, 'full', 'Test', true, 1600);
+  h += '<h2>Specific Practice</h2>' + testTable(att, 'specific', 'Chapter', false);
+  h += '<p class="small" style="margin-top:22px">Μ.Ο. = μέσος όρος των ποσοστών όλων των προσπαθειών (Homework/Review, Fast Track) ή συνολικό ποσοστό σωστών απαντήσεων (Drills, Related Questions). Σκορ tests: scaled score όπως εμφανίζεται στο κάθε test.</p>';
+  $('main').innerHTML = h;
+}
+
+// ── data loading ──
+let CTX = null, ALL = [], STUDENTS = {};
+async function loadOwn(email) {
+  const s = await CTX.db.collection('results').doc(email).collection('attempts').get();
+  return s.docs.map(d => d.data());
+}
+async function loadAll() {
+  const s = await CTX.db.collectionGroup('attempts').get();
+  return s.docs.map(d => d.data());
+}
+
+function adminOverview() {
+  const by = groupBy(ALL, x => x.email);
+  const emails = [...by.keys()].sort();
+  let h = '<h2>Όλοι οι μαθητές</h2><table><tr><th>Μαθητής</th><th class="n">Ομάδα</th><th class="n">CB Math</th><th class="n">CB English</th><th class="n">Rel. Q.</th><th class="n">Drills</th><th class="n">Fast Track</th><th class="n">Math Tests</th><th class="n">Full Tests</th></tr>';
+  const sc = (a, src) => { const v = a.filter(x => x.src === src && x.score != null).map(x => x.score); return v.length ? r1(v.reduce((s, y) => s + y, 0) / v.length) : '—'; };
+  const pc = (v) => v == null ? '—' : v + '%';
+  emails.forEach(em => {
+    const a = by.get(em), cb = a.filter(x => x.src === 'cb');
+    const st = STUDENTS[em] || {};
+    h += '<tr><td><a href="#" onclick="pick(\'' + esc(em) + '\');return false">' + esc(st.name || (a.find(x => x.name) || {}).name || em) + '</a><div class="small">' + esc(em) + '</div></td><td class="n">' + esc(st.group || '—') + '</td>' +
+      '<td class="n">' + pc(meanPct(cb.filter(x => x.subject === 'math'))) + '</td><td class="n">' + pc(meanPct(cb.filter(x => x.subject === 'english'))) + '</td>' +
+      '<td class="n">' + pc(pooled(a.filter(x => x.src === 'rq'))) + '</td><td class="n">' + pc(pooled(a.filter(x => x.src === 'drill'))) + '</td>' +
+      '<td class="n">' + pc(meanPct(a.filter(x => x.src === 'fasttrack'))) + '</td><td class="n">' + sc(a, 'mathtest') + '</td><td class="n">' + sc(a, 'full') + '</td></tr>';
+  });
+  return h + '</table>';
+}
+
+function pick(email) { $('who').value = email; showWho(); window.scrollTo(0, 0); }
+function showWho() {
+  const v = $('who').value;
+  if (v === '__all') { $('main').innerHTML = adminOverview(); return; }
+  const a = ALL.filter(x => x.email === v), st = STUDENTS[v] || {};
+  renderReport(a, (st.name || v));
+  $('main').insertAdjacentHTML('afterbegin', '<h2 style="margin-top:0">' + esc(st.name || (a.find(x => x.name) || {}).name || v) + ' <span class="small">· ' + esc(v) + (st.group ? ' · Ομάδα ' + esc(st.group) : '') + '</span></h2>');
+}
+
+async function init() {
+  try {
+    CTX = await clcResultsEnsure();
+    if (!CTX.user) {
+      $('main').innerHTML = '<div class="msg">Για να δεις την πρόοδό σου πρέπει να έχεις συνδεθεί με Google.<br><button class="btn" id="login">Είσοδος με Google</button></div>';
+      $('login').onclick = async () => { try { const p = new firebase.auth.GoogleAuthProvider(); p.setCustomParameters({ prompt: 'select_account' }); await CTX.auth.signInWithPopup(p); location.reload(); } catch (e) { alert('Αποτυχία σύνδεσης'); } };
+      return;
+    }
+    const email = (CTX.user.email || '').toLowerCase();
+    if (email === CLC_ADMIN_EMAIL) {
+      $('title').textContent = 'Reports μαθητών (host)';
+      try { const ss = await CTX.db.collection('students').get(); ss.docs.forEach(d => { const x = d.data(); if (x.email) STUDENTS[String(x.email).trim().toLowerCase()] = x; }); } catch (e) { console.warn(e); }
+      ALL = await loadAll();
+      const emails = new Set(ALL.map(x => x.email)); Object.keys(STUDENTS).forEach(e => emails.add(e));
+      const sel = $('who'); sel.style.display = '';
+      sel.innerHTML = '<option value="__all">Όλοι οι μαθητές</option>' + [...emails].sort().map(e => '<option value="' + esc(e) + '">' + esc((STUDENTS[e] && STUDENTS[e].name) || e) + (STUDENTS[e] && STUDENTS[e].group ? ' (Ομάδα ' + esc(STUDENTS[e].group) + ')' : '') + '</option>').join('');
+      sel.onchange = showWho;
+      const q = new URLSearchParams(location.search).get('student');
+      if (q) sel.value = q.toLowerCase();
+      showWho();
+    } else {
+      ALL = await loadOwn(email);
+      $('title').textContent = 'Η πρόοδός μου — ' + (CTX.user.displayName || email);
+      renderReport(ALL, '');
+    }
+  } catch (e) {
+    console.warn(e);
+    $('main').innerHTML = '<div class="msg">Δεν ήταν δυνατή η φόρτωση (' + esc(e.code || e.message || 'σφάλμα') + ').</div>';
+  }
+}
+init();
+</script>
+</body>
+</html>

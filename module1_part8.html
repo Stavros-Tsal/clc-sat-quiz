@@ -90,9 +90,9 @@ function bind(){document.querySelectorAll('input[type=radio]').forEach(e=>e.onch
 function prog(){const n=Object.values(given).filter(v=>v!==''&&v!==undefined).length;document.getElementById('prog').textContent=n+' / 22 answered'}
 function typeset(){if(window.MathJax&&MathJax.typesetPromise)MathJax.typesetPromise().catch(()=>{})}
 function fmtScore(x){return (Math.round(x*10)/10).toString()}
-function doCheck(){checked=true;let earned=0,maxW=0;Q.forEach((q,i)=>{const w=weight(i);maxW+=w;if(ok(q,given[i]))earned+=w});document.getElementById('score').textContent='Score: '+fmtScore(earned)+' / '+fmtScore(maxW);render();window.scrollTo(0,0)}
+function doCheck(){checked=true;let earned=0,maxW=0;Q.forEach((q,i)=>{const w=weight(i);maxW+=w;if(ok(q,given[i]))earned+=w});document.getElementById('score').textContent='Score: '+fmtScore(earned)+' / '+fmtScore(maxW);try{if(window.clcReport&&!window.__clcFtDone){window.__clcFtDone=1;let c=0;Q.forEach((q,i)=>{if(ok(q,given[i]))c++});clcReport({src:'fasttrack',correct:c,total:Q.length,score:Math.round(1000*earned/(maxW||1))/10})}}catch(_e){}render();window.scrollTo(0,0)}
 document.getElementById('chk').onclick=doCheck;
-document.getElementById('rst').onclick=()=>{for(const k in given)delete given[k];checked=false;document.getElementById('score').textContent='';render();window.scrollTo(0,0)};
+document.getElementById('rst').onclick=()=>{for(const k in given)delete given[k];checked=false;window.__clcFtDone=0;document.getElementById('score').textContent='';render();window.scrollTo(0,0)};
 render();window.addEventListener('load',()=>setTimeout(typeset,600));
 
 // ── Timer / start screen ──
@@ -107,4 +107,4 @@ renderTimingOptions();
 function updateTimerDisplay(){const mnt=Math.floor(timeLeft/60),s=timeLeft%60;const str=String(mnt).padStart(2,'0')+':'+String(s).padStart(2,'0');const pill=document.getElementById('timer-pill');pill.textContent=str;pill.classList.toggle('warn',timeLeft<=60)}
 function startTimer(){timeLeft=chosenMinutes*60;updateTimerDisplay();timerInterval=setInterval(()=>{timeLeft--;if(timeLeft<=0){clearInterval(timerInterval);timeLeft=0;updateTimerDisplay();if(!checked)doCheck();return}updateTimerDisplay()},1000)}
 document.getElementById('start-btn').onclick=()=>{document.getElementById('start-overlay').style.display='none';document.getElementById('m').style.display='block';document.getElementById('bar').style.display='flex';document.getElementById('hbar').style.display='flex';startTimer()};
-</script></body></html>
+</script><script src="results.js"></script></body></html>
