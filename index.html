@@ -1123,55 +1123,51 @@
   <div class="auth-card">
     <img src="assets/greek-flag.png" alt="Greek flag" style="width:90px;height:auto;border-radius:4px;box-shadow:0 4px 16px rgba(0,0,0,0.2);margin-bottom:14px;">
     <h1 style="font-style:italic;font-weight:600;">Greek SAT Platform</h1>
-    <p class="auth-sub" id="auth-sub">Επίλεξε τρόπο εισόδου</p>
-    <div id="auth-choice">
+    <p class="auth-sub" id="auth-sub">Έλεγχος σύνδεσης…</p>
+    <div id="auth-choice" style="display:none;">
       <button type="button" class="auth-alt-btn" onclick="enterAsGuest()">Είσοδος ως επισκέπτης</button>
-      <button type="button" class="auth-submit-btn" onclick="showPasswordForm()">Είσοδος με κωδικό</button>
+      <button type="button" class="auth-submit-btn" id="google-btn" onclick="signInWithGoogle()">Είσοδος με Google</button>
     </div>
-    <form id="auth-form" onsubmit="return handleLogin(event)" style="display:none;">
-      <div class="auth-field">
-        <label for="auth-password">Password</label>
-        <input type="password" id="auth-password" autocomplete="current-password" required>
-      </div>
-      <button type="submit" class="auth-submit-btn">Σύνδεση</button>
-      <button type="button" class="auth-alt-btn" onclick="showChoice()">← Πίσω</button>
-      <div class="auth-error" id="auth-error"></div>
-    </form>
+    <div class="auth-error" id="auth-error"></div>
   </div>
 </div>
 
-<button type="button" class="guest-login-link guest-only" onclick="showGate()">🔑 Είσοδος με κωδικό</button>
-<script src="auth-config.js"></script>
+<button type="button" class="guest-login-link guest-only" onclick="showGate()">🔑 Είσοδος με Google</button>
+<button type="button" class="guest-login-link member-only" id="logout-btn" onclick="signOutUser()">Αποσύνδεση</button>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="progress.js"></script>
 <script>
-const HOST_SECRET = "ΒΑΣΙΛΙΚΗΟΔΟΣ";
+// Access: members sign in with Google; the email must exist in the Firestore "students" collection
+// (managed by the host in the Firebase console). Guests get the limited free view.
+const ADMIN_EMAIL = "stavrostsalapatis@gmail.com";
+const firebaseConfig = {
+  apiKey: "AIzaSyAkUxve_zohtR45XPKYmfAX8VGTk_ClR5g",
+  authDomain: "sat-greek-quiz-stavros.firebaseapp.com",
+  projectId: "sat-greek-quiz-stavros",
+  storageBucket: "sat-greek-quiz-stavros.firebasestorage.app",
+  messagingSenderId: "227150541720",
+  appId: "1:227150541720:web:d07a027044f5d7470ef1ed"
+};
+let fbAuth = null, fbDb = null;
+try {
+  firebase.initializeApp(firebaseConfig);
+  fbAuth = firebase.auth();
+  fbDb = firebase.firestore();
+} catch (e) { console.warn('Firebase unavailable', e); }
 
-async function sha256Hex(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-function hideAuthGate() {
-  document.getElementById('auth-gate').classList.add('hidden');
-}
-function setMode(mode) {
-  // mode: 'member' | 'guest'
-  document.body.classList.toggle('guest', mode === 'guest');
-}
-function showChoice() {
+function hideAuthGate() { document.getElementById('auth-gate').classList.add('hidden'); }
+function setMode(mode) { document.body.classList.toggle('guest', mode === 'guest'); }
+function setAuthError(msg) { document.getElementById('auth-error').textContent = msg || ''; }
+function showChoice(msg) {
   document.getElementById('auth-choice').style.display = '';
-  document.getElementById('auth-form').style.display = 'none';
   document.getElementById('auth-sub').textContent = 'Επίλεξε τρόπο εισόδου';
-  document.getElementById('auth-error').textContent = '';
+  setAuthError(msg);
 }
-function showPasswordForm() {
-  document.getElementById('auth-choice').style.display = 'none';
-  document.getElementById('auth-form').style.display = '';
-  document.getElementById('auth-sub').textContent = 'Συνδέσου με τον κωδικό της εβδομάδας';
-  document.getElementById('auth-password').focus();
-}
-function showGate() {
-  showChoice();
+function showGate(msg) {
+  showChoice(msg);
   document.getElementById('auth-gate').classList.remove('hidden');
 }
 function enterAsGuest() {
@@ -1180,70 +1176,58 @@ function enterAsGuest() {
   hideAuthGate();
   goScreen('screen-welcome');
 }
-
-async function checkAuth() {
-  // 1. Host bypass via secret URL param
-  const params = new URLSearchParams(window.location.search);
-  const hostParam = params.get('host');
-  if (hostParam && hostParam === HOST_SECRET) {
-    localStorage.setItem('clc_host', '1');
-    localStorage.removeItem('clc_guest');
-    setMode('member');
-    // Clean the secret out of the URL bar
-    params.delete('host');
-    const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '') + window.location.hash;
-    window.history.replaceState({}, '', newUrl);
-    hideAuthGate();
-    return;
+async function isAllowed(user) {
+  const email = (user.email || '').trim().toLowerCase();
+  if (!email) return false;
+  if (email === ADMIN_EMAIL) return true;
+  const snap = await fbDb.collection('students').where('email', '==', email).limit(1).get();
+  return !snap.empty;
+}
+async function signInWithGoogle() {
+  if (!fbAuth) { setAuthError('Η σύνδεση με Google δεν είναι διαθέσιμη. Δοκίμασε ξανά ή μπες ως επισκέπτης.'); return; }
+  setAuthError('');
+  const provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: 'select_account' });
+  try {
+    await fbAuth.signInWithPopup(provider);
+  } catch (e) {
+    if (e.code === 'auth/popup-blocked') { fbAuth.signInWithRedirect(provider); return; }
+    if (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') return;
+    setAuthError('Αποτυχία σύνδεσης (' + (e.code || 'σφάλμα') + ').');
   }
-
-  // 2. Already-verified host on this device
-  if (localStorage.getItem('clc_host') === '1') {
-    setMode('member');
-    hideAuthGate();
-    return;
-  }
-
-  // 3. Already-logged-in on this device (password hash matches the current one)
-  const savedHash = localStorage.getItem('clc_auth');
-  if (savedHash && savedHash === PASSWORD_HASH) {
-    setMode('member');
-    hideAuthGate();
-    return;
-  }
-
-  // 4. Guest on this device
-  if (localStorage.getItem('clc_guest') === '1') {
-    setMode('guest');
-    hideAuthGate();
-    return;
-  }
-
-  // Otherwise, the gate stays visible and awaits login.
+}
+function signOutUser() {
+  localStorage.removeItem('clc_guest');
+  if (fbAuth) fbAuth.signOut();
 }
 
-async function handleLogin(e) {
-  e.preventDefault();
-  const password = document.getElementById('auth-password').value;
-  const errorEl = document.getElementById('auth-error');
-  errorEl.textContent = '';
-
-  const hash = await sha256Hex(password);
-  if (hash === PASSWORD_HASH) {
-    // Store the hash itself (not the raw password) so that when the weekly
-    // password rotates, previously-saved devices are naturally logged out.
-    localStorage.setItem('clc_auth', hash);
-    localStorage.removeItem('clc_guest');
-    setMode('member');
-    hideAuthGate();
-    goScreen('screen-welcome');
-  } else {
-    errorEl.textContent = 'Λάθος password.';
-  }
-  return false;
+function initAuth() {
+  // Guests resume instantly; a member sign-in (below) overrides this.
+  if (localStorage.getItem('clc_guest') === '1') { setMode('guest'); hideAuthGate(); }
+  if (!fbAuth) { if (localStorage.getItem('clc_guest') !== '1') showChoice(); return; }
+  fbAuth.getRedirectResult().catch(function () {});
+  fbAuth.onAuthStateChanged(async function (user) {
+    if (user) {
+      let ok = false;
+      try { ok = await isAllowed(user); }
+      catch (e) { console.warn(e); setAuthError('Δεν ήταν δυνατός ο έλεγχος πρόσβασης. Δοκίμασε ξανά.'); }
+      if (ok) {
+        localStorage.removeItem('clc_guest');
+        setMode('member');
+        hideAuthGate();
+        if (!document.querySelector('.screen.active') || document.querySelector('.screen.active').id === 'screen-welcome') goScreen('screen-welcome');
+      } else {
+        const em = user.email;
+        await fbAuth.signOut();
+        showGate('Το email ' + em + ' δεν έχει πρόσβαση. Επικοινώνησε με τον διδάσκοντα ή μπες ως επισκέπτης.');
+      }
+    } else {
+      if (localStorage.getItem('clc_guest') === '1') { setMode('guest'); hideAuthGate(); }
+      else { setMode('member'); showGate(); }
+    }
+  });
 }
-
-checkAuth();
+initAuth();
 </script>
 
 <!-- ══ SCREEN 1: WELCOME ══ -->
