@@ -1635,8 +1635,43 @@ initAuth();
 <!-- ══ SCREEN: COLLEGE BOARD · ENGLISH · PSAT ══ -->
 <div id="screen-cb-english-psat" class="screen">
   <h2 class="subject-title">College Board · English · PSAT</h2>
-  <p class="subject-sub">Ο φάκελος θα συμπληρωθεί σύντομα.</p>
+  <p class="subject-sub">Διάλεξε chapter</p>
+  <div class="mode-cards">
+    <div class="mode-card" onclick="goScreen('screen-cb-english-psat-craft')">
+      <div class="icon">📁</div>
+      <div class="label">Craft and Structure</div>
+      <div class="desc">3 skills · Homework &amp; Review</div>
+    </div>
+    <div class="mode-card" onclick="goScreen('screen-cb-english-psat-expression')">
+      <div class="icon">📁</div>
+      <div class="label">Expression of Ideas</div>
+      <div class="desc">2 skills · Homework &amp; Review</div>
+    </div>
+  </div>
   <button class="nav-back-btn" onclick="goScreen('screen-cb-english')">← Back</button>
+</div>
+
+<!-- ══ SCREEN: COLLEGE BOARD · ENGLISH · PSAT · CRAFT AND STRUCTURE ══ -->
+<div id="screen-cb-english-psat-craft" class="screen">
+  <h2 class="subject-title">Craft and Structure</h2>
+  <p class="subject-sub">College Board · English · PSAT</p>
+  <div class="cb-skills">
+    <div class="cb-skill"><div class="cb-skill-name">Words in Context</div><div class="cb-links"><a class="cb-link" href="college-board/english/psat/craft-and-structure/words-in-context/PSAT-English_words-in-context_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/english/psat/craft-and-structure/words-in-context/PSAT-English_words-in-context_Review-15.html">Review</a><a class="cb-link member-only" href="college-board/english/psat/craft-and-structure/words-in-context/PSAT-English_words-in-context_Class-Quiz-12.html">Class Quiz</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Text Structure and Purpose</div><div class="cb-links"><a class="cb-link" href="college-board/english/psat/craft-and-structure/text-structure-and-purpose/PSAT-English_text-structure-and-purpose_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/english/psat/craft-and-structure/text-structure-and-purpose/PSAT-English_text-structure-and-purpose_Review-15.html">Review</a><a class="cb-link member-only" href="college-board/english/psat/craft-and-structure/text-structure-and-purpose/PSAT-English_text-structure-and-purpose_Class-Quiz-12.html">Class Quiz</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Cross-Text Connections</div><div class="cb-links"><a class="cb-link" href="college-board/english/psat/craft-and-structure/cross-text-connections/PSAT-English_cross-text-connections_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/english/psat/craft-and-structure/cross-text-connections/PSAT-English_cross-text-connections_Review-15.html">Review</a><a class="cb-link member-only" href="college-board/english/psat/craft-and-structure/cross-text-connections/PSAT-English_cross-text-connections_Class-Quiz-12.html">Class Quiz</a></div></div>
+  </div>
+  <button class="nav-back-btn" onclick="goScreen('screen-cb-english-psat')">← Back</button>
+</div>
+
+<!-- ══ SCREEN: COLLEGE BOARD · ENGLISH · PSAT · EXPRESSION OF IDEAS ══ -->
+<div id="screen-cb-english-psat-expression" class="screen">
+  <h2 class="subject-title">Expression of Ideas</h2>
+  <p class="subject-sub">College Board · English · PSAT</p>
+  <div class="cb-skills">
+    <div class="cb-skill"><div class="cb-skill-name">Rhetorical Synthesis</div><div class="cb-links"><a class="cb-link" href="college-board/english/psat/expression-of-ideas/rhetorical-synthesis/PSAT-English_rhetorical-synthesis_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/english/psat/expression-of-ideas/rhetorical-synthesis/PSAT-English_rhetorical-synthesis_Review-15.html">Review</a><a class="cb-link member-only" href="college-board/english/psat/expression-of-ideas/rhetorical-synthesis/PSAT-English_rhetorical-synthesis_Class-Quiz-12.html">Class Quiz</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Transitions</div><div class="cb-links"><a class="cb-link" href="college-board/english/psat/expression-of-ideas/transitions/PSAT-English_transitions_Homework-30.html">Homework</a><a class="cb-link member-only" href="college-board/english/psat/expression-of-ideas/transitions/PSAT-English_transitions_Review-15.html">Review</a><a class="cb-link member-only" href="college-board/english/psat/expression-of-ideas/transitions/PSAT-English_transitions_Class-Quiz-12.html">Class Quiz</a></div></div>
+  </div>
+  <button class="nav-back-btn" onclick="goScreen('screen-cb-english-psat')">← Back</button>
 </div>
 <!-- ══ SCREEN: COLLEGE BOARD · ENGLISH · CRAFT AND STRUCTURE ══ -->
 <div id="screen-cb-english-craft" class="screen">
