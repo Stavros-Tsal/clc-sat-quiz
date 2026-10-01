@@ -148,7 +148,7 @@ function block(i){const d=D[i],s=st(i);
 function finish(timeUp){
  if(submitted)return;submitted=true;clearInterval(tmr);
  const right=D.filter((_,i)=>st(i)==='ok').length,ans=picks.filter(Boolean).length,pct=Math.round(100*right/N);
- const h=hist();h.push({s:sid(),n:name,c:right,d:new Date().toISOString()});LS.set(KEY,h);
+ const h=hist();h.push({s:sid(),n:name,c:right,d:new Date().toISOString()});LS.set(KEY,h);try{window.clcReport&&clcReport({src:'cb',correct:right,total:N})}catch(_e){}
  const secs=[...new Set(D.map(d=>d.sec).filter(Boolean))];
  const secTxt=secs.map(s=>{const ix=D.map((d,i)=>d.sec===s?i:-1).filter(i=>i>=0);return s+': '+ix.filter(i=>st(i)==='ok').length+' / '+ix.length}).join(' · ');
  const sub='Answered: '+ans+' / '+N+' · Incorrect: '+(ans-right)+' · Unanswered: '+(N-ans)+(timeUp?' · Time expired — test submitted automatically':'');
@@ -162,4 +162,4 @@ function finish(timeUp){
 $('pdf').onclick=()=>{const t=document.title;document.title=CFG.title+' — '+name;window.print();setTimeout(()=>document.title=t,600)};
 $('retry').onclick=()=>{$('nm').value=name;const s=stats();$('hist').textContent=s.n?histText():'';show('s-name')};
 </script>
-</body></html>
+<script src="../../../../results.js"></script></body></html>
