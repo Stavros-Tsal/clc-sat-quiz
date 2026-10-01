@@ -1502,6 +1502,25 @@ checkAuth();
 <!-- ══ SCREEN: COLLEGE BOARD · ENGLISH ══ -->
 <div id="screen-cb-english" class="screen">
   <h2 class="subject-title">College Board · English</h2>
+  <p class="subject-sub">Διάλεξε φάκελο</p>
+  <div class="mode-cards">
+    <div class="mode-card" onclick="goScreen('screen-cb-english-sat')">
+      <div class="icon">📁</div>
+      <div class="label">SAT</div>
+      <div class="desc">English · SAT</div>
+    </div>
+    <div class="mode-card" onclick="goScreen('screen-cb-english-psat')">
+      <div class="icon">📁</div>
+      <div class="label">PSAT</div>
+      <div class="desc">English · PSAT</div>
+    </div>
+  </div>
+  <button class="nav-back-btn" onclick="goScreen('screen-college-board')">← Back</button>
+</div>
+
+<!-- ══ SCREEN: COLLEGE BOARD · ENGLISH · SAT ══ -->
+<div id="screen-cb-english-sat" class="screen">
+  <h2 class="subject-title">College Board · English · SAT</h2>
   <p class="subject-sub">Διάλεξε chapter</p>
   <div class="mode-cards">
     <div class="mode-card" onclick="goScreen('screen-cb-english-craft')">
@@ -1525,56 +1544,63 @@ checkAuth();
       <div class="desc">2 skills · Homework &amp; Review</div>
     </div>
   </div>
-  <button class="nav-back-btn" onclick="goScreen('screen-college-board')">← Back</button>
+  <button class="nav-back-btn" onclick="goScreen('screen-cb-english')">← Back</button>
+</div>
+
+<!-- ══ SCREEN: COLLEGE BOARD · ENGLISH · PSAT ══ -->
+<div id="screen-cb-english-psat" class="screen">
+  <h2 class="subject-title">College Board · English · PSAT</h2>
+  <p class="subject-sub">Ο φάκελος θα συμπληρωθεί σύντομα.</p>
+  <button class="nav-back-btn" onclick="goScreen('screen-cb-english')">← Back</button>
 </div>
 <!-- ══ SCREEN: COLLEGE BOARD · ENGLISH · CRAFT AND STRUCTURE ══ -->
 <div id="screen-cb-english-craft" class="screen">
   <h2 class="subject-title">Craft and Structure</h2>
-  <p class="subject-sub">College Board · English</p>
+  <p class="subject-sub">College Board · English · SAT</p>
   <div class="cb-skills">
-    <div class="cb-skill"><div class="cb-skill-name">Words in Context</div><div class="cb-links"><a class="cb-link" href="college-board/english/craft-and-structure/words-in-context/SAT-English_words-in-context_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/craft-and-structure/words-in-context/SAT-English_words-in-context_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Text Structure and Purpose</div><div class="cb-links"><a class="cb-link" href="college-board/english/craft-and-structure/text-structure-and-purpose/SAT-English_text-structure-and-purpose_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/craft-and-structure/text-structure-and-purpose/SAT-English_text-structure-and-purpose_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Cross-Text Connections</div><div class="cb-links"><a class="cb-link" href="college-board/english/craft-and-structure/cross-text-connections/SAT-English_cross-text-connections_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/craft-and-structure/cross-text-connections/SAT-English_cross-text-connections_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">College Board Related Questions</div><div class="cb-links"><a class="cb-link" href="college-board/english/craft-and-structure/College-Board-Related-Questions-craft-and-structure.html">Questions</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Words in Context</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/craft-and-structure/words-in-context/SAT-English_words-in-context_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/sat/craft-and-structure/words-in-context/SAT-English_words-in-context_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Text Structure and Purpose</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/craft-and-structure/text-structure-and-purpose/SAT-English_text-structure-and-purpose_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/sat/craft-and-structure/text-structure-and-purpose/SAT-English_text-structure-and-purpose_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Cross-Text Connections</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/craft-and-structure/cross-text-connections/SAT-English_cross-text-connections_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/sat/craft-and-structure/cross-text-connections/SAT-English_cross-text-connections_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">College Board Related Questions</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/craft-and-structure/College-Board-Related-Questions-craft-and-structure.html">Questions</a></div></div>
   </div>
-  <button class="nav-back-btn" onclick="goScreen('screen-cb-english')">← Back</button>
+  <button class="nav-back-btn" onclick="goScreen('screen-cb-english-sat')">← Back</button>
 </div>
 
 <!-- ══ SCREEN: COLLEGE BOARD · ENGLISH · INFORMATION AND IDEAS ══ -->
 <div id="screen-cb-english-info" class="screen">
   <h2 class="subject-title">Information and Ideas</h2>
-  <p class="subject-sub">College Board · English</p>
+  <p class="subject-sub">College Board · English · SAT</p>
   <div class="cb-skills">
-    <div class="cb-skill"><div class="cb-skill-name">Central Ideas and Details</div><div class="cb-links"><a class="cb-link" href="college-board/english/information-and-ideas/central-ideas-and-details/SAT-English_central-ideas-and-details_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/information-and-ideas/central-ideas-and-details/SAT-English_central-ideas-and-details_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Command of Evidence</div><div class="cb-links"><a class="cb-link" href="college-board/english/information-and-ideas/command-of-evidence/SAT-English_command-of-evidence_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/information-and-ideas/command-of-evidence/SAT-English_command-of-evidence_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Inferences</div><div class="cb-links"><a class="cb-link" href="college-board/english/information-and-ideas/inferences/SAT-English_inferences_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/information-and-ideas/inferences/SAT-English_inferences_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">College Board Related Questions</div><div class="cb-links"><a class="cb-link" href="college-board/english/information-and-ideas/College-Board-Related-Questions-information-and-ideas.html">Questions</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Central Ideas and Details</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/information-and-ideas/central-ideas-and-details/SAT-English_central-ideas-and-details_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/sat/information-and-ideas/central-ideas-and-details/SAT-English_central-ideas-and-details_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Command of Evidence</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/information-and-ideas/command-of-evidence/SAT-English_command-of-evidence_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/sat/information-and-ideas/command-of-evidence/SAT-English_command-of-evidence_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Inferences</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/information-and-ideas/inferences/SAT-English_inferences_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/sat/information-and-ideas/inferences/SAT-English_inferences_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">College Board Related Questions</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/information-and-ideas/College-Board-Related-Questions-information-and-ideas.html">Questions</a></div></div>
   </div>
-  <button class="nav-back-btn" onclick="goScreen('screen-cb-english')">← Back</button>
+  <button class="nav-back-btn" onclick="goScreen('screen-cb-english-sat')">← Back</button>
 </div>
 
 <!-- ══ SCREEN: COLLEGE BOARD · ENGLISH · STANDARD ENGLISH CONVENTIONS ══ -->
 <div id="screen-cb-english-conventions" class="screen">
   <h2 class="subject-title">Standard English Conventions</h2>
-  <p class="subject-sub">College Board · English</p>
+  <p class="subject-sub">College Board · English · SAT</p>
   <div class="cb-skills">
-    <div class="cb-skill"><div class="cb-skill-name">Boundaries</div><div class="cb-links"><a class="cb-link" href="college-board/english/standard-english-conventions/boundaries/SAT-English_boundaries_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/standard-english-conventions/boundaries/SAT-English_boundaries_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Form, Structure, and Sense</div><div class="cb-links"><a class="cb-link" href="college-board/english/standard-english-conventions/form-structure-and-sense/SAT-English_form-structure-and-sense_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/standard-english-conventions/form-structure-and-sense/SAT-English_form-structure-and-sense_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">College Board Related Questions</div><div class="cb-links"><a class="cb-link" href="college-board/english/standard-english-conventions/College-Board-Related-Questions-standard-english-conventions.html">Questions</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Boundaries</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/standard-english-conventions/boundaries/SAT-English_boundaries_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/sat/standard-english-conventions/boundaries/SAT-English_boundaries_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Form, Structure, and Sense</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/standard-english-conventions/form-structure-and-sense/SAT-English_form-structure-and-sense_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/sat/standard-english-conventions/form-structure-and-sense/SAT-English_form-structure-and-sense_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">College Board Related Questions</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/standard-english-conventions/College-Board-Related-Questions-standard-english-conventions.html">Questions</a></div></div>
   </div>
-  <button class="nav-back-btn" onclick="goScreen('screen-cb-english')">← Back</button>
+  <button class="nav-back-btn" onclick="goScreen('screen-cb-english-sat')">← Back</button>
 </div>
 
 <!-- ══ SCREEN: COLLEGE BOARD · ENGLISH · EXPRESSION OF IDEAS ══ -->
 <div id="screen-cb-english-expression" class="screen">
   <h2 class="subject-title">Expression of Ideas</h2>
-  <p class="subject-sub">College Board · English</p>
+  <p class="subject-sub">College Board · English · SAT</p>
   <div class="cb-skills">
-    <div class="cb-skill"><div class="cb-skill-name">Rhetorical Synthesis</div><div class="cb-links"><a class="cb-link" href="college-board/english/expression-of-ideas/rhetorical-synthesis/SAT-English_rhetorical-synthesis_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/expression-of-ideas/rhetorical-synthesis/SAT-English_rhetorical-synthesis_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">Transitions</div><div class="cb-links"><a class="cb-link" href="college-board/english/expression-of-ideas/transitions/SAT-English_transitions_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/expression-of-ideas/transitions/SAT-English_transitions_Review-15.html">Review</a></div></div>
-    <div class="cb-skill"><div class="cb-skill-name">College Board Related Questions</div><div class="cb-links"><a class="cb-link" href="college-board/english/expression-of-ideas/College-Board-Related-Questions-expression-of-ideas.html">Questions</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Rhetorical Synthesis</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/expression-of-ideas/rhetorical-synthesis/SAT-English_rhetorical-synthesis_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/sat/expression-of-ideas/rhetorical-synthesis/SAT-English_rhetorical-synthesis_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Transitions</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/expression-of-ideas/transitions/SAT-English_transitions_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/sat/expression-of-ideas/transitions/SAT-English_transitions_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">College Board Related Questions</div><div class="cb-links"><a class="cb-link" href="college-board/english/sat/expression-of-ideas/College-Board-Related-Questions-expression-of-ideas.html">Questions</a></div></div>
   </div>
-  <button class="nav-back-btn" onclick="goScreen('screen-cb-english')">← Back</button>
+  <button class="nav-back-btn" onclick="goScreen('screen-cb-english-sat')">← Back</button>
 </div>
 
 <!-- ══ SCREEN 3: MODE ══ -->
