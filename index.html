@@ -1502,8 +1502,62 @@ checkAuth();
 <!-- ══ SCREEN: COLLEGE BOARD · ENGLISH ══ -->
 <div id="screen-cb-english" class="screen">
   <h2 class="subject-title">College Board · English</h2>
-  <p class="subject-sub">Ο φάκελος θα συμπληρωθεί σύντομα.</p>
+  <p class="subject-sub">Διάλεξε chapter</p>
+  <div class="mode-cards">
+    <div class="mode-card" onclick="goScreen('screen-cb-english-craft')">
+      <div class="icon">📁</div>
+      <div class="label">Craft and Structure</div>
+      <div class="desc">3 skills · Homework &amp; Review</div>
+    </div>
+    <div class="mode-card" onclick="goScreen('screen-cb-english-info')">
+      <div class="icon">📁</div>
+      <div class="label">Information and Ideas</div>
+      <div class="desc">3 skills · Homework &amp; Review</div>
+    </div>
+    <div class="mode-card" onclick="goScreen('screen-cb-english-expression')">
+      <div class="icon">📁</div>
+      <div class="label">Expression of Ideas</div>
+      <div class="desc">2 skills · Homework &amp; Review</div>
+    </div>
+  </div>
   <button class="nav-back-btn" onclick="goScreen('screen-college-board')">← Back</button>
+</div>
+<!-- ══ SCREEN: COLLEGE BOARD · ENGLISH · CRAFT AND STRUCTURE ══ -->
+<div id="screen-cb-english-craft" class="screen">
+  <h2 class="subject-title">Craft and Structure</h2>
+  <p class="subject-sub">College Board · English</p>
+  <div class="cb-skills">
+    <div class="cb-skill"><div class="cb-skill-name">Words in Context</div><div class="cb-links"><a class="cb-link" href="college-board/english/craft-and-structure/words-in-context/SAT-English_words-in-context_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/craft-and-structure/words-in-context/SAT-English_words-in-context_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Text Structure and Purpose</div><div class="cb-links"><a class="cb-link" href="college-board/english/craft-and-structure/text-structure-and-purpose/SAT-English_text-structure-and-purpose_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/craft-and-structure/text-structure-and-purpose/SAT-English_text-structure-and-purpose_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Cross-Text Connections</div><div class="cb-links"><a class="cb-link" href="college-board/english/craft-and-structure/cross-text-connections/SAT-English_cross-text-connections_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/craft-and-structure/cross-text-connections/SAT-English_cross-text-connections_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">College Board Related Questions</div><div class="cb-links"><a class="cb-link" href="college-board/english/craft-and-structure/College-Board-Related-Questions-craft-and-structure.html">Questions</a></div></div>
+  </div>
+  <button class="nav-back-btn" onclick="goScreen('screen-cb-english')">← Back</button>
+</div>
+
+<!-- ══ SCREEN: COLLEGE BOARD · ENGLISH · INFORMATION AND IDEAS ══ -->
+<div id="screen-cb-english-info" class="screen">
+  <h2 class="subject-title">Information and Ideas</h2>
+  <p class="subject-sub">College Board · English</p>
+  <div class="cb-skills">
+    <div class="cb-skill"><div class="cb-skill-name">Central Ideas and Details</div><div class="cb-links"><a class="cb-link" href="college-board/english/information-and-ideas/central-ideas-and-details/SAT-English_central-ideas-and-details_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/information-and-ideas/central-ideas-and-details/SAT-English_central-ideas-and-details_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Command of Evidence</div><div class="cb-links"><a class="cb-link" href="college-board/english/information-and-ideas/command-of-evidence/SAT-English_command-of-evidence_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/information-and-ideas/command-of-evidence/SAT-English_command-of-evidence_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Inferences</div><div class="cb-links"><a class="cb-link" href="college-board/english/information-and-ideas/inferences/SAT-English_inferences_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/information-and-ideas/inferences/SAT-English_inferences_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">College Board Related Questions</div><div class="cb-links"><a class="cb-link" href="college-board/english/information-and-ideas/College-Board-Related-Questions-information-and-ideas.html">Questions</a></div></div>
+  </div>
+  <button class="nav-back-btn" onclick="goScreen('screen-cb-english')">← Back</button>
+</div>
+
+<!-- ══ SCREEN: COLLEGE BOARD · ENGLISH · EXPRESSION OF IDEAS ══ -->
+<div id="screen-cb-english-expression" class="screen">
+  <h2 class="subject-title">Expression of Ideas</h2>
+  <p class="subject-sub">College Board · English</p>
+  <div class="cb-skills">
+    <div class="cb-skill"><div class="cb-skill-name">Rhetorical Synthesis</div><div class="cb-links"><a class="cb-link" href="college-board/english/expression-of-ideas/rhetorical-synthesis/SAT-English_rhetorical-synthesis_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/expression-of-ideas/rhetorical-synthesis/SAT-English_rhetorical-synthesis_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">Transitions</div><div class="cb-links"><a class="cb-link" href="college-board/english/expression-of-ideas/transitions/SAT-English_transitions_Homework-30.html">Homework</a><a class="cb-link" href="college-board/english/expression-of-ideas/transitions/SAT-English_transitions_Review-15.html">Review</a></div></div>
+    <div class="cb-skill"><div class="cb-skill-name">College Board Related Questions</div><div class="cb-links"><a class="cb-link" href="college-board/english/expression-of-ideas/College-Board-Related-Questions-expression-of-ideas.html">Questions</a></div></div>
+  </div>
+  <button class="nav-back-btn" onclick="goScreen('screen-cb-english')">← Back</button>
 </div>
 
 <!-- ══ SCREEN 3: MODE ══ -->
