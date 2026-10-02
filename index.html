@@ -1138,9 +1138,31 @@
     user-select: none;
   }
 
+
+  /* ── MATH QUOTES BACKGROUND ── */
+  #math-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; user-select: none; -webkit-user-select: none; }
+  body:has(#screen-welcome.active, #screen-subject.active, #screen-mode.active) #math-bg { background: linear-gradient(160deg, #fff 60%, #f8f0f0 100%); }
+  #screen-welcome, #screen-subject, #screen-mode { background: transparent; }
+  #math-bg .mq {
+    position: absolute; width: 46vw; max-width: 340px;
+    font-family: 'Playfair Display', 'Crimson Text', Georgia, serif; font-style: italic;
+    color: var(--crimson); opacity: 0.085; line-height: 1.25; text-align: center;
+    font-size: clamp(15px, 2.1vw, 26px); transition: opacity .6s ease;
+  }
+  #math-bg .mq.eq { font-style: normal; font-size: clamp(20px, 3vw, 38px); font-weight: 600; max-width: 380px; }
+  #math-bg .mq .who { display: block; margin-top: 4px; font-family: 'Inter', sans-serif; font-style: normal;
+    font-size: 0.5em; letter-spacing: 1.5px; text-transform: uppercase; opacity: .9; }
+  #math-bg .mq.gr { font-family: 'Playfair Display', Georgia, serif; font-style: normal; }
+  @media (max-width: 600px) {
+    #math-bg .mq { width: 62vw; font-size: 15px; opacity: 0.075; }
+    #math-bg .mq.eq { font-size: 21px; }
+  }
+  @media print { #math-bg { display: none !important; } }
+
 </style>
 </head>
 <body>
+<div id="math-bg" aria-hidden="true"></div>
 
 <div id="auth-gate">
   <div class="auth-card">
@@ -4238,5 +4260,50 @@ function resetTestTimer() {
   });
 </script>
 
+<script>
+/* Decorative math quotes background — purely visual, never blocks clicks */
+(function(){
+  try {
+    var ITEMS = [
+      {c:'eq', t:'e<sup>iπ</sup> + 1 = 0', w:'Euler'},
+      {c:'eq', t:'a² + b² = c²', w:'Pythagoras'},
+      {c:'eq', t:'1 + 2 + … + n = n(n+1)/2', w:'Gauss'},
+      {c:'eq', t:'Σ 1/n² = π²/6', w:'Euler · Basel problem'},
+      {c:'eq', t:'V = <span style="font-style:italic">⁴⁄₃</span>πr³', w:'Archimedes · sphere'},
+      {c:'eq', t:'∂<sub>μ</sub>J<sup>μ</sup> = 0', w:'Noether · symmetry ⇒ conservation'},
+      {c:'eq', t:'e<sup>ix</sup> = cos x + i sin x', w:'Euler'},
+      {c:'',   t:'There is no royal road to geometry.', w:'Euclid (attributed)'},
+      {c:'',   t:'Give me a place to stand, and I will move the Earth.', w:'Archimedes (attributed)'},
+      {c:'gr', t:'Δός μοι πᾷ στῶ καὶ τὰν γᾶν κινάσω', w:'Ἀρχιμήδης (attributed)'},
+      {c:'',   t:'Mathematics is the queen of the sciences.', w:'Gauss (attributed)'},
+      {c:'gr', t:'Μηδεὶς ἀγεωμέτρητος εἰσίτω', w:'Plato’s Academy (attributed)'},
+      {c:'',   t:'The primes contain arbitrarily long arithmetic progressions.', w:'Green–Tao theorem'},
+      {c:'',   t:'There are infinitely many prime numbers.', w:'Euclid · Elements IX.20'},
+      {c:'eq', t:'F(<span style="font-style:italic">x</span>) = ∫ f(t) dt', w:'Fundamental theorem of calculus'}
+    ];
+    // 10 slots around the edges / gaps; [top%, left%, rotation°]
+    var SLOTS = [[4,3,-5],[10,50,3],[20,62,-4],[30,2,4],[42,54,-3],[52,4,-4],[63,50,5],[73,3,-3],[84,52,4],[90,6,-5]];
+    var root = document.getElementById('math-bg');
+    if (!root) return;
+    function shuffle(a){ for (var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var x=a[i];a[i]=a[j];a[j]=x; } return a; }
+    function render(){
+      var items = shuffle(ITEMS.slice()), out = '';
+      var mobile = window.innerWidth <= 600;
+      var slots = mobile ? shuffle(SLOTS.slice()).slice(0,6) : SLOTS;
+      for (var k=0;k<slots.length;k++){
+        var it=items[k], s=slots[k];
+        out += '<div class="mq '+it.c+'" style="top:'+s[0]+'%;'+(s[1]>=50?'right:3%':'left:'+s[1]+'%')+';transform:rotate('+s[2]+'deg)">'+it.t+'<span class="who">'+it.w+'</span></div>';
+      }
+      root.innerHTML = out;
+    }
+    render();
+    // new selection on every screen change
+    if (typeof window.goScreen === 'function') {
+      var orig = window.goScreen;
+      window.goScreen = function(){ var r = orig.apply(this, arguments); try { render(); } catch(e){} return r; };
+    }
+  } catch(e) { /* background is optional */ }
+})();
+</script>
 </body>
 </html>
