@@ -1141,24 +1141,24 @@
 
 
   /* ── DRILLS INTRO ── */
-  #screen-drills-intro {
+  #screen-drills-intro, #screen-tests-intro {
     min-height: 100vh; align-items: center; justify-content: center;
     background: transparent; padding: 70px 20px 60px; text-align: center;
   }
-  #screen-drills-intro .di-img {
+  #screen-drills-intro .di-img, #screen-tests-intro .di-img {
     width: min(78vw, 400px); height: auto; mix-blend-mode: multiply;
     margin-bottom: 18px; animation: diBob 3.2s ease-in-out infinite;
   }
-  #screen-drills-intro .di-title {
+  #screen-drills-intro .di-title, #screen-tests-intro .di-title {
     font-family: 'Playfair Display', serif; font-weight: 900; color: var(--crimson);
     font-size: clamp(26px, 6.2vw, 44px); line-height: 1.2; max-width: 620px; margin-bottom: 26px;
   }
   @keyframes diBob { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-8px) rotate(1deg); } }
-  @media (prefers-reduced-motion: reduce) { #screen-drills-intro .di-img { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { #screen-drills-intro .di-img, #screen-tests-intro .di-img { animation: none; } }
 
   /* ── MATH QUOTES BACKGROUND ── */
   #math-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; user-select: none; -webkit-user-select: none; }
-  body:has(#screen-welcome.active, #screen-subject.active, #screen-mode.active, #screen-drills-intro.active) #math-bg { background: linear-gradient(160deg, #fff 60%, #f8f0f0 100%); }
+  body:has(#screen-welcome.active, #screen-subject.active, #screen-mode.active, #screen-drills-intro.active, #screen-tests-intro.active) #math-bg { background: linear-gradient(160deg, #fff 60%, #f8f0f0 100%); }
   #screen-welcome, #screen-subject, #screen-mode { background: transparent; }
   #math-bg .mq {
     position: absolute; width: 46vw; max-width: 340px;
@@ -1820,12 +1820,20 @@ initAuth();
   <button class="welcome-next" onclick="goQuiz()">Πάμε →</button>
 </div>
 
+<!-- ══ PRACTICE TESTS INTRO ══ -->
+<div id="screen-tests-intro" class="screen">
+  <button class="nav-back-btn" onclick="goScreen('screen-mode')">← Back</button>
+  <img class="di-img" src="assets/skeletons-peace.png" alt="Δύο σκελετοί με σήμα ειρήνης" loading="lazy">
+  <h2 class="di-title">Είναι δύσκολα, κάντε το καλύτερο που μπορείτε</h2>
+  <button class="welcome-next" onclick="goScreen('screen-test-list')">Ξεκινάμε →</button>
+</div>
+
 <div id="screen-mode" class="screen">
   <div class="mode-subject-badge" id="mode-badge">📐 Math</div>
   <h2 class="subject-title">Choose a mode</h2>
   <p class="subject-sub">How do you want to practice?</p>
   <div class="mode-cards">
-    <div class="mode-card" onclick="goScreen('screen-test-list')">
+    <div class="mode-card" onclick="goScreen('screen-tests-intro')">
       <div class="icon">📝</div>
       <div class="label">Practice Test</div>
       <div class="desc">Full-length SAT mock test under timed conditions</div>
