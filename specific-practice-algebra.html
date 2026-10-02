@@ -3,7 +3,7 @@
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CLC Digital SAT Math — Algebra Questionbank</title>
+<title>CLC Digital SAT Math — Algebra Practice Hub</title>
 <script>
   MathJax = {
     tex: { inlineMath: [['\\(','\\)']] },
@@ -152,6 +152,12 @@
   .mode-card-btn:hover { border-color: var(--gold); box-shadow: 0 3px 10px rgba(0,0,0,.06); transform: translateY(-1px); }
   .mode-card-btn .mc-icon { font-size: 26px; margin-bottom: 8px; }
   .mode-card-btn .mc-title { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--crimson); font-weight: 700; margin-bottom: 4px; }
+  .mode-card-btn { display:flex !important; flex-direction:row; align-items:center; gap:14px; text-align:left; }
+  .mode-card-btn .mc-icon { width:48px; height:48px; flex:0 0 48px; display:flex; align-items:center; justify-content:center; margin:0 !important; border-radius:50%; background:#e6eef8; color:var(--crimson); }
+  .mode-card-btn .mc-title { flex:1; margin:0 !important; }
+  .mode-card-btn .mc-arrow { color:#b9b09f; flex:0 0 auto; transition:transform .15s; }
+  .mode-card-btn:hover .mc-arrow { transform:translateX(3px); color:var(--gold); }
+  .mode-card-btn:hover .mc-icon { background:var(--crimson); color:#fff; }
   .mode-card-btn .mc-desc { font-size: 12.5px; color: #6b6459; line-height: 1.5; }
   .skill-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 12px; margin: 24px 0; text-align: left; }
   .skill-pick-btn { background: #fff; border: 1.5px solid #e2dcd0; border-radius: 10px; padding: 14px 16px; cursor: pointer;
@@ -162,6 +168,66 @@
   .diff-check-label:hover { border-color: var(--gold); }
   .diff-check-label input { width: 16px; height: 16px; }
   .diff-check-label.checked { border-color: var(--crimson); background: #EAF4FC; }
+  /* ── intro mode cards: diamond icon + round arrow ── */
+  .mode-card-btn { position:relative; overflow:hidden; padding:20px 18px 20px 26px !important; border-radius:14px !important; }
+  .mode-card-btn::before { content:''; position:absolute; left:0; top:14%; bottom:14%; width:5px; border-radius:0 6px 6px 0; background:linear-gradient(var(--gold), var(--crimson)); }
+  .mode-card-btn::after { content:''; position:absolute; right:-26px; top:-26px; width:84px; height:84px; transform:rotate(45deg); background:#eef5fc; z-index:0; transition:.2s; }
+  .mode-card-btn:hover::after { background:#dcebf9; }
+  .mode-card-btn > * { position:relative; z-index:1; }
+  .mode-card-btn .mc-icon { width:46px !important; height:46px !important; flex:0 0 46px !important; border-radius:10px !important; transform:rotate(45deg); margin:0 8px 0 4px !important; background:linear-gradient(135deg,#e6eef8,#cfe2f6) !important; box-shadow:0 2px 6px rgba(13,94,175,.18); }
+  .mode-card-btn .mc-icon svg { transform:rotate(-45deg); width:22px; height:22px; }
+  .mode-card-btn:hover .mc-icon { background:linear-gradient(135deg,var(--crimson),#063970) !important; }
+  .mode-card-btn .mc-arrow { width:30px; height:30px; padding:6px; border-radius:50%; background:#fff; border:1.5px solid #cfdff0; box-sizing:border-box; }
+  .mode-card-btn:hover .mc-arrow { background:var(--crimson); border-color:var(--crimson); color:#fff; }
+
+  /* ── skill picker rows ── */
+  .skill-grid { grid-template-columns: 1fr !important; max-width:560px; margin:24px auto !important; gap:10px !important; }
+  .skill-pick-btn { display:flex; align-items:center; gap:14px; border-radius:40px !important; padding:10px 12px 10px 12px !important; text-align:left; font-family:inherit; font-size:15px; color:var(--ink); transition:.15s; }
+  .skill-pick-btn .sp-num { width:34px; height:34px; flex:0 0 34px; border-radius:50%; background:linear-gradient(135deg,var(--crimson),#063970); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; font-family:'Playfair Display',serif; }
+  .skill-pick-btn .sp-label { flex:1; font-weight:600; }
+  .skill-pick-btn .sp-go { width:30px; height:30px; flex:0 0 30px; border-radius:50%; border:1.5px solid #cfdff0; display:flex; align-items:center; justify-content:center; color:var(--crimson); transition:.15s; }
+  .skill-pick-btn:hover { transform:translateX(3px); }
+  .skill-pick-btn:hover .sp-go { background:var(--crimson); color:#fff; border-color:var(--crimson); }
+
+  /* ── difficulty chips ── */
+  .diff-check-row { flex-direction:row !important; flex-wrap:wrap; justify-content:center; max-width:560px !important; gap:12px !important; }
+  .diff-check-label { flex-direction:column; align-items:center !important; gap:6px !important; min-width:130px; padding:16px 18px !important; border-radius:16px !important; position:relative; }
+  .diff-check-label input { position:absolute; opacity:0; pointer-events:none; }
+  .diff-check-label .dc-dot { width:14px; height:14px; transform:rotate(45deg); border-radius:3px; }
+  .dc-Easy .dc-dot { background:#3aa76d; } .dc-Medium .dc-dot { background:#e0a128; } .dc-Hard .dc-dot { background:#cf4b4b; }
+  .diff-check-label .dc-name { font-weight:700; font-size:15px; }
+  .diff-check-label .dc-count { font-size:12px; color:#6b6459; }
+  .diff-check-label .dc-tick { position:absolute; top:8px; right:8px; width:18px; height:18px; border-radius:50%; border:1.5px solid #cdbfa2; display:flex; align-items:center; justify-content:center; color:transparent; font-size:11px; }
+  .diff-check-label.checked .dc-tick { background:var(--crimson); border-color:var(--crimson); color:#fff; }
+  .diff-check-label.checked { box-shadow:0 3px 10px rgba(13,94,175,.18); }
+  .time-pill { display:inline-flex; align-items:center; gap:8px; background:#EAF4FC; color:var(--crimson); border-radius:30px; padding:7px 16px; font-weight:700; font-size:13px; min-height:20px; }
+  .time-pill.empty { visibility:hidden; }
+
+  /* ── nav buttons: pill style ── */
+  .screen-center .btn-primary, .screen-center .btn-ghost, .brief-actions button { border-radius:40px !important; padding:11px 26px !important; font-weight:700; letter-spacing:.2px; }
+  .screen-center .btn-primary:not(:disabled), .brief-actions .btn-primary { background:linear-gradient(135deg,var(--crimson),#063970) !important; box-shadow:0 4px 12px rgba(13,94,175,.28); }
+  .screen-center .btn-primary:disabled { opacity:.4; box-shadow:none; }
+
+  /* ── "ready" briefing overlay (replaces the browser alert) ── */
+  #briefOverlay { position:fixed; inset:0; background:rgba(10,30,55,.55); display:none; align-items:center; justify-content:center; z-index:9999; padding:16px; }
+  #briefOverlay.show { display:flex; }
+  .brief-card { background:#fff; border-radius:22px; max-width:440px; width:100%; padding:30px 28px 24px; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,.35); position:relative; overflow:hidden; }
+  .brief-card::before { content:''; position:absolute; left:0; right:0; top:0; height:6px; background:linear-gradient(90deg,var(--gold),var(--crimson)); }
+  .brief-kicker { font-size:11.5px; letter-spacing:2px; text-transform:uppercase; color:#6b7c8f; font-weight:700; }
+  .brief-title { font-family:'Playfair Display',serif; color:var(--crimson); font-size:24px; margin:6px 0 2px; }
+  .brief-sub { font-size:13.5px; color:#555; margin-bottom:16px; }
+  .brief-ring { width:128px; height:128px; border-radius:50%; margin:6px auto 14px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:conic-gradient(var(--crimson) 0 75%, #dbe8f6 75% 100%); position:relative; }
+  .brief-ring::before { content:''; position:absolute; inset:9px; border-radius:50%; background:#fff; }
+  .brief-ring > * { position:relative; }
+  .brief-ring .br-num { font-family:'Playfair Display',serif; font-size:34px; font-weight:700; color:var(--crimson); line-height:1; }
+  .brief-ring .br-unit { font-size:11px; letter-spacing:1.5px; color:#6b7c8f; text-transform:uppercase; margin-top:4px; }
+  .brief-stats { display:flex; gap:10px; justify-content:center; margin-bottom:14px; }
+  .brief-stat { flex:1; background:#f3f8fd; border-radius:12px; padding:9px 6px; }
+  .brief-stat b { display:block; font-size:18px; color:var(--ink); }
+  .brief-stat span { font-size:11px; color:#6b7c8f; letter-spacing:.5px; text-transform:uppercase; }
+  .brief-note { font-size:12.5px; color:#6b6459; margin-bottom:18px; line-height:1.5; }
+  .brief-actions { display:flex; gap:10px; justify-content:center; }
+
   .time-hint { font-size: 13px; color: var(--gold); font-weight: 700; margin-top: 4px; }
 </style>
 </head>
@@ -176,7 +242,7 @@
 <div class="toolbar" id="toolbar" style="display:none;">
   <button class="btn-ghost" onclick="openCalc()">Open Desmos Calculator ↗</button>
   <button class="btn-ghost" id="flagBtn" onclick="toggleFlag()">Flag for Review</button>
-  <span id="rapidBadge" style="display:none;font-weight:700;color:#5a2e94;background:#f3eafd;border:1px solid #ddc9f3;border-radius:20px;padding:5px 12px;font-size:12.5px;margin-left:auto;">⚡ Rapid Fire &mdash; no time limit</span>
+  <span id="rapidBadge" style="display:none;font-weight:700;color:#5a2e94;background:#f3eafd;border:1px solid #ddc9f3;border-radius:20px;padding:5px 12px;font-size:12.5px;margin-left:auto;">⚡ Speed Round &mdash; no time limit</span>
   <div id="timerWrap" style="display:flex;align-items:center;gap:8px;margin-left:auto;">
     <div id="timer" style="margin-left:0;" onclick="if(state.timerHidden) toggleTimerVisibility()">80:00</div>
     <button class="btn-ghost" id="hideTimerBtn" onclick="toggleTimerVisibility()">Hide Timer</button>
@@ -185,7 +251,7 @@
 </div>
 
 <div id="app"><div class="screen-center">
-    <h1 class="serif" style="color:var(--crimson);">Algebra Questionbank</h1>
+    <h1 class="serif" style="color:var(--crimson);">Algebra Practice Hub</h1>
     <p>Loading…</p>
   </div></div>
 
@@ -321,9 +387,39 @@ function selectMode(mode) {
   }
 }
 
+function showBrief(opts) {
+  const o = document.getElementById('briefOverlay');
+  const whole = opts.minutes >= 60 && opts.minutes % 60 === 0;
+  const big = whole ? (opts.minutes / 60) : opts.minutes;
+  const unit = whole ? (opts.minutes === 60 ? 'hour' : 'hours') : 'minutes';
+  o.innerHTML = `<div class="brief-card" role="dialog" aria-modal="true">
+    <div class="brief-kicker">Before you begin</div>
+    <div class="brief-title">${opts.title}</div>
+    <div class="brief-sub">${opts.subtitle}</div>
+    <div class="brief-ring"><div class="br-num">${big}</div><div class="br-unit">${unit}</div></div>
+    <div class="brief-stats">
+      <div class="brief-stat"><b>${opts.count}</b><span>Questions</span></div>
+      <div class="brief-stat"><b>${opts.minutes}</b><span>Minutes</span></div>
+      <div class="brief-stat"><b>${opts.pace}</b><span>Per question</span></div>
+    </div>
+    <div class="brief-note">The timer starts as soon as you press <strong>Start</strong>. You can flag questions and move freely between them.</div>
+    <div class="brief-actions">
+      <button class="btn-ghost" onclick="closeBrief()">Cancel</button>
+      <button class="btn-primary" onclick="confirmBrief()">Start &rarr;</button>
+    </div>
+  </div>`;
+  window.__briefStart = opts.onStart;
+  o.classList.add('show');
+}
+function closeBrief() { document.getElementById('briefOverlay').classList.remove('show'); window.__briefStart = null; }
+function confirmBrief() { const fn = window.__briefStart; closeBrief(); if (fn) fn(); }
+function paceText(minutes, count) { const sec = Math.round(minutes * 60 / count); return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'); }
+
+
 function startChapterReview() {
-  window.alert('Whole Chapter Review: you have 3 hours (180 minutes) to complete all ' + QUESTIONS.length + ' questions in Algebra. The timer starts now — good luck!');
-  startSession(ORDERED_QUESTIONS.slice(), 180 * 60, true);
+  showBrief({ title: 'Chapter Marathon', subtitle: 'All ' + QUESTIONS.length + ' Algebra questions, from the first skill to the last.',
+    minutes: 180, count: QUESTIONS.length, pace: paceText(180, QUESTIONS.length),
+    onStart: () => startSession(ORDERED_QUESTIONS.slice(), 180 * 60, true) });
 }
 
 function pickSkill(skey) {
@@ -352,8 +448,9 @@ function startSkillReview() {
   if (state.selectedDiffs.length === 0) return;
   const order = buildSkillOrder(state.selectedSkill, state.selectedDiffs);
   const minutes = state.selectedDiffs.length <= 1 ? 35 : 75;
-  window.alert('Skill Review \u2014 ' + SKILL_LABEL[state.selectedSkill] + ' (' + state.selectedDiffs.join(', ') + '): you have ' + minutes + ' minutes for ' + order.length + ' questions. The timer starts now \u2014 good luck!');
-  startSession(order, minutes * 60, true);
+  showBrief({ title: 'Skill Builder', subtitle: SKILL_LABEL[state.selectedSkill] + ' \u00b7 ' + state.selectedDiffs.join(', '),
+    minutes: minutes, count: order.length, pace: paceText(minutes, order.length),
+    onStart: () => startSession(order, minutes * 60, true) });
 }
 
 function startRapidFire() {
@@ -518,7 +615,7 @@ function isCorrect(q) {
 function renderPalette() {
   const skillsToShow = state.mode === 'skill' ? SKILLS.filter(([k]) => k === state.selectedSkill) : SKILLS;
   const allowedDiffs = state.mode === 'skill' ? state.selectedDiffs : ['Easy','Medium','Hard'];
-  const showReviewTab = state.mode === 'skill'; // "purple" per-skill review only in Skill Review mode
+  const showReviewTab = state.mode === 'skill'; // "purple" per-skill review only in Skill Builder mode
   let html = '<div id="palette">';
   skillsToShow.forEach(([skey, slabel]) => {
     const skillEntries = [];
@@ -632,30 +729,33 @@ function renderQuestion() {
 
 function renderIntro() {
   return `<div class="screen-center" style="max-width:820px;">
-    <h1 class="serif" style="color:var(--crimson);">Algebra Questionbank</h1>
+    <h1 class="serif" style="color:var(--crimson);">Algebra Practice Hub</h1>
     <div class="mode-grid">
       <button class="mode-card-btn" onclick="selectMode('chapter')">
-        <div class="mc-icon">📘</div>
-        <div class="mc-title">Whole Chapter Review</div>
+        <div class="mc-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H19v14H5.5A1.5 1.5 0 0 0 4 19.5z"/><path d="M4 19.5A1.5 1.5 0 0 0 5.5 21H19v-3"/><path d="M9 8h6M9 12h6"/></svg></div>
+        <div class="mc-title">Chapter Marathon</div>
+        <svg class="mc-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
       </button>
       <button class="mode-card-btn" onclick="selectMode('skill')">
-        <div class="mc-icon">🎯</div>
-        <div class="mc-title">Skill Review</div>
+        <div class="mc-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg></div>
+        <div class="mc-title">Skill Builder</div>
+        <svg class="mc-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
       </button>
       <button class="mode-card-btn" onclick="selectMode('rapid')">
-        <div class="mc-icon">⚡</div>
-        <div class="mc-title">Rapid Fire Questions</div>
+        <div class="mc-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13.5h6L10 21l8-10.5h-6z"/></svg></div>
+        <div class="mc-title">Speed Round</div>
+        <svg class="mc-arrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
       </button>
     </div>
   </div>`;
 }
 
 function renderSkillPick() {
-  let cards = SKILLS.map(([skey, slabel]) => {
-    return `<button class="skill-pick-btn" onclick="pickSkill('${skey}')"><strong>${slabel}</strong></button>`;
+  let cards = SKILLS.map(([skey, slabel], i) => {
+    return `<button class="skill-pick-btn" onclick="pickSkill('${skey}')"><span class="sp-num">${i+1}</span><span class="sp-label">${slabel}</span><span class="sp-go"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></button>`;
   }).join('');
   return `<div class="screen-center" style="max-width:780px;">
-    <h1 class="serif" style="color:var(--crimson);">Skill Review</h1>
+    <h1 class="serif" style="color:var(--crimson);">Skill Builder</h1>
     <div class="skill-grid">${cards}</div>
     <button class="nav-back-btn btn-ghost" style="padding:8px 18px;" onclick="backToIntro()">&larr; Back</button>
   </div>`;
@@ -668,19 +768,20 @@ function renderDiffPick() {
     const n = QUESTIONS.filter(q => q.skill === skey && q.difficulty === d).length;
     if (n === 0) return '';
     const checked = state.selectedDiffs.indexOf(d) !== -1;
-    return `<label class="diff-check-label ${checked?'checked':''}">
-      <input type="checkbox" ${checked?'checked':''} onchange="toggleDiffChoice('${d}')"> ${d}
+    return `<label class="diff-check-label dc-${d} ${checked?'checked':''}">
+      <input type="checkbox" ${checked?'checked':''} onchange="toggleDiffChoice('${d}')">
+      <span class="dc-tick">&check;</span><span class="dc-dot"></span><span class="dc-name">${d}</span><span class="dc-count">${n} questions</span>
     </label>`;
   }).join('');
   const n = state.selectedDiffs.length;
-  const timeText = n === 0 ? '' : (n === 1 ? 'You will get 35 minutes.' : 'You will get 75 minutes.');
+  const timeText = n === 0 ? 'Choose one or more levels' : (n === 1 ? '35 minutes' : '75 minutes');
   return `<div class="screen-center" style="max-width:520px;">
     <h1 class="serif" style="color:var(--crimson);">${SKILL_LABEL[skey]}</h1>
     <div class="diff-check-row">${rows}</div>
-    <div class="time-hint">${timeText}</div>
+    <div class="time-pill"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${timeText}</div>
     <div style="margin-top:22px;display:flex;gap:10px;justify-content:center;">
       <button class="btn-ghost" onclick="state.selectedSkill=null; state.selectedDiffs=[]; state.screen='skillpick'; render();">&larr; Back</button>
-      <button class="btn-primary" ${n===0?'disabled':''} onclick="startSkillReview()">Start Skill Review</button>
+      <button class="btn-primary" ${n===0?'disabled':''} onclick="startSkillReview()">Start Skill Builder</button>
     </div>
   </div>`;
 }
@@ -783,4 +884,5 @@ render();
 </script>
 
 
+<div id="briefOverlay"></div>
 </body></html>
