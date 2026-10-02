@@ -1141,11 +1141,11 @@
 
 
   /* ── DRILLS INTRO ── */
-  #screen-drills-intro, #screen-tests-intro {
+  #screen-drills-intro, #screen-tests-intro, #screen-fp-intro {
     min-height: 100vh; align-items: center; justify-content: center;
     background: transparent; padding: 70px 20px 60px; text-align: center;
   }
-  #screen-drills-intro .di-img, #screen-tests-intro .di-img {
+  #screen-drills-intro .di-img, #screen-tests-intro .di-img, #screen-fp-intro .di-img {
     width: min(78vw, 400px); height: auto; mix-blend-mode: multiply;
     margin-bottom: 18px; animation: diBob 3.2s ease-in-out infinite;
   }
@@ -1153,12 +1153,13 @@
     font-family: 'Playfair Display', serif; font-weight: 900; color: var(--crimson);
     font-size: clamp(26px, 6.2vw, 44px); line-height: 1.2; max-width: 620px; margin-bottom: 26px;
   }
+  #screen-fp-intro .di-img { width: min(90vw, 520px); }
   @keyframes diBob { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-8px) rotate(1deg); } }
-  @media (prefers-reduced-motion: reduce) { #screen-drills-intro .di-img, #screen-tests-intro .di-img { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { #screen-drills-intro .di-img, #screen-tests-intro .di-img, #screen-fp-intro .di-img { animation: none; } }
 
   /* ── MATH QUOTES BACKGROUND ── */
   #math-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; user-select: none; -webkit-user-select: none; }
-  body:has(#screen-welcome.active, #screen-subject.active, #screen-mode.active, #screen-drills-intro.active, #screen-tests-intro.active) #math-bg { background: linear-gradient(160deg, #fff 60%, #f8f0f0 100%); }
+  body:has(#screen-welcome.active, #screen-subject.active, #screen-mode.active, #screen-drills-intro.active, #screen-tests-intro.active, #screen-fp-intro.active) #math-bg { background: linear-gradient(160deg, #fff 60%, #f8f0f0 100%); }
   #screen-welcome, #screen-subject, #screen-mode { background: transparent; }
   #math-bg .mq {
     position: absolute; width: 46vw; max-width: 340px;
@@ -1344,7 +1345,7 @@ initAuth();
       <div class="label">Math</div>
       <div class="desc">Algebra, Data Analysis, Geometry & more</div>
     </div>
-    <div class="subject-card" onclick="goScreen('screen-full-practice-list')">
+    <div class="subject-card" onclick="goScreen('screen-fp-intro')">
       <div class="icon">🎯</div>
       <div class="label">Full Practice Test</div>
       <div class="desc">Πλήρες Digital SAT · R&amp;W + Math, 4 modules, χρονόμετρο</div>
@@ -1364,6 +1365,13 @@ initAuth();
 </div>
 
 <!-- ══ SCREEN: FULL PRACTICE TEST LIST ══ -->
+<!-- ══ FULL PRACTICE TEST INTRO ══ -->
+<div id="screen-fp-intro" class="screen">
+  <button class="nav-back-btn" onclick="goScreen('screen-subject')">← Back</button>
+  <img class="di-img" src="assets/skeletons-brains.png" alt="Same brains, different bones!" loading="lazy" style="margin-bottom:26px;">
+  <button class="welcome-next" onclick="goScreen('screen-full-practice-list')">Ξεκινάμε →</button>
+</div>
+
 <div id="screen-full-practice-list" class="screen">
   <h2 class="subject-title">Full Practice Test</h2>
   <p class="subject-sub">Πλήρες Digital SAT · R&amp;W + Math, 4 modules, χρονόμετρο</p>
@@ -2968,7 +2976,7 @@ document.addEventListener('keydown', e => {
 // ── SCREEN NAVIGATION ──
 let __isHistoryNav = false;
 
-const GUEST_SCREENS = /^screen-(welcome|subject|full-practice-list|college-board|cb-)/;
+const GUEST_SCREENS = /^screen-(welcome|subject|full-practice-list|fp-intro|college-board|cb-)/;
 function goScreen(id, subject) {
   if (document.body.classList.contains('guest') && !GUEST_SCREENS.test(id)) id = 'screen-subject';
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
