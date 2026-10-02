@@ -1139,9 +1139,26 @@
   }
 
 
+
+  /* ── DRILLS INTRO ── */
+  #screen-drills-intro {
+    min-height: 100vh; align-items: center; justify-content: center;
+    background: transparent; padding: 70px 20px 60px; text-align: center;
+  }
+  #screen-drills-intro .di-img {
+    width: min(78vw, 400px); height: auto; mix-blend-mode: multiply;
+    margin-bottom: 18px; animation: diBob 3.2s ease-in-out infinite;
+  }
+  #screen-drills-intro .di-title {
+    font-family: 'Playfair Display', serif; font-weight: 900; color: var(--crimson);
+    font-size: clamp(26px, 6.2vw, 44px); line-height: 1.2; max-width: 620px; margin-bottom: 26px;
+  }
+  @keyframes diBob { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-8px) rotate(1deg); } }
+  @media (prefers-reduced-motion: reduce) { #screen-drills-intro .di-img { animation: none; } }
+
   /* ── MATH QUOTES BACKGROUND ── */
   #math-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; user-select: none; -webkit-user-select: none; }
-  body:has(#screen-welcome.active, #screen-subject.active, #screen-mode.active) #math-bg { background: linear-gradient(160deg, #fff 60%, #f8f0f0 100%); }
+  body:has(#screen-welcome.active, #screen-subject.active, #screen-mode.active, #screen-drills-intro.active) #math-bg { background: linear-gradient(160deg, #fff 60%, #f8f0f0 100%); }
   #screen-welcome, #screen-subject, #screen-mode { background: transparent; }
   #math-bg .mq {
     position: absolute; width: 46vw; max-width: 340px;
@@ -1795,6 +1812,14 @@ initAuth();
 </div>
 
 <!-- ══ SCREEN 3: MODE ══ -->
+<!-- ══ DRILLS INTRO ══ -->
+<div id="screen-drills-intro" class="screen">
+  <button class="nav-back-btn" onclick="goScreen('screen-mode')">← Back</button>
+  <img class="di-img" src="assets/skeletons.png" alt="Δύο σκελετοί που χαιρετούν" loading="lazy">
+  <h2 class="di-title">Μπήκες στο καλό κομμάτι φιλαράκι</h2>
+  <button class="welcome-next" onclick="goQuiz()">Πάμε →</button>
+</div>
+
 <div id="screen-mode" class="screen">
   <div class="mode-subject-badge" id="mode-badge">📐 Math</div>
   <h2 class="subject-title">Choose a mode</h2>
@@ -1805,7 +1830,7 @@ initAuth();
       <div class="label">Practice Test</div>
       <div class="desc">Full-length SAT mock test under timed conditions</div>
     </div>
-    <div class="mode-card" onclick="goQuiz()">
+    <div class="mode-card" onclick="goScreen('screen-drills-intro')">
       <div class="icon">🎯</div>
       <div class="label">Modules / Drills</div>
       <div class="desc">Targeted exercises by topic — Algebra, Interpretation, Statistics</div>
